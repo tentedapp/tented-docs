@@ -1,0 +1,316 @@
+---
+title: "Custom Domains"
+description: "Configure custom domains and DNS redirects for your tents"
+---
+
+## Custom Domains Overview
+
+While Tented doesn't yet support direct custom domain hosting, you can use DNS redirects to point your own domain to your tents. This allows you to maintain your brand identity while leveraging Tented's powerful hosting infrastructure.
+
+## How DNS Redirects Work
+
+### Basic Concept
+
+**Domain Redirect Process:**
+1. **Your Domain**: `landing.yourcompany.com`
+2. **DNS Record**: Points to Tented's servers
+3. **Tented Hosting**: Your tent is hosted on Tented
+4. **Branded URL**: Visitors see your domain
+
+**Benefits of DNS Redirects:**
+- Maintain brand identity with your domain
+- Professional appearance for your landing pages
+- SEO benefits from branded URLs
+- Easy to remember and share
+
+### Technical Implementation
+
+**DNS Configuration:**
+- **CNAME Record**: `landing` → `tented.ai`
+- **A Record**: Point to Tented's IP address
+- **SSL Certificate**: Automatically provisioned by Tented
+- **Global CDN**: Fast loading worldwide
+
+**Redirect Types:**
+- **301 Redirect**: Permanent redirect (SEO-friendly)
+- **302 Redirect**: Temporary redirect
+- **Frame Redirect**: Display your domain with Tented content
+- **JavaScript Redirect**: Client-side redirect
+
+## Setting Up Custom Domains
+
+### Prerequisites
+
+**Domain Requirements:**
+- Own a domain name
+- Access to domain DNS settings
+- Ability to modify DNS records
+- Domain registrar account access
+
+**Tented Requirements:**
+- Active Tented account
+- Published tent ready for redirect
+- Understanding of DNS concepts
+- Technical setup capability
+
+### Step-by-Step Setup
+
+**1. Choose Your Subdomain:**
+- Select a subdomain (e.g., `landing`, `campaign`, `promo`)
+- Ensure it's available and not conflicting
+- Consider your brand and marketing needs
+- Plan for future subdomains
+
+**2. Configure DNS Records:**
+- Log into your domain registrar
+- Navigate to DNS management
+- Add CNAME record: `subdomain` → `tented.ai`
+- Or add A record pointing to Tented's IP
+
+**3. Configure Tented Settings:**
+- Navigate to tent settings
+- Add custom domain configuration
+- Enter your subdomain
+- Verify DNS propagation
+
+**4. Test the Redirect:**
+- Wait for DNS propagation (up to 48 hours)
+- Test the redirect in browser
+- Verify SSL certificate is working
+- Check mobile and desktop access
+
+## DNS Configuration Examples
+
+### Popular Domain Registrars
+
+**GoDaddy DNS Setup:**
+1. Log into GoDaddy account
+2. Go to "My Products" → "DNS"
+3. Add CNAME record:
+   - **Name**: `landing`
+   - **Value**: `tented.ai`
+   - **TTL**: `3600`
+
+**Namecheap DNS Setup:**
+1. Log into Namecheap account
+2. Go to "Domain List" → "Manage"
+3. Add CNAME record:
+   - **Host**: `landing`
+   - **Value**: `tented.ai`
+   - **TTL**: `Automatic`
+
+**Cloudflare DNS Setup:**
+1. Log into Cloudflare account
+2. Select your domain
+3. Go to "DNS" tab
+4. Add CNAME record:
+   - **Type**: `CNAME`
+   - **Name**: `landing`
+   - **Target**: `tented.ai`
+   - **Proxy**: `Proxied` (orange cloud)
+
+### Multiple Subdomains
+
+**Campaign-Specific Subdomains:**
+- `q4-sale.yourcompany.com`
+- `product-launch.yourcompany.com`
+- `holiday-promo.yourcompany.com`
+- `webinar-signup.yourcompany.com`
+
+**Department-Specific Subdomains:**
+- `marketing.yourcompany.com`
+- `sales.yourcompany.com`
+- `support.yourcompany.com`
+- `partners.yourcompany.com`
+
+## Advanced Configuration
+
+### SSL Certificate Management
+
+**Automatic SSL:**
+- Tented automatically provisions SSL certificates
+- Supports wildcard certificates for subdomains
+- Automatic renewal and management
+- No additional configuration needed
+
+**Custom SSL:**
+- Upload your own SSL certificate
+- Configure certificate chain
+- Set up automatic renewal
+- Monitor certificate status
+
+### CDN Configuration
+
+**Global CDN:**
+- Automatic global content delivery
+- Optimized for fast loading worldwide
+- Image and asset optimization
+- Mobile-optimized delivery
+
+**CDN Settings:**
+- Configure cache policies
+- Set up cache purging
+- Monitor CDN performance
+- Optimize delivery settings
+
+## Troubleshooting Custom Domains
+
+### Common Issues
+
+**DNS Propagation Delays:**
+- DNS changes can take up to 48 hours
+- Check DNS propagation status
+- Clear DNS cache on your computer
+- Use different DNS servers for testing
+
+**SSL Certificate Issues:**
+- Verify DNS is pointing correctly
+- Check certificate provisioning status
+- Ensure domain is accessible
+- Contact support if certificate fails
+
+**Redirect Not Working:**
+- Verify DNS configuration
+- Check for typos in domain setup
+- Test with different browsers
+- Clear browser cache and cookies
+
+### Testing and Validation
+
+**DNS Testing Tools:**
+- Use `nslookup` or `dig` commands
+- Check DNS propagation with online tools
+- Verify CNAME records are correct
+- Test from different locations
+
+**SSL Testing:**
+- Use SSL testing tools online
+- Verify certificate validity
+- Check certificate chain
+- Test HTTPS accessibility
+
+## Best Practices
+
+### Domain Strategy
+
+**Subdomain Planning:**
+- Plan your subdomain structure
+- Use consistent naming conventions
+- Consider future expansion needs
+- Document your domain strategy
+
+**Brand Consistency:**
+- Maintain brand identity across domains
+- Use consistent messaging
+- Ensure visual consistency
+- Align with brand guidelines
+
+### Performance Optimization
+
+**DNS Optimization:**
+- Use low TTL values during setup
+- Increase TTL after setup is complete
+- Monitor DNS performance
+- Use reliable DNS providers
+
+**CDN Optimization:**
+- Leverage Tented's global CDN
+- Optimize images and assets
+- Monitor loading performance
+- Test from different locations
+
+## Future Custom Domain Support
+
+### Planned Features
+
+**Direct Domain Hosting:**
+- Host tents directly on your domain
+- No redirects needed
+- Full domain control
+- Advanced DNS management
+
+**Advanced DNS Management:**
+- Custom DNS records
+- Advanced routing options
+- Load balancing capabilities
+- Geographic routing
+
+**Domain Management Tools:**
+- Built-in domain management
+- DNS configuration interface
+- Domain health monitoring
+- Automated domain setup
+
+### Migration Planning
+
+**Preparing for Direct Hosting:**
+- Document current redirect setup
+- Plan domain structure
+- Prepare for migration
+- Test migration process
+
+**Backup Strategies:**
+- Keep redirect setup as backup
+- Document all configurations
+- Test rollback procedures
+- Maintain domain access
+
+## Security Considerations
+
+### Domain Security
+
+**DNS Security:**
+- Use DNSSEC for DNS security
+- Monitor DNS for changes
+- Set up DNS monitoring alerts
+- Protect DNS credentials
+
+**SSL Security:**
+- Monitor certificate expiration
+- Use strong SSL configurations
+- Enable HSTS headers
+- Regular security audits
+
+### Access Control
+
+**Domain Access:**
+- Limit domain management access
+- Use strong authentication
+- Monitor domain changes
+- Regular access reviews
+
+**Backup Access:**
+- Maintain backup domain access
+- Document recovery procedures
+- Test emergency access
+- Keep credentials secure
+
+## Getting Help
+
+### Support Resources
+
+**Documentation:**
+- Comprehensive setup guides
+- Troubleshooting documentation
+- Best practices guides
+- Video tutorials
+
+**Community Support:**
+- User community forums
+- Expert user assistance
+- Shared experiences
+- Problem-solving discussions
+
+**Technical Support:**
+- Direct support tickets
+- Live chat assistance
+- Phone support for enterprise
+- Emergency support procedures
+
+<Card
+  title="Next: Billing & Subscriptions"
+  icon="arrow-right"
+  href="/billing-subscriptions/upgrading-plan"
+>
+  Learn how to manage your subscription and billing.
+</Card>

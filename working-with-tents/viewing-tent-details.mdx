@@ -1,0 +1,172 @@
+---
+title: "Viewing Tent Details"
+description: "Navigate and understand the tent details page"
+---
+
+## Tent Details Overview
+
+The tent details page provides a comprehensive view of your tent's information, status, and management options. This is your central hub for understanding and controlling your tent.
+
+## Page Layout
+
+### Header Section
+
+The header displays essential tent information:
+
+- **Tent Name**: Click to edit/rename your tent
+- **Status Badge**: Shows current status (Draft, Published, Generating, etc.)
+- **Last Updated**: Timestamp of the most recent changes
+- **Created By**: User who originally created the tent
+
+### Action Buttons
+
+<AccordionGroup>
+  <Accordion icon="edit" title="Edit Tent">
+    Opens the tent editor where you can make changes through chat or direct code editing.
+  </Accordion>
+  
+  <Accordion icon="eye" title="Preview">
+    Opens a preview window to see how your tent looks on different devices.
+  </Accordion>
+  
+  <Accordion icon="rocket" title="Publish">
+    Makes your tent live on the web with a unique URL.
+  </Accordion>
+  
+  <Accordion icon="copy" title="Clone">
+    Creates a copy of your tent for variations or A/B testing.
+  </Accordion>
+</AccordionGroup>
+
+## Information Tabs
+
+### Overview Tab
+
+**Generation History:**
+- List of all generations with timestamps
+- Current active generation highlighted
+- Ability to revert to previous generations
+- Generation notes and changes
+
+**Tent Statistics:**
+- Total views and visits
+- Form submissions count
+- Last published date
+- Creation date and creator
+
+**Quick Actions:**
+- Edit tent name
+- Change status
+- Download code
+- Share preview link
+
+### Settings Tab
+
+**General Settings:**
+- Tent name and description
+- Status (Draft/Published/Archived)
+- Visibility settings
+- Access permissions
+
+**Brand Settings:**
+- Color scheme
+- Typography settings
+- Logo and brand assets
+- Custom CSS (advanced)
+
+**Form Settings:**
+- Form submission handling
+- Email notifications
+- Data export settings
+- Integration options
+
+### Analytics Tab
+
+**Performance Metrics:**
+- Page views and unique visitors
+- Conversion rates
+- Form submission rates
+- Traffic sources
+
+**Form Submissions:**
+- List of all form submissions
+- Export capabilities
+- Submission details and timestamps
+- Contact information
+
+## Status Indicators
+
+Understanding tent statuses:
+
+<CardGroup cols={2}>
+
+<Card title="Draft" icon="edit">
+  Tent is being created or edited. Not yet published to the web.
+</Card>
+
+<Card title="Published" icon="check">
+  Tent is live and accessible via its unique URL.
+</Card>
+
+<Card title="Generating" icon="spinner">
+  AI is currently creating or updating the tent content.
+</Card>
+
+<Card title="Archived" icon="archive">
+  Tent is no longer active but preserved for reference.
+</Card>
+
+</CardGroup>
+
+## Generation Management
+
+### Viewing Generations
+
+Each tent maintains a history of all generations:
+
+- **Generation Number**: Sequential version number
+- **Created Date**: When this generation was made
+- **Created By**: User who triggered the generation
+- **Type**: Initial, Iteration, or Reverted
+- **Status**: Completed, Failed, or In Progress
+
+### Reverting Generations
+
+To revert to a previous generation:
+
+1. **Click on a previous generation** in the history
+2. **Review the changes** that will be made
+3. **Confirm the revert** action
+4. **New generation created** with the reverted content
+
+<Warning>
+Reverting creates a new generation and cannot be undone. Make sure you want to lose recent changes before reverting.
+</Warning>
+
+## Quick Actions Menu
+
+Access common actions from the three-dot menu:
+
+- **Rename Tent**: Change the tent name
+- **Duplicate**: Create a copy of the tent
+- **Archive**: Move tent to archived status
+- **Delete**: Permanently remove the tent
+- **Export Code**: Download the HTML/CSS/JS files
+- **Share Preview**: Get a shareable preview link
+
+## Mobile Responsiveness
+
+The tent details page is fully responsive:
+
+- **Mobile View**: Optimized layout for phones and tablets
+- **Touch Actions**: Swipe and tap gestures supported
+- **Quick Access**: Essential actions easily accessible on mobile
+- **Preview**: Mobile preview of your tent included
+
+<Card
+  title="Next: Understanding the Tent Editor"
+  icon="arrow-right"
+  href="/working-with-tents/understanding-tent-editor"
+>
+  Learn how to navigate and use the tent editor interface.
+</Card>
