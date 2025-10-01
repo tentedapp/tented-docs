@@ -21,11 +21,38 @@
             ]
           },
           {
+            "group": "Working with Tents",
+            "pages": [
+              "working-with-tents/creating-tents",
+              "working-with-tents/viewing-tent-details",
+              "working-with-tents/understanding-tent-editor",
+              "working-with-tents/editing-tents",
+              "working-with-tents/reverting-generations",
+              "working-with-tents/best-practices-prompting",
+              "working-with-tents/previewing-tents",
+              "working-with-tents/publishing-tents",
+              "working-with-tents/viewing-form-submissions",
+              "working-with-tents/managing-tents",
+              "working-with-tents/tent-settings"
+            ]
+          },
+          {
             "group": "Configuring Tented",
             "pages": [
               "configuring-tented/inviting-new-users",
               "configuring-tented/managing-users",
-              "configuring-tented/user-permissions"
+              "configuring-tented/user-permissions",
+              "configuring-tented/user-settings",
+              "configuring-tented/workspace-settings",
+              "configuring-tented/custom-domains"
+            ]
+          },
+          {
+            "group": "Billing & Subscriptions",
+            "pages": [
+              "billing-subscriptions/upgrading-plan",
+              "billing-subscriptions/managing-subscription",
+              "billing-subscriptions/viewing-usage"
             ]
           }
         ]
