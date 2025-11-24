@@ -1,0 +1,140 @@
+---
+title: "Connecting Microsoft Teams"
+description: "Learn how to connect Microsoft Teams to your Tented workspace for automated form submission notifications."
+---
+
+Tented integrates with Microsoft Teams to send real-time notifications when forms are submitted on your published tents. This guide walks you through connecting your Teams workspace to Tented.
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+- **Admin or Owner access** to your Tented workspace
+- **Permission to install apps** in your Microsoft Teams workspace (or access to request app installation from your Teams admin)
+
+## Step 1: Find Tented in the Teams App Store
+
+1. Open **Microsoft Teams** (desktop or web app)
+2. Click on **Apps** in the left sidebar
+3. Search for **"Tented"** in the app search bar
+4. Click on the **Tented** app to view its details
+
+<Frame>
+  <img src="/images/teams-app-store.png" alt="Tented app in Teams App Store" />
+</Frame>
+
+## Step 2: Add Tented to Your Team
+
+1. Click the **Add** button on the Tented app page
+2. Select **Add to a team** from the dropdown options
+3. Choose the **team** where you want to receive notifications
+4. Select a **channel** where the Tented bot will be added (this is typically your General channel or a dedicated notifications channel)
+5. Click **Set up a bot** to complete the installation
+
+<Note>
+  When you add Tented to a team via a standard channel, the app gains access to **all standard channels** in that team. You'll be able to send notifications to any standard channel without additional setup.
+</Note>
+
+## Step 3: Complete the Connection via Deep Link
+
+After adding the app to your team, Tented will send a **welcome message** to the channel you selected during installation.
+
+1. Look for the welcome message from **Tented** in your channel
+2. Click the **Connect to Tented** button in the welcome message
+3. You'll be redirected to Tented where you can select which **Tented workspace** to link with your Teams tenant
+4. Confirm the connection
+
+<Check>
+  Once connected, your Tented workspace is linked to your Microsoft Teams tenant. You can now set up automations to send notifications to any standard channel in the connected team.
+</Check>
+
+## Step 4: Set Up a Teams Automation in Tented
+
+Now that your Teams workspace is connected, you can create automations to send notifications when forms are submitted.
+
+1. In Tented, navigate to the **tent** you want to add an automation to
+2. Click on **Automations** in the tent details panel
+3. Click **Add Automation**
+4. Select **Send Teams Message** as the action type
+5. Choose the **form** that should trigger the notification
+6. Select the **channel** where notifications should be sent from the dropdown list
+7. Click **Save** to activate the automation
+
+<Info>
+  The channel dropdown will show all standard channels available in your connected team. Simply select the channel where you want form submission notifications to appear.
+</Info>
+
+## How It Works
+
+When a visitor submits a form on your published tent:
+
+1. Tented receives the form submission
+2. The automation triggers and sends a formatted message to your selected Teams channel
+3. The message includes:
+   - Form name and tent details
+   - Submission timestamp
+   - A link to the tent
+   - All submitted form data
+
+## Automatic Cleanup & Disconnection
+
+Tented automatically manages your Teams connection to ensure everything stays in sync:
+
+<Warning>
+  **If the Tented app is removed from your team**, Tented will automatically:
+  - Disable all Teams automations for that workspace
+  - Clean up the connection between Tented and your Teams tenant
+  
+  You'll need to re-add the app and complete the connection process again to restore Teams notifications.
+</Warning>
+
+<Warning>
+  **If the app loses access to a specific channel** (for example, if the channel is deleted or converted to a private channel), Tented will automatically disable automations targeting that channel. You'll need to update your automation to use a different channel.
+</Warning>
+
+## Private Channels
+
+<Note>
+  **Private channels require separate installation.** When you add Tented to a team, it only has access to standard channels. To send notifications to a private channel, you must add the Tented app directly to that private channel:
+  
+  1. Open the private channel in Teams
+  2. Click the **+** button or go to channel settings
+  3. Select **Manage apps** or **Get more apps**
+  4. Search for and add **Tented** to the private channel
+  
+  Once installed, the private channel will appear in your channel selection dropdown in Tented.
+</Note>
+
+## Troubleshooting
+
+### I don't see any channels in the dropdown
+
+- Ensure you've completed the connection process by clicking the deep link in the welcome message
+- Verify the Tented app is still installed in your team
+- Check that your Tented workspace has an active Teams connection in workspace settings
+
+### Notifications aren't being sent
+
+- Confirm the automation is **enabled** (toggle should be on)
+- Verify the tent is **published**
+- Check that the selected channel still exists and the app has access to it
+
+### The welcome message didn't appear
+
+- Check the channel where you added the app—the message is sent there
+- Look in the channel's chat history; it may have been sent earlier
+- Try removing and re-adding the Tented app to the team
+
+## Disconnecting Teams
+
+To disconnect Microsoft Teams from your Tented workspace:
+
+1. Remove the **Tented** app from your team in Microsoft Teams
+2. Tented will automatically detect the removal and clean up the connection
+
+Alternatively, you can manage your integrations in Tented's workspace settings.
+
+---
+
+Need help? Contact us at [support@tented.ai](mailto:support@tented.ai).
+
