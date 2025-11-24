@@ -54,6 +54,12 @@
               "billing-subscriptions/managing-subscription",
               "billing-subscriptions/viewing-usage"
             ]
+          },
+          {
+            "group": "Connectors",
+            "pages": [
+              "integrations/connecting-microsoft-teams"
+            ]
           }
         ]
       }
