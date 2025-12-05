@@ -5,7 +5,7 @@ description: "How to revert to previous versions of your tent"
 
 ## Understanding Generation History
 
-Every tent maintains a complete history of all generations - each time you create a tent or make significant changes, a new generation is created. This allows you to explore different directions and always return to a previous version if needed.
+Every tent maintains a complete history of all generations. Each time you create a tent or make significant changes, a new generation is created. This allows you to explore different directions and always return to a previous version if needed.
 
 ## What is a Generation?
 
@@ -19,61 +19,33 @@ Each generation includes:
 - Complete HTML, CSS, and JavaScript code
 - All brand settings and uploaded assets
 - Timestamp and creator information
-- Generation type and notes
 
 ## Viewing Generation History
 
-### Accessing History
+The entire generation history for a tent is retained in the tent editor chat interface. You can open it at any time. 
 
-**From Tent Details:**
-1. Navigate to your tent's details page
-2. Click on the **"Generations"** tab
-3. View the complete list of all generations
+To access the generation history for a tent:
 
-**From Tent Editor:**
-1. Open the tent editor
-2. Look for the **generation history** panel
-3. Click on any previous generation to preview it
+1. In the dashboard, select **Tents** from the sidebar.
+2. Click the link for the tent you want to view.
+3. On the **Tent Details** page, select **Edit** at the top right.
 
-### Generation Information
+The tent opens in the tent editor. In the chat interface, you can scroll through all past generations to understand how your tent has evolved. To view the details about a specific generation, hover on the confirmation message from Tented in the history list. The generation number and timestamp will display.
 
-Each generation shows:
-
-**Basic Details:**
-- Generation number (sequential)
-- Creation date and time
-- User who created it
-- Generation type (Initial, Iteration, Reverted)
-
-**Content Preview:**
-- Thumbnail of the tent at that point
-- Brief description of changes made
-- Status (Completed, Failed, In Progress)
-
-**Actions Available:**
-- Preview the generation
-- Revert to this generation
-- Compare with current version
-- Download the code
+![A screenshot of the generation number and timestamp for a specific generation in the chat history.](../images/generation-info-fullscreen.png)
 
 ## Reverting to a Previous Generation
 
 ### Step-by-Step Process
 
-**1. Select the Target Generation:**
-- Browse through your generation history
-- Click on the generation you want to revert to
-- Review the preview to confirm it's what you want
+1. Browse through your generation history.
+2. Hover over the the confirmation message from Tented for the generation you want to revert to.
+3. Click on the generation number that appears.
+4. A new dialog box asks you if you're sure you want to revert the tent. Click **Confirm**.
 
-**2. Confirm the Revert:**
-- Click **"Revert to This Generation"**
-- Review the confirmation dialog
-- Understand that this will create a new generation
+The tent reverts to that generation. If the tent was already live on the web, you will need to republish it for the changes to become public.
 
-**3. Complete the Revert:**
-- The system creates a new generation with the reverted content
-- You're taken to the tent editor with the reverted version
-- All changes since that generation are lost
+![A screenshot of a reverted tent in the tent editor. The confirmation message, new generation number, and timestamp are highlighted in the chat history.](../images/generation-reverted.png)
 
 ### What Happens During Revert
 
@@ -118,7 +90,7 @@ Each generation shows:
 - Would a few specific changes solve the problem?
 - Is there a middle ground between versions?
 
-**Incremental Fixes:**
+**Prompts For Incremental Fixes:**
 - "Revert just the hero section styling"
 - "Keep the new content but fix the layout"
 - "Restore the original colors but keep the new sections"
@@ -137,62 +109,18 @@ Each generation shows:
 - Test thoroughly before proceeding
 - Keep track of what works and what doesn't
 
-### Managing Generation History
-
-**Regular Cleanup:**
-- Archive or delete old generations you won't need
-- Keep only meaningful versions in active history
-- Document significant changes in generation notes
-
-**Naming Conventions:**
-- Use descriptive names for important generations
-- Tag experimental versions clearly
-- Mark stable, production-ready versions
-
-## Advanced Revert Options
-
-### Partial Reverts
-
-**Selective Restoration:**
-- Revert only specific sections or elements
-- Keep some changes while undoing others
-- Mix and match from different generations
-
-**Code-Level Reverts:**
-- Revert specific CSS rules or HTML elements
-- Restore individual JavaScript functions
-- Fix isolated issues without full revert
-
-### Comparison Tools
-
-**Generation Comparison:**
-- Side-by-side view of different generations
-- Highlight differences between versions
-- Identify specific changes made
-
-**Change Tracking:**
-- See exactly what changed between generations
-- Understand the impact of each modification
-- Make informed decisions about reverts
-
 ## Troubleshooting Reverts
 
 ### Common Issues
 
 **Revert Not Working:**
-- Check if you have permission to revert
 - Verify the target generation is complete
-- Ensure no conflicts with current settings
+- Check for any system errors during revert
 
 **Unexpected Results:**
 - Review what the target generation actually contained
 - Check if brand settings were different
 - Verify uploaded assets are still available
-
-**Data Loss Concerns:**
-- Form submissions are always preserved
-- Analytics data remains intact
-- Only the tent code is reverted
 
 ### Recovery Options
 
