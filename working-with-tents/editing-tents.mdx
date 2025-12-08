@@ -5,11 +5,22 @@ description: "Advanced techniques for editing and iterating on your tents"
 
 ## Editing Workflow
 
-Editing tents in Tented is designed to be intuitive and conversational. You can make changes through natural language, see updates in real-time, and iterate quickly to perfect your landing page.
+Editing tents is designed to be intuitive and conversational. You can make changes through natural language, see updates in real-time, and iterate quickly to perfect your landing page.
+
+To edit an existing tent, open it in the tent editor: 
+
+1. From the **Tents** page in your workspace, click on the tent you want to edit to open the **Tent Details** page.
+2. Select **Edit** at the top right to open the tent editor.
+3. In the chat input area, describe the changes you want to make. Be as specific as possible.
+4. Click the send icon to submit your request. Changes typically take 4-5 seconds to process.
+
+The following sections outline different types of edits you can make, advanced techniques for refining your tent, and best practices for using the chat interface effectively.
 
 ## Types of Edits
 
 ### Content Edits
+
+When generating a landing page with AI, you often need to refine the generated copy to better match your brand, optimize for conversions, or reflect current offers.
 
 **Text Changes:**
 - "Change the headline to 'Transform Your Business Today'"
@@ -28,6 +39,8 @@ Editing tents in Tented is designed to be intuitive and conversational. You can 
 
 ### Design Changes
 
+You might want to adjust the visual presentation to ensure it aligns with your design system and provides an excellent user experience. These commands focus on making high-level Layout Modifications, specifying Color and Styling changes, and refining the Typography Updates across the page.
+
 **Layout Modifications:**
 - "Make the hero section full-screen height"
 - "Center all content on the page"
@@ -45,10 +58,14 @@ Editing tents in Tented is designed to be intuitive and conversational. You can 
 
 ### Functional Changes
 
+Beyond static content and visual design, the AI can also handle the implementation of complex logic and interactivity. Functional changes may involve modifying existing interactive elements, updating forms to capture specific data, and enhancing site navigation to improve user flow and data collection capabilities.
+
 **Form Modifications:**
 - "Add a phone number field to the contact form"
 - "Change the form submit button text to 'Get Started'"
 - "Add form validation for email addresses"
+
+  ![A screenshot of the result when prompting to add email validation to a form.](../images/form-validation.png)
 
 **Interactive Elements:**
 - "Add a smooth scroll to the pricing section"
@@ -62,165 +79,41 @@ Editing tents in Tented is designed to be intuitive and conversational. You can 
 
 ## Advanced Editing Techniques
 
+The following strategies help you manage complexity, resolve unexpected behaviors, and ensure the AI builds exactly what you intend, especially for larger, multi-step projects.
+
 ### Iterative Refinement
 
-**Start Broad, Get Specific:**
-1. **Layout**: "Make the layout more modern"
-2. **Sections**: "Add more spacing between sections"
-3. **Details**: "Increase padding to 2rem on all sections"
+Consider guiding the AI through a series of small, focused commands rather than one large, complicated request. This systematic approach is critical for maintaining control and ensuring the quality of the output.
 
-**Build Incrementally:**
-- Make one change at a time
-- Test each change before proceeding
-- Build complexity gradually
+When you **build incrementally**, the key is to make one change at a time, test each change before proceeding, and only then build complexity gradually.
 
 ### Visual References
 
-**Upload Images for Inspiration:**
-- Screenshots of designs you like
-- Brand guidelines or style guides
-- Reference websites or competitors
+To ensure the AI produces designs that meet your aesthetic standards, you can provide visual references either by uploading files or by describing specific design styles. This is extremely helpful for guiding the AI on branding, layout, and overall look and feel.
 
-**Describe Visual Elements:**
-- "Make it look like the Apple website"
-- "Use a design similar to Stripe's landing page"
-- "Add shadows like in Material Design"
+These references might be screenshots of designs you like, your official brand guidelines or style guides, or even visuals from reference websites or competitors. Alternatively, you can describe visual elements to the AI using specific instructions like, "Make it look like the Apple website," "Use a design similar to Stripe's landing page," or "Add shadows like in Material Design."
+
+  ![A screenshot of a prompt to make the page design similar to the Adobe Photoshop landing page, along with the result.](../images/iteration-design-adobe.png)
 
 ### Context-Aware Editing
 
-**Reference Existing Elements:**
+Context-Aware Editing leverages the AI's understanding of previously generated elements, allowing you to establish and maintain a cohesive design system by referencing existing components and styles across the page. Here are some example prompts:
+
 - "Make the pricing buttons match the hero button style"
 - "Use the same font as the headline for subheadings"
 - "Apply the same color scheme throughout"
-
-**Maintain Consistency:**
-- Reference previously established styles
-- Build on existing design patterns
-- Maintain visual hierarchy
-
-## Chat Interface Best Practices
-
-### Effective Communication
-
-**Be Clear and Specific:**
-- Instead of: "Fix the layout"
-- Try: "Make the hero section take up the full viewport height and center the content both horizontally and vertically"
-
-**Use Action Words:**
-- "Add", "Change", "Remove", "Update", "Make"
-- "Increase", "Decrease", "Move", "Center"
-- "Replace", "Insert", "Delete"
-
-**Provide Context:**
-- Mention which section you're referring to
-- Reference existing elements by name
-- Describe the desired outcome
-
-### Handling Complex Requests
-
-**Break Down Large Changes:**
-- Instead of: "Redesign the entire page"
-- Try: "First, update the hero section, then we'll work on the features"
-
-**Use Sequential Instructions:**
-- "First, change the background color"
-- "Then, update the text color to match"
-- "Finally, adjust the button styling"
-
-**Verify Understanding:**
-- Ask clarifying questions if needed
-- Confirm changes before proceeding
-- Request explanations of modifications
-
-## Real-Time Collaboration
-
-### Live Preview Updates
-
-**Instant Feedback:**
-- See changes immediately in the preview
-- Test interactions in real-time
-- Verify responsive behavior
-
-**Multi-Device Testing:**
-- Switch between device views
-- Test touch interactions
-- Verify mobile responsiveness
-
-### Version Control
-
-**Generation History:**
-- Each edit creates a new generation
-- Track all changes over time
-- Compare different versions
-
-**Revert Capability:**
-- Go back to any previous generation
-- Undo unwanted changes
-- Experiment without fear
-
-## Quality Assurance
-
-### Testing Your Edits
-
-**Functionality Testing:**
-- Test all interactive elements
-- Verify form submissions
-- Check navigation and links
-
-**Visual Testing:**
-- Review on different screen sizes
-- Test color contrast and readability
-- Verify alignment and spacing
-
-**Performance Testing:**
-- Check page load speed
-- Verify image optimization
-- Test on slower connections
-
-### Common Editing Mistakes
-
-**Avoid These Pitfalls:**
-- Making too many changes at once
-- Not testing on mobile devices
-- Ignoring accessibility considerations
-- Forgetting to test form functionality
-
-**Best Practices:**
-- Test each change individually
-- Maintain design consistency
-- Consider user experience
-- Keep performance in mind
 
 ## Troubleshooting Edits
 
 ### When Changes Don't Apply
 
-**Check Your Request:**
-- Ensure clear, specific instructions
-- Avoid ambiguous language
-- Provide sufficient context
+If you encounter issues where the AI's output isn't what you expected, the first step is to check your request. To get better results, always ensure your instructions are clear and specific, and provide sufficient context about the desired outcome. If the initial request fails, try to rephrase your request using different language, or use more specific terminology to clarify your intent to the AI.
 
-**Review Chat History:**
-- Look for error messages
-- Check if previous changes conflicted
-- Verify the AI understood your request
+Next, ask the AI to verify its work. Telling it to THINK HARD adds reasoning to its workflow. Here are some examples:
 
-**Try Alternative Approaches:**
-- Rephrase your request
-- Break down complex changes
-- Use more specific terminology
-
-### Handling Conflicts
-
-**Style Conflicts:**
-- Check for competing CSS rules
-- Verify specificity of selectors
-- Test changes in isolation
-
-**Layout Issues:**
-- Test on different screen sizes
-- Check for overflow problems
-- Verify responsive behavior
+- "Please review the last change and ensure it was applied correctly"
+- "Please double-check the layout adjustments I requested"
+- "Please THINK HARD and remove the predictive-scheduling dashboard image from the hero section; I still see it even after you recent attempt to remove it" 
 
 <Card
   title="Next: Reverting to Previous Generations"
