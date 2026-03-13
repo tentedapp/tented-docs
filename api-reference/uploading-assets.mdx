@@ -1,0 +1,144 @@
+---
+title: "Uploading Assets"
+description: "Upload files to a new or existing tent before you create a public API generation."
+---
+
+## Endpoint
+
+```bash
+POST /v1/tents/{tentId}/assets
+```
+
+Use this endpoint when your prompt should reference uploaded files such as:
+
+- Logos and product images
+- PDFs and Word documents
+- CSV or spreadsheet files
+- Slide decks
+- Video and audio files
+
+## Two Supported Patterns
+
+### Upload to a new tent
+
+Use `new` as the path parameter:
+
+```bash
+POST /v1/tents/new/assets
+```
+
+Tented creates an idle tent and returns:
+
+- `actual_tent_id`
+- `asset_id`
+
+Use those values in your later `POST /v1/tents` request.
+
+### Upload to an existing tent
+
+If you already have a `tentId`, attach more files to the same tent:
+
+```bash
+POST /v1/tents/{existingTentId}/assets
+```
+
+<Info>
+  The upload endpoint only checks that the tent exists in your workspace. If you plan to use that `tent_id` with `POST /v1/tents`, the tent must still have no generation yet.
+</Info>
+
+## Request Format
+
+Send `multipart/form-data` with a single field named `file`.
+
+### cURL example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/tents/new/assets \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --form "file=@./brand-brief.pdf"
+```
+
+## Successful Response
+
+`201 Created`
+
+```json
+{
+  "requested_tent_id": "new",
+  "actual_tent_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "asset_id": "01JPAEWP9PY5SCX1V6X03XK9M2",
+  "filename": "brand-brief.pdf",
+  "content_type": "application/pdf",
+  "file_size": 248392,
+  "uploaded_at": "2026-03-13T15:35:00.000Z"
+}
+```
+
+## File Limits
+
+- Maximum file size: `4 MB` per upload
+- Maximum referenced assets on create: `5`
+- One file per request
+
+## Supported Content Types
+
+### Images
+
+- `image/png`
+- `image/jpeg`
+- `image/gif`
+- `image/svg+xml`
+- `image/webp`
+- `image/x-icon`
+- `image/tiff`
+- `image/avif`
+
+### Documents
+
+- `application/pdf`
+- `application/msword`
+- `application/vnd.openxmlformats-officedocument.wordprocessingml.document`
+- `text/markdown`
+- `text/plain`
+- `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
+- `application/vnd.ms-excel`
+- `text/csv`
+- `application/vnd.ms-powerpoint`
+- `application/vnd.openxmlformats-officedocument.presentationml.presentation`
+
+### Media
+
+- `video/mp4`
+- `video/webm`
+- `video/quicktime`
+- `audio/mpeg`
+- `audio/wav`
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | `Content-Type` is not `multipart/form-data` |
+| `400 Bad Request` | Request body is missing |
+| `400 Bad Request` | No `file` field was provided |
+| `400 Bad Request` | File is larger than `4 MB` |
+| `400 Bad Request` | Unsupported MIME type |
+| `400 Bad Request` | `tentId` is not `new` and is not a valid UUID |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | You referenced an existing tent that does not exist in your workspace |
+
+## Next Step
+
+After uploading, call `POST /v1/tents` and pass:
+
+- `tent_id`: the `actual_tent_id`
+- `asset_ids`: an array of the returned `asset_id` values
+
+<Card
+  title="Next: Create Tents"
+  icon="arrow-right"
+  href="/api-reference/creating-tents"
+>
+  Use your uploaded asset IDs in the tent creation request.
+</Card>
