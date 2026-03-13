@@ -21,6 +21,16 @@
             ]
           },
           {
+            "group": "Public API",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/authentication",
+              "api-reference/uploading-assets",
+              "api-reference/creating-tents",
+              "api-reference/retrieving-tent-status"
+            ]
+          },
+          {
             "group": "Working with Tents",
             "pages": [
               "working-with-tents/creating-tents",

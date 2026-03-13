@@ -1,0 +1,176 @@
+---
+title: "Retrieving Tent Status"
+description: "Poll a tent until generation completes, fails, or finishes publishing."
+---
+
+## Endpoint
+
+```bash
+GET /v1/tents/{tentId}
+```
+
+Use this endpoint to poll the status of a tent created through the public API.
+
+## Status Values
+
+| Status | Meaning |
+| --- | --- |
+| `queued` | The generation record exists but work has not started yet |
+| `generating` | Tented is actively generating the HTML |
+| `completed` | Generation finished successfully |
+| `failed` | Generation failed |
+
+While the tent is still processing, Tented returns:
+
+```http
+Retry-After: 10
+```
+
+Poll no more frequently than every 10 seconds.
+
+## In-Progress Example
+
+```json
+{
+  "id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "status": "queued",
+  "created_at": "2026-03-13T15:40:00.000Z",
+  "updated_at": "2026-03-13T15:40:00.000Z"
+}
+```
+
+## Completed Example
+
+When generation succeeds, the response includes a `result` object:
+
+```json
+{
+  "id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "status": "completed",
+  "created_at": "2026-03-13T15:40:00.000Z",
+  "updated_at": "2026-03-13T15:41:02.000Z",
+  "result": {
+    "tentId": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+    "s3Key": "tents/org-id/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/gen-id/index.html",
+    "filePath": "index.html"
+  }
+}
+```
+
+## Failed Example
+
+If generation fails, the response includes an `error` field:
+
+```json
+{
+  "id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "status": "failed",
+  "created_at": "2026-03-13T15:40:00.000Z",
+  "updated_at": "2026-03-13T15:40:47.000Z",
+  "error": "Upstream generation failed."
+}
+```
+
+## Publication Object
+
+If the original create request used `auto_publish: true`, the status response also includes a `publication` object.
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `status` | `pending \| published \| published_with_warnings \| failed` | Publication lifecycle state |
+| `published_url` | `string` | Present when the tent was published |
+| `requested_custom_page_alias` | `string` | The alias you asked for |
+| `applied_custom_page_alias` | `string \| null` | The alias that was actually applied. `null` means publish fell back or failed |
+| `warnings` | `array` | Returned when publish succeeded with warnings |
+| `error` | `object` | Returned when publish failed |
+
+## Published Example
+
+```json
+{
+  "id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "status": "completed",
+  "created_at": "2026-03-13T15:40:00.000Z",
+  "updated_at": "2026-03-13T15:41:02.000Z",
+  "result": {
+    "tentId": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+    "s3Key": "tents/org-id/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/gen-id/index.html",
+    "filePath": "index.html"
+  },
+  "publication": {
+    "status": "published",
+    "published_url": "https://your-workspace.tented-pages.com/launch-page",
+    "requested_custom_page_alias": "launch-page",
+    "applied_custom_page_alias": "launch-page"
+  }
+}
+```
+
+## Published With Warning Example
+
+If the requested alias is already taken, Tented still publishes the tent at its default path and returns a warning:
+
+```json
+{
+  "publication": {
+    "status": "published_with_warnings",
+    "published_url": "https://your-workspace.tented-pages.com/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+    "requested_custom_page_alias": "launch-page",
+    "applied_custom_page_alias": null,
+    "warnings": [
+      {
+        "code": "CUSTOM_PAGE_ALIAS_UNAVAILABLE",
+        "message": "Requested alias is already in use. Published using default tent URL."
+      }
+    ]
+  }
+}
+```
+
+## Publication Failure Example
+
+If generation succeeds but auto-publish fails, the generation status still remains `completed` and the failure is reported under `publication`:
+
+```json
+{
+  "publication": {
+    "status": "failed",
+    "applied_custom_page_alias": null,
+    "error": {
+      "code": "PUBLISH_LIMIT_EXCEEDED",
+      "message": "Free users can only have 1 published tent. Upgrade to publish more."
+    }
+  }
+}
+```
+
+## Root Page Publishing
+
+If you requested `/` or `__index__` as the alias, the status response normalizes it to `/`:
+
+```json
+{
+  "publication": {
+    "status": "published",
+    "published_url": "https://your-workspace.tented-pages.com/",
+    "requested_custom_page_alias": "/",
+    "applied_custom_page_alias": "/"
+  }
+}
+```
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | `tentId` is missing or not a valid UUID |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | The tent does not exist in the workspace associated with your API key |
+
+<Card
+  title="Back to API Overview"
+  icon="arrow-left"
+  href="/api-reference/introduction"
+>
+  Review the full public API workflow and endpoint map.
+</Card>
