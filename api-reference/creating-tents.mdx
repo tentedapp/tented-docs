@@ -1,0 +1,199 @@
+---
+title: "Creating Tents"
+description: "Create a tent generation job through the public API, with optional branding, assets, and auto-publish."
+---
+
+## Endpoint
+
+```bash
+POST /v1/tents
+```
+
+This endpoint creates the initial generation job for a tent.
+
+<Info>
+  `POST /v1/tents` is an async trigger, not a synchronous HTML response. The immediate response only confirms the request was accepted.
+</Info>
+
+## Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | `string` | Yes | Human-readable tent name |
+| `prompt` | `string` | Yes | The generation prompt |
+| `user_id` | `string` | No | Optional external identifier to attribute the request |
+| `include_brand` | `boolean` | No | Pulls brand context from the workspace before generation |
+| `auto_publish` | `boolean` | No | Automatically publishes after successful generation |
+| `custom_page_alias` | `string` | No | Only valid when `auto_publish` is `true` |
+| `tent_id` | `uuid` | No | Use this when you uploaded assets first and want to generate into that idle tent |
+| `asset_ids` | `string[]` | No | Up to 5 asset IDs. Requires `tent_id` |
+
+## Minimal Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/tents \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Acme launch page",
+    "prompt": "Create a launch page for Acme Analytics with a hero, feature sections, customer logos, pricing, and a lead capture form"
+  }'
+```
+
+### Response
+
+`202 Accepted`
+
+```json
+{
+  "id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "status": "pending",
+  "created_at": "2026-03-13T15:40:00.000Z"
+}
+```
+
+## Create From Uploaded Assets
+
+If you uploaded files first, provide the returned tent and asset IDs:
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/tents \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Partner landing page",
+    "prompt": "Use the uploaded brief and logo to build a partner-specific campaign page",
+    "tent_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+    "asset_ids": ["01JPAEWP9PY5SCX1V6X03XK9M2"]
+  }'
+```
+
+<Info>
+  `asset_ids` can only be used with a `tent_id`. If you send asset IDs without a tent ID, the API returns `400 Bad Request`.
+</Info>
+
+## Include Workspace Branding
+
+Set `include_brand` to `true` when you want Tented to enrich the prompt with workspace brand context such as:
+
+- Brand logo
+- Brand icon
+- Primary color
+- Workspace or company name
+- Company domain
+- Company description
+- Brand guidelines
+
+Example:
+
+```json
+{
+  "name": "Branded page",
+  "prompt": "Build a product marketing page for our latest release",
+  "include_brand": true
+}
+```
+
+## Auto-Publish After Generation
+
+Set `auto_publish` to `true` if you want Tented to publish the finished tent automatically.
+
+```json
+{
+  "name": "Launch page",
+  "prompt": "Create a launch page for our new feature release",
+  "auto_publish": true
+}
+```
+
+When auto-publish is enabled:
+
+- Generation still completes asynchronously
+- The create response is still `202 Accepted`
+- Publication details appear later in `GET /v1/tents/{tentId}`
+
+### Requesting a custom page alias
+
+You can optionally request a custom published path:
+
+```json
+{
+  "name": "Spring launch",
+  "prompt": "Create a campaign page for our spring launch",
+  "auto_publish": true,
+  "custom_page_alias": "spring-launch"
+}
+```
+
+Alias rules:
+
+- Maximum `100` characters
+- Lowercase letters, numbers, hyphens, underscores, and dots only
+- Must start with a letter or number
+- Must not be a UUID
+- Must not use reserved words such as `api`, `admin`, `submit`, or `assets`
+- Use `/` to publish at the domain root
+
+<Warning>
+  `custom_page_alias` requires `auto_publish: true`. Sending an alias without auto-publish returns `400 Bad Request`.
+</Warning>
+
+## Important Behavior
+
+### One initial generation per tent
+
+If you supply `tent_id`, that tent must not already have a generation. Otherwise Tented returns:
+
+```json
+{
+  "error": "Tent already has a generation"
+}
+```
+
+with `409 Conflict`.
+
+### Prompt validation
+
+Tented validates that your prompt is actually asking for web content. Requests that do not look like a landing page, form, registration page, or related web experience can be rejected with:
+
+```json
+{
+  "error": "Invalid request",
+  "message": "Please enter a prompt that describes the web content you'd like to create (e.g., landing page, form, registration page).",
+  "code": "INVALID_PROMPT_INTENT"
+}
+```
+
+### Credit limits
+
+If the workspace does not have enough credits to start generation, the API returns `429 Too Many Requests`.
+
+### User attribution
+
+If you provide `user_id`, Tented stores it as the request's creator identity for that tent's first chat message and generation trigger. It does not change authentication or workspace scope.
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid JSON body |
+| `400 Bad Request` | Request body is missing |
+| `400 Bad Request` | Missing required fields like `name` or `prompt` |
+| `400 Bad Request` | `asset_ids` sent without `tent_id` |
+| `400 Bad Request` | Invalid `custom_page_alias` |
+| `400 Bad Request` | Prompt fails web-content intent validation |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | `tent_id` does not exist |
+| `404 Not Found` | One of the supplied `asset_ids` does not exist |
+| `409 Conflict` | The supplied `tent_id` already has a generation |
+| `429 Too Many Requests` | Credit limit exceeded |
+
+<Card
+  title="Next: Retrieve Tent Status"
+  icon="arrow-right"
+  href="/api-reference/retrieving-tent-status"
+>
+  Poll for generation progress and read publication results.
+</Card>

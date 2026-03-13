@@ -1,0 +1,74 @@
+---
+title: "Authentication"
+description: "Authenticate to the Tented public API with workspace-scoped bearer API keys."
+---
+
+## How Authentication Works
+
+The Tented public API uses bearer API keys. Each key belongs to exactly one Tented workspace, and every request runs in that workspace's context.
+
+Send your key in the `Authorization` header:
+
+```bash
+Authorization: Bearer tented_your_api_key
+```
+
+If the key is valid, Tented resolves the associated workspace internally and authorizes the request for that workspace only.
+
+## Creating an API Key
+
+Public API keys are created inside Tented by a workspace admin.
+
+1. Ask an admin to create an API key for your workspace.
+2. Copy the raw key when it is shown.
+3. Store it in your secrets manager or environment variables.
+
+<Warning>
+  Tented only returns the raw API key once at creation time. After that, only key metadata remains visible in the app.
+</Warning>
+
+## Example Request
+
+```bash
+curl --request GET \
+  --url https://api.tented.ai/v1/tents/00000000-0000-4000-8000-000000000000 \
+  --header "Authorization: Bearer $TENTED_API_KEY"
+```
+
+## Common Authentication Failures
+
+| Status | Cause |
+| --- | --- |
+| `401 Unauthorized` | Missing `Authorization` header |
+| `401 Unauthorized` | Header is not in `Bearer <token>` format |
+| `401 Unauthorized` | API key is unknown, revoked, or expired |
+
+## Security Notes
+
+- Treat the key like a password.
+- Never expose it in browser-side code.
+- Rotate or revoke it if you suspect leakage.
+- Use separate keys for separate systems when you want cleaner auditability.
+
+## Workspace Scope
+
+An API key cannot cross workspace boundaries. For example:
+
+- A tent created with Workspace A's key cannot be fetched with Workspace B's key.
+- An asset uploaded with one workspace's key cannot be attached from another workspace.
+
+## Required Headers
+
+| Header | Required | Notes |
+| --- | --- | --- |
+| `Authorization` | Yes | `Bearer <api-key>` |
+| `Content-Type` | Yes for JSON requests | Use `application/json` for `POST /v1/tents` |
+| `Content-Type` | Yes for asset uploads | Use `multipart/form-data` for `POST /v1/tents/{tentId}/assets` |
+
+<Card
+  title="Next: Upload Assets"
+  icon="arrow-right"
+  href="/api-reference/uploading-assets"
+>
+  Learn how to attach files to a new or existing tent before generation.
+</Card>
