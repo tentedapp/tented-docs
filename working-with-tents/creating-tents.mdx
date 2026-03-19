@@ -1,6 +1,6 @@
 ---
 title: "Creating Tents"
-description: "Learn how to create AI-generated landing pages with brand settings and generations"
+description: "Learn how to create AI-generated landing pages with your brand assets"
 ---
 
 ## Creating Your First Tent
@@ -9,9 +9,29 @@ Creating a tent in Tented is as simple as describing what you want in natural la
 
 ## The Creation Process
 
-### 1. Start with a Prompt
+### 1. Set Your Branding
 
-Navigate to your dashboard and click **"Create New Tent"**. In the prompt interface, describe your landing page:
+Before you create your tent, customize your brand identity. You're prompted to do this when you first sign up. Here's the information you'll need to provide:
+
+ - **Primary Brand Color**: Your main brand color (used for buttons)
+ - **Brand Logo**: The logo that represents your brand
+ - **Brand Icon**: A smaller icon version of your logo
+
+Logos should have a 3:1 aspect ratio and a transparent background. They should be saved as a PNG or SVG file for best results. Icons should have a 1:1 (square) aspect ratio. They should also be saved as a transparent PNG or SVG file.
+
+After you sign up for Tented, you'll see a prompt like this:
+
+![A screenshot of the prompt for adding brand assets. It appears after you first sign up for Tented.](../images/add-branding.png)
+
+1. Set your primary brand color by entering a hex code or using the color picker.
+2. Upload your logo and icon.
+3. Click **Save** to finish.
+
+Or, you can skip this step and add your branding later in your [Workspace Settings](../configuring-tented/workspace-settings).
+
+### 2. Write a Prompt
+
+Navigate to the **Home** page in your dashboard. In the prompt interface, describe your landing page.
 
 **Good prompts include:**
 - Your industry or business type
@@ -22,112 +42,83 @@ Navigate to your dashboard and click **"Create New Tent"**. In the prompt interf
 
 **Example prompts:**
 - "Create a landing page for a SaaS productivity tool targeting busy professionals, with a hero section, key features, pricing tiers, and a contact form"
-- "Build a landing page for a local coffee shop with menu highlights, location info, hours, and online ordering"
-- "Design a portfolio page for a freelance graphic designer showcasing recent projects and client testimonials"
+- "Build a professional landing page for a 'Predictive Scheduling' feature with a sign-up form to capture early access leads"
 
-### 2. Add Brand Settings
+For more information, see our [Best Practices for AI Prompting](best-practices-prompting) guide.
 
-Before generating, customize your brand identity:
+    ![A screenshot of a detailed prompt for an early-access signup page for a new feature called "Predictive Scheduling"](../images/initial-prompt.png)
 
-<AccordionGroup>
-  <Accordion icon="palette" title="Brand Colors">
-    Set your primary and secondary colors to match your brand:
-    - **Primary Color**: Your main brand color (used for buttons, links, highlights)
-    - **Secondary Color**: Supporting color for accents and secondary elements
-    - **Background Color**: Page background color
-    - **Text Color**: Main text color for readability
-  </Accordion>
-  
-  <Accordion icon="font" title="Typography">
-    Choose fonts that reflect your brand personality:
-    - **Heading Font**: For titles and major headings
-    - **Body Font**: For paragraph text and content
-    - **Font Weight**: Bold, regular, or light variations
-  </Accordion>
-  
-  <Accordion icon="image" title="Brand Assets">
-    Upload visual elements to enhance your tent:
-    - **Logo**: Your company or product logo
-    - **Product Images**: Photos of your product or service
-    - **Background Images**: Hero section or background imagery
-    - **Icons**: Custom icons that match your brand
-  </Accordion>
-</AccordionGroup>
+### 3. Generate Your Tent
 
-### 3. Understanding Generations
+Once you've set your branding and written your prompt:
 
-A **generation** is a complete version of your tent created by AI. Each time you create a new tent or make significant changes, a new generation is created.
+1. **Click the send icon** to start the AI creation process.
+2. **Wait for generation** (typically 60-70 seconds).
+3. **Preview** your new tent. For details, see [Previewing Tents](previewing-tents).
 
-**Generation Types:**
-- **Initial Generation**: The first version created from your prompt
-- **Iteration**: Updates made through chat-based editing
-- **Reverted Generation**: When you go back to a previous version
+    ![A screenshot of a generated early-access signup page for a "Predictive Scheduling" feature.](../images/initial-prompt-response.png)
 
-**Generation Features:**
-- Each generation has a unique ID and timestamp
-- You can revert to any previous generation
-- Generations preserve your brand settings and uploaded assets
-- Version history tracks all changes and iterations
+### 4. Refine and Iterate
 
-### 4. Generate Your Tent
+Refine your tent through natural conversation in the chat interface. Request changes like:
 
-Once you've set your prompt and brand settings:
+- "Add a testimonials section"
+- "Make the call-to-action button larger"  
+- "Add a sign-up form at the bottom"
 
-1. **Click "Generate Tent"** to start the AI creation process
-2. **Wait for generation** (typically 30-60 seconds)
-3. **Review the preview** in the tent editor
-4. **Make adjustments** using the chat interface if needed
+### 5. Add Images and files
+Consider enhancing your tent with images and downloadable content like brochures, reports, or white papers. There are two ways to add an image or file.
 
-## Best Practices for Tent Creation
+**From the chat input area:**
 
-### Writing Effective Prompts
+1. In the chat input area, click the **plus button > Add Images or Files**.
+2. Select the image or file from your computer.
+3. A thumbnail for the file appears above the chat input area. Reference it in your prompt. For example, "Add this AI scheduling graphic centered at the bottom of the hero section, below the stats."
+4. Click the **send icon** to submit your prompt with the image or file reference.
+    
+    ![A screenshot of a prompt to upload and insert an image with the final result.](../images/upload-image-via-prompt.png)
 
-**Be Specific:**
-- Instead of: "Create a landing page"
-- Try: "Create a landing page for a B2B SaaS project management tool targeting remote teams, with hero section, key features, pricing, testimonials, and contact form"
+**Through the Manage Assets option:**
 
-**Include Context:**
-- Your industry and target market
-- Key value propositions
-- Desired page sections
-- Call-to-action goals
+1. In the tent editor, click the **image icon** in the top menu.
+2. In the **Tent Assets** window that appears, click **Add File**.
+3. Select the image or file from your computer.
+4. The file is added to the **Tent Assets** list. You can now reference it in your prompts. For example, "Add this brochure download link below the pricing section."
 
-**Set Expectations:**
-- Mention if you want specific design styles
-- Include any must-have elements
-- Specify mobile-first or desktop-first approach
+    ![A screenshot of the Tent Assets window with an uploaded PDF file.](../images/upload-file-via-manage-assets.png)
 
-### Brand Settings Tips
 
-**Color Selection:**
-- Use your existing brand colors for consistency
-- Ensure good contrast for accessibility
-- Consider how colors work together
+### 6. Publish Your Tent   
 
-**Typography:**
-- Choose fonts that match your brand personality
-- Ensure readability across devices
-- Consider loading performance
+To make your tent live on the web, follow the steps in [Publishing Tents](publishing-tents).
+    
+    Your tent is now accessible worldwide!
 
-**Images:**
-- Use high-quality, relevant images
-- Optimize file sizes for web performance
-- Include alt text for accessibility
+    ![A screenshot of the confirmation that a tent was published.](../images/publish.png)
+
+## Troubleshooting
+
+### Common Issues
+
+Here are some common issues you might encounter while working with Tented's AI, along with suggested solutions.
+
+**Preview Not Updating:**
+If you notice the preview isn't updating as expected, a few steps can resolve this: first, try refreshing the preview panel. If that doesn't work, check for JavaScript errors in the console, and finally, carefully verify your code syntax for any mistakes that might be preventing the update. 
+
+**Changes Not Applied:**
+If you find that changes you requested are not being applied correctly, you should ensure your instructions are clear and specific to the AI. It's also helpful to check the chat history for any errors or confusing previous inputs, or simply try rephrasing your request to see if a different approach yields the correct result. 
+
+**Layout Issues:**
+For any layout problems, you should begin by testing the output on different screen sizes to identify the scope of the issue. You should then check your CSS for conflicts that might be causing unexpected rendering. Use browser developer tools for detailed inspection and debugging of the layout elements.
 
 ## What Happens Next?
 
-After creating your tent, you can:
-
-1. **Edit and iterate** using the chat interface
-2. **Preview** on different devices
-3. **Publish** to get a live URL
-4. **Track form submissions** and analytics
-5. **Clone** for variations or A/B testing
+After creating your tent, you might want to [edit and iterate](editing-tents) to perfect it. You can also track form submissions and analytics on the [Tent Details](viewing-tent-details) page.
 
 <Card
   title="Next: Viewing Tent Details"
   icon="arrow-right"
   href="/working-with-tents/viewing-tent-details"
 >
-  Learn how to navigate and understand the tent details page.
+  Learn how to navigate and understand the **Tent Details** page.
 </Card>
