@@ -1,11 +1,11 @@
 ---
-title: "Public API Overview"
-description: "Create tents programmatically, attach files, and poll generation status through Tented's public API."
+title: "Vibe Coding API Overview"
+description: "Create tents programmatically, attach files, and poll generation status through Tented's Vibe Coding API."
 ---
 
 ## Overview
 
-Tented's public API lets you create new tents from your own systems without using the app UI. The current public surface is focused on the initial generation workflow:
+Tented's Vibe Coding API lets you create new tents from your own systems without using the app UI. The current public surface is focused on the initial generation workflow:
 
 - Create a tent from a prompt
 - Upload files before generation
@@ -13,7 +13,7 @@ Tented's public API lets you create new tents from your own systems without usin
 - Auto-publish the finished tent if you opt in
 
 <Info>
-  The public API is asynchronous. `POST /v1/tents` returns immediately with a pending job, and you then poll `GET /v1/tents/{tentId}` until the status becomes `completed` or `failed`.
+  The Vibe Coding API is asynchronous. `POST /v1/tents` returns immediately with a pending job, and you then poll `GET /v1/tents/{tentId}` until the status becomes `completed` or `failed`.
 </Info>
 
 ## Base URL
