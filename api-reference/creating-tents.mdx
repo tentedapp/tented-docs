@@ -28,7 +28,9 @@ This endpoint creates the initial generation job for a tent.
 | `tent_id` | `uuid` | No | Use this when you uploaded assets first and want to generate into that idle tent |
 | `asset_ids` | `string[]` | No | Up to 5 asset IDs. Requires `tent_id` |
 
-## Minimal Example
+## Request Examples
+
+### Minimal Request
 
 ```bash
 curl --request POST \
@@ -41,19 +43,7 @@ curl --request POST \
   }'
 ```
 
-### Response
-
-`202 Accepted`
-
-```json
-{
-  "id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
-  "status": "pending",
-  "created_at": "2026-03-13T15:40:00.000Z"
-}
-```
-
-## Create From Uploaded Assets
+### With Uploaded Assets
 
 If you uploaded files first, provide the returned tent and asset IDs:
 
@@ -68,6 +58,18 @@ curl --request POST \
     "tent_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
     "asset_ids": ["01JPAEWP9PY5SCX1V6X03XK9M2"]
   }'
+```
+
+## Response Example
+
+`202 Accepted`
+
+```json
+{
+  "id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "status": "pending",
+  "created_at": "2026-03-13T15:40:00.000Z"
+}
 ```
 
 <Info>

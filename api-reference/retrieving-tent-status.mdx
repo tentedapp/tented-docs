@@ -28,7 +28,17 @@ Retry-After: 10
 
 Poll no more frequently than every 10 seconds.
 
-## In-Progress Example
+## Request Example
+
+```bash
+curl --request GET \
+  --url https://api.tented.ai/v1/tents/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1 \
+  --header "Authorization: Bearer $TENTED_API_KEY"
+```
+
+## Response Examples
+
+### In-Progress Response
 
 ```json
 {
@@ -39,7 +49,7 @@ Poll no more frequently than every 10 seconds.
 }
 ```
 
-## Completed Example
+### Completed Response
 
 When generation succeeds, the response includes a `result` object:
 
@@ -57,7 +67,7 @@ When generation succeeds, the response includes a `result` object:
 }
 ```
 
-## Failed Example
+### Failed Response
 
 If generation fails, the response includes an `error` field:
 
@@ -71,7 +81,7 @@ If generation fails, the response includes an `error` field:
 }
 ```
 
-## Publication Object
+### Publication Object
 
 If the original create request used `auto_publish: true`, the status response also includes a `publication` object.
 
@@ -84,7 +94,7 @@ If the original create request used `auto_publish: true`, the status response al
 | `warnings` | `array` | Returned when publish succeeded with warnings |
 | `error` | `object` | Returned when publish failed |
 
-## Published Example
+### Published Response
 
 ```json
 {
@@ -106,7 +116,7 @@ If the original create request used `auto_publish: true`, the status response al
 }
 ```
 
-## Published With Warning Example
+### Published With Warning Response
 
 If the requested alias is already taken, Tented still publishes the tent at its default path and returns a warning:
 
@@ -127,7 +137,7 @@ If the requested alias is already taken, Tented still publishes the tent at its 
 }
 ```
 
-## Publication Failure Example
+### Publication Failure Response
 
 If generation succeeds but auto-publish fails, the generation status still remains `completed` and the failure is reported under `publication`:
 
@@ -144,7 +154,7 @@ If generation succeeds but auto-publish fails, the generation status still remai
 }
 ```
 
-## Root Page Publishing
+### Root Page Publishing Response
 
 If you requested `/` as the alias, the status response returns `/`:
 
