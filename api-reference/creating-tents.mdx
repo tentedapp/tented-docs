@@ -1,6 +1,6 @@
 ---
 title: "Creating Tents"
-description: "Create a tent generation job through the Vibe Coding API, with optional branding, assets, and auto-publish."
+description: "Create a tent generation job through the public API from a prompt or approved template, with optional branding, assets, and auto-publish."
 ---
 
 ## Endpoint
@@ -23,6 +23,7 @@ This endpoint creates the initial generation job for a tent.
 | `prompt` | `string` | Yes | The generation prompt |
 | `user_id` | `string` | No | Optional external identifier to attribute the request |
 | `include_brand` | `boolean` | No | Pulls brand context from the workspace before generation |
+| `template_id` | `string` | No | Starts from an approved template in the same workspace instead of a blank generation |
 | `auto_publish` | `boolean` | No | Automatically publishes after successful generation |
 | `custom_page_alias` | `string` | No | Only valid when `auto_publish` is `true` |
 | `tent_id` | `uuid` | No | Use this when you uploaded assets first and want to generate into that idle tent |
@@ -74,6 +75,35 @@ curl --request POST \
 
 <Info>
   `asset_ids` can only be used with a `tent_id`. If you send asset IDs without a tent ID, the API returns `400 Bad Request`.
+</Info>
+
+## Create From a Template
+
+Pass `template_id` when you want Tented to start from an existing approved template instead of generating from scratch.
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/tents \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Template-based onboarding page",
+    "prompt": "Adapt it into a customer onboarding page for Acme with updated copy, pricing, and a contact form",
+    "template_id": "01JPC2YJ5S6M3T5H8XQ4N7R9AB"
+  }'
+```
+
+When `template_id` is present:
+
+- The template must exist in the same workspace as the API key
+- The template must already be approved
+- Tented uses the approved template content as the starting point for the generation
+- The request still requires a `prompt` describing the customization you want
+
+The public API does not currently expose a template listing endpoint. You should obtain the template ID from Tented's template workflow in the same workspace before calling `POST /v1/tents`.
+
+<Info>
+  Template-based requests use the same `POST /v1/tents` endpoint and return the same `202 Accepted` response shape as prompt-only creates.
 </Info>
 
 ## Include Workspace Branding
@@ -168,6 +198,8 @@ Tented validates that your prompt is actually asking for web content. Requests t
 }
 ```
 
+If you send `template_id`, prompt validation becomes more permissive. Short customization requests like "make it blue", "change the speaker name", or "use it as is" are accepted as long as they are clearly about modifying the selected template.
+
 ### Credit limits
 
 If the workspace does not have enough credits to start generation, the API returns `429 Too Many Requests`.
@@ -184,11 +216,14 @@ If you provide `user_id`, Tented stores it as the request's creator identity for
 | `400 Bad Request` | Request body is missing |
 | `400 Bad Request` | Missing required fields like `name` or `prompt` |
 | `400 Bad Request` | `asset_ids` sent without `tent_id` |
+| `400 Bad Request` | `template_id` exists but is not approved |
+| `400 Bad Request` | `template_id` has no approved content available |
 | `400 Bad Request` | Invalid `custom_page_alias` |
 | `400 Bad Request` | Prompt fails web-content intent validation |
 | `401 Unauthorized` | Missing or invalid bearer token |
 | `404 Not Found` | `tent_id` does not exist |
 | `404 Not Found` | One of the supplied `asset_ids` does not exist |
+| `404 Not Found` | `template_id` does not exist in the workspace |
 | `409 Conflict` | The supplied `tent_id` already has a generation |
 | `429 Too Many Requests` | Credit limit exceeded |
 

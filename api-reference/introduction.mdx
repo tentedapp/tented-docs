@@ -1,6 +1,6 @@
 ---
-title: "Vibe Coding API Overview"
-description: "Create tents programmatically, attach files, and poll generation status through Tented's Vibe Coding API."
+title: "Public API Overview"
+description: "Create tents programmatically from prompts or approved templates, attach files, and poll generation status through Tented's public API."
 ---
 
 ## Overview
@@ -8,6 +8,7 @@ description: "Create tents programmatically, attach files, and poll generation s
 Tented's Vibe Coding API lets you create new tents from your own systems without using the app UI. The current public surface is focused on the initial generation workflow:
 
 - Create a tent from a prompt
+- Create a tent from an approved template
 - Upload files before generation
 - Poll generation status until it completes or fails
 - Auto-publish the finished tent if you opt in
@@ -72,6 +73,16 @@ Send the prompt and any optional generation settings:
 {
   "name": "Spring campaign landing page",
   "prompt": "Create a launch page for our spring release with a hero, feature grid, pricing, FAQ, and contact form"
+}
+```
+
+If you already have an approved template in the same workspace, you can start from that template instead:
+
+```json
+{
+  "name": "Spring campaign landing page",
+  "prompt": "Adapt it for our spring release with updated pricing, customer logos, and a contact form",
+  "template_id": "01JPC2YJ5S6M3T5H8XQ4N7R9AB"
 }
 ```
 
