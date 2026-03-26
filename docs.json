@@ -73,6 +73,8 @@
               "api-reference/authentication",
               "api-reference/uploading-assets",
               "api-reference/creating-tents",
+              "api-reference/creating-bulk-tents",
+              "api-reference/retrieving-bulk-job-status",
               "api-reference/retrieving-tent-status"
             ]
           }
@@ -100,15 +102,15 @@
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {

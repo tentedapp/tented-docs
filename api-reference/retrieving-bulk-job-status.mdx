@@ -1,0 +1,248 @@
+---
+title: "Retrieving Bulk Job Status"
+description: "Poll a bulk tent creation job until all accepted items complete, fail, or finish publishing."
+---
+
+## Endpoint
+
+```bash
+GET /v1/bulk-jobs/{bulkJobId}
+```
+
+Use this endpoint to monitor a bulk tent creation request submitted through `POST /v1/tents/bulk`.
+
+## Bulk Job Status Values
+
+| Status | Meaning |
+| --- | --- |
+| `accepted` | The bulk job was admitted and is about to start processing |
+| `running` | One or more accepted items are still queued or generating |
+| `completed` | All accepted items finished successfully |
+| `completed_with_failures` | Some accepted items completed and some failed |
+| `failed` | No accepted items completed successfully |
+
+## Item Status Values
+
+| Status | Meaning |
+| --- | --- |
+| `rejected` | The item was rejected during admission and never queued |
+| `queued` | The item was accepted but generation has not started yet |
+| `generating` | Tented is actively generating the tent |
+| `completed` | The tent generation finished successfully |
+| `failed` | Generation failed after the item was accepted |
+
+## Request Example
+
+```bash
+curl --request GET \
+  --url https://api.tented.ai/v1/bulk-jobs/01JQZB4H8A7T5B3R2W1X9Y6Z0K \
+  --header "Authorization: Bearer $TENTED_API_KEY"
+```
+
+## Response Examples
+
+### In-Progress Response
+
+```json
+{
+  "bulk_job_id": "01JQZB4H8A7T5B3R2W1X9Y6Z0K",
+  "status": "running",
+  "template_id": "tpl_01JABC123XYZ",
+  "auto_publish": true,
+  "total": 3,
+  "queued": 1,
+  "generating": 1,
+  "completed": 1,
+  "failed": 0,
+  "items": [
+    {
+      "index": 0,
+      "client_item_id": "acme-row-001",
+      "tent_id": "b6f8d617-7cfe-4d63-a8e9-5d971780d57f",
+      "tent_name": "Acme Onboarding Page 1",
+      "status": "completed",
+      "publication_status": "published",
+      "published_url": "https://your-workspace.tented-pages.com/acme-onboarding-jane"
+    },
+    {
+      "index": 1,
+      "client_item_id": "acme-row-002",
+      "tent_id": "85833f2b-40ba-4af4-b820-cf13f7356d7a",
+      "tent_name": "Acme onboarding 2",
+      "status": "generating",
+      "publication_status": "pending"
+    },
+    {
+      "index": 2,
+      "client_item_id": "acme-row-003",
+      "tent_id": "53e8237e-0c87-495d-8d10-946db64dbf8d",
+      "tent_name": "Acme onboarding 3",
+      "status": "queued",
+      "publication_status": "pending"
+    }
+  ],
+  "credits": {
+    "reserved": 3,
+    "consumed": 1,
+    "refunded": 0,
+    "pending_reconciliation": 2
+  },
+  "created_at": "2026-03-25T14:30:00.000Z",
+  "updated_at": "2026-03-25T14:31:10.000Z"
+}
+```
+
+### Completed Response
+
+```json
+{
+  "bulk_job_id": "01JQZB4H8A7T5B3R2W1X9Y6Z0K",
+  "status": "completed",
+  "template_id": "tpl_01JABC123XYZ",
+  "auto_publish": true,
+  "total": 3,
+  "queued": 0,
+  "generating": 0,
+  "completed": 3,
+  "failed": 0,
+  "items": [
+    {
+      "index": 0,
+      "client_item_id": "acme-row-001",
+      "tent_id": "b6f8d617-7cfe-4d63-a8e9-5d971780d57f",
+      "tent_name": "Acme Onboarding Page 1",
+      "status": "completed",
+      "publication_status": "published",
+      "published_url": "https://your-workspace.tented-pages.com/acme-onboarding-jane"
+    },
+    {
+      "index": 1,
+      "client_item_id": "acme-row-002",
+      "tent_id": "85833f2b-40ba-4af4-b820-cf13f7356d7a",
+      "tent_name": "Acme onboarding 2",
+      "status": "completed",
+      "publication_status": "published",
+      "published_url": "https://your-workspace.tented-pages.com/acme-onboarding-michael"
+    },
+    {
+      "index": 2,
+      "client_item_id": "acme-row-003",
+      "tent_id": "53e8237e-0c87-495d-8d10-946db64dbf8d",
+      "tent_name": "Acme onboarding 3",
+      "status": "completed",
+      "publication_status": "published",
+      "published_url": "https://your-workspace.tented-pages.com/acme-onboarding-sarah"
+    }
+  ],
+  "credits": {
+    "reserved": 3,
+    "consumed": 3,
+    "refunded": 0,
+    "pending_reconciliation": 0
+  },
+  "created_at": "2026-03-25T14:30:00.000Z",
+  "updated_at": "2026-03-25T14:32:10.000Z"
+}
+```
+
+### Completed With Failures Response
+
+```json
+{
+  "bulk_job_id": "01JQZB4H8A7T5B3R2W1X9Y6Z0K",
+  "status": "completed_with_failures",
+  "items": [
+    {
+      "index": 0,
+      "client_item_id": "acme-row-001",
+      "tent_id": "b6f8d617-7cfe-4d63-a8e9-5d971780d57f",
+      "tent_name": "Acme Onboarding Page 1",
+      "status": "completed",
+      "publication_status": "published",
+      "published_url": "https://your-workspace.tented-pages.com/acme-onboarding-jane"
+    },
+    {
+      "index": 1,
+      "client_item_id": "acme-row-002",
+      "tent_id": "85833f2b-40ba-4af4-b820-cf13f7356d7a",
+      "tent_name": "Acme onboarding 2",
+      "status": "failed",
+      "message": "Upstream generation failed"
+    },
+    {
+      "index": 2,
+      "client_item_id": "acme-row-003",
+      "status": "rejected",
+      "error_code": "INSUFFICIENT_CREDITS",
+      "message": "Insufficient credits for generation"
+    }
+  ],
+  "credits": {
+    "reserved": 2,
+    "consumed": 1,
+    "refunded": 1,
+    "pending_reconciliation": 0
+  }
+}
+```
+
+## Response Fields
+
+### Top-Level Fields
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `bulk_job_id` | `string` | Bulk job identifier returned by `POST /v1/tents/bulk` |
+| `status` | `string` | Bulk job status |
+| `template_id` | `string` | Template used for this batch |
+| `auto_publish` | `boolean` | Whether the batch requested auto-publish |
+| `total` | `integer` | Total number of submitted items |
+| `queued` | `integer` | Accepted items waiting to start |
+| `generating` | `integer` | Accepted items currently generating |
+| `completed` | `integer` | Accepted items that completed successfully |
+| `failed` | `integer` | Accepted items that failed after admission |
+| `items` | `array` | Per-item statuses and tent references |
+| `credits` | `object` | Aggregate bulk job credit accounting |
+| `created_at` | `string` | Bulk job creation timestamp |
+| `updated_at` | `string` | Last aggregate update timestamp |
+
+### Item Fields
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `index` | `integer` | Zero-based index from the original request |
+| `client_item_id` | `string` | Your per-item identifier, when supplied |
+| `tent_id` | `uuid` | Present for accepted items |
+| `tent_name` | `string` | Tent name used for generation |
+| `status` | `string` | Item status |
+| `publication_status` | `string` | Present when publication state exists for the current generation |
+| `published_url` | `string` | Present when the tent has been published |
+| `error_code` | `string` | Present for rejected items |
+| `message` | `string` | Present for rejected or failed items |
+
+## Publication Behavior
+
+If the original bulk request used `auto_publish: true`, item responses can include:
+
+- `publication_status: pending`
+- `publication_status: published`
+- `publication_status: published_with_warnings`
+- `publication_status: failed`
+
+`published_url` appears when a tent is successfully published.
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | `bulkJobId` is missing or malformed |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | The bulk job does not exist in the workspace associated with your API key |
+
+<Card
+  title="Back: Create Bulk Tents"
+  icon="arrow-left"
+  href="/api-reference/creating-bulk-tents"
+>
+  Review the bulk request format and admission response.
+</Card>
