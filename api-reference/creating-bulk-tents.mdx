@@ -33,12 +33,14 @@ This endpoint creates a bulk job that fans out template-based tent generations a
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `input_data` | `object` | No | Structured personalization data for this tent. Required when the template uses variable placeholders |
-| `instructions` | `string` | No | Item-specific instructions for how the tent should be generated |
+| `input_data` | `object` | No* | Structured personalization data for this tent |
+| `instructions` | `string` | No* | Item-specific instructions for how the tent should be generated |
 | `client_item_id` | `string` | No | Your own per-item identifier for reconciliation |
 | `tent_name` | `string` | No | Overrides batch naming defaults |
 | `custom_page_alias` | `string` | No | Requested published path for this item. Requires top-level `auto_publish: true` |
 | `include_brand` | `boolean` | No | Pulls workspace branding into this item's prompt |
+
+*\*Each item must include at least one of `input_data` or `instructions`. Both can be provided together.*
 
 ## Important Rules
 
@@ -140,7 +142,7 @@ curl --request POST \
 ```
 
 <Info>
-  Each item must provide at least one of `input_data` or `instructions`. When both are provided, `input_data` is applied first and `instructions` are treated as additional guidance.
+  Each item must provide at least one of `input_data` or `instructions`. You can provide both — `input_data` is applied first and `instructions` are treated as additional guidance.
 </Info>
 
 ## Response Example
