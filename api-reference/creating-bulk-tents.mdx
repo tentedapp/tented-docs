@@ -1,0 +1,244 @@
+---
+title: "Creating Bulk Tents"
+description: "Create up to 25 tents from one approved template in a single public API request."
+---
+
+## Endpoint
+
+```bash
+POST /v1/tents/bulk
+```
+
+This endpoint creates a bulk job that fans out template-based tent generations across multiple items.
+
+<Info>
+  `POST /v1/tents/bulk` is an async admission endpoint. The immediate response confirms which items were accepted or rejected and returns a `bulk_job_id` for polling.
+</Info>
+
+## Request Body
+
+### Top-Level Fields
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `template_id` | `string` | Yes | Approved template ID to reuse across the whole batch |
+| `items` | `array` | Yes | Between `1` and `25` items |
+| `client_job_descriptor` | `string` | No | Optional label for the bulk job |
+| `default_tent_name_prefix` | `string` | No | Used when an item does not provide `tent_name` |
+| `start_index` | `integer` | No | Starting counter for generated tent names. Defaults to `1` |
+| `auto_publish` | `boolean` | No | Applies to the entire bulk request |
+| `metadata` | `object` | No | Optional job-level metadata echoed back in responses |
+
+### Item Fields
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `input_data` | `object` | Yes | Structured personalization data for this tent |
+| `instructions` | `string` | No | Additional item-specific instructions |
+| `client_item_id` | `string` | No | Your own per-item identifier for reconciliation |
+| `tent_name` | `string` | No | Overrides batch naming defaults |
+| `custom_page_alias` | `string` | No | Requested published path for this item. Requires top-level `auto_publish: true` |
+| `include_brand` | `boolean` | No | Pulls workspace branding into this item's prompt |
+| `asset_ids` | `string[]` | No | Up to `5` asset IDs to clone into this generated tent |
+
+## Important Rules
+
+- All items in one bulk request must use the same `template_id`
+- The template must exist in the same workspace as the API key
+- The template must already be approved and have approved content available
+- Tented generates every `tent_id`; callers cannot supply or override it
+- Bulk requests support partial success. Some items can be accepted while others are rejected
+- `auto_publish` is batch-wide, but each item can still request its own `custom_page_alias`
+
+## Request Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/tents/bulk \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "template_id": "tpl_01JABC123XYZ",
+    "client_job_descriptor": "Acme onboarding batch",
+    "default_tent_name_prefix": "Acme onboarding",
+    "start_index": 1,
+    "auto_publish": true,
+    "metadata": {
+      "source": "crm-import",
+      "batch_label": "acme-q2-onboarding"
+    },
+    "items": [
+      {
+        "client_item_id": "acme-row-001",
+        "tent_name": "Acme Onboarding Page 1",
+        "custom_page_alias": "acme-onboarding-jane",
+        "input_data": {
+          "first_name": "Jane",
+          "company_name": "Acme",
+          "event_time": "9 PM",
+          "cta_text": "Book your onboarding kickoff"
+        },
+        "instructions": "Make the tone more executive and emphasize customer onboarding.",
+        "include_brand": true
+      },
+      {
+        "client_item_id": "acme-row-002",
+        "custom_page_alias": "acme-onboarding-michael",
+        "input_data": {
+          "first_name": "Michael",
+          "company_name": "Acme",
+          "event_time": "10 AM",
+          "cta_text": "Schedule your implementation review"
+        },
+        "instructions": "Keep it concise and more operations-focused.",
+        "include_brand": true
+      },
+      {
+        "client_item_id": "acme-row-003",
+        "custom_page_alias": "acme-onboarding-sarah",
+        "input_data": {
+          "first_name": "Sarah",
+          "company_name": "Acme",
+          "event_time": "2 PM",
+          "cta_text": "Confirm your onboarding session"
+        },
+        "instructions": "Make it warmer and more personal, but keep the same structure.",
+        "include_brand": true
+      }
+    ]
+  }'
+```
+
+## Response Example
+
+`202 Accepted`
+
+```json
+{
+  "bulk_job_id": "01JQZB4H8A7T5B3R2W1X9Y6Z0K",
+  "status": "accepted",
+  "template_id": "tpl_01JABC123XYZ",
+  "auto_publish": true,
+  "accepted_count": 3,
+  "rejected_count": 0,
+  "items": [
+    {
+      "index": 0,
+      "client_item_id": "acme-row-001",
+      "tent_id": "b6f8d617-7cfe-4d63-a8e9-5d971780d57f",
+      "tent_name": "Acme Onboarding Page 1",
+      "custom_page_alias": "acme-onboarding-jane",
+      "status": "accepted"
+    },
+    {
+      "index": 1,
+      "client_item_id": "acme-row-002",
+      "tent_id": "85833f2b-40ba-4af4-b820-cf13f7356d7a",
+      "tent_name": "Acme onboarding 2",
+      "custom_page_alias": "acme-onboarding-michael",
+      "status": "accepted"
+    },
+    {
+      "index": 2,
+      "client_item_id": "acme-row-003",
+      "tent_id": "53e8237e-0c87-495d-8d10-946db64dbf8d",
+      "tent_name": "Acme onboarding 3",
+      "custom_page_alias": "acme-onboarding-sarah",
+      "status": "accepted"
+    }
+  ],
+  "metadata": {
+    "source": "crm-import",
+    "batch_label": "acme-q2-onboarding"
+  },
+  "created_at": "2026-03-25T14:30:00.000Z"
+}
+```
+
+## Partial Success
+
+Bulk requests are not all-or-nothing. Individual items can be rejected during admission while the rest of the batch proceeds.
+
+```json
+{
+  "bulk_job_id": "01JQZB4H8A7T5B3R2W1X9Y6Z0K",
+  "status": "accepted",
+  "template_id": "tpl_01JABC123XYZ",
+  "auto_publish": true,
+  "accepted_count": 2,
+  "rejected_count": 1,
+  "items": [
+    {
+      "index": 0,
+      "client_item_id": "acme-row-001",
+      "tent_id": "b6f8d617-7cfe-4d63-a8e9-5d971780d57f",
+      "tent_name": "Acme Onboarding Page 1",
+      "custom_page_alias": "acme-onboarding-jane",
+      "status": "accepted"
+    },
+    {
+      "index": 1,
+      "client_item_id": "acme-row-002",
+      "status": "rejected",
+      "error_code": "INVALID_ITEM",
+      "message": "Invalid custom_page_alias"
+    },
+    {
+      "index": 2,
+      "client_item_id": "acme-row-003",
+      "tent_id": "53e8237e-0c87-495d-8d10-946db64dbf8d",
+      "tent_name": "Acme onboarding 3",
+      "custom_page_alias": "acme-onboarding-sarah",
+      "status": "accepted"
+    }
+  ],
+  "created_at": "2026-03-25T14:30:00.000Z"
+}
+```
+
+Possible item-level rejection codes include:
+
+- `INVALID_ITEM`
+- `NOT_FOUND`
+- `INSUFFICIENT_CREDITS`
+
+## Naming Behavior
+
+If an item omits `tent_name`, Tented generates a name using the batch defaults:
+
+- `default_tent_name_prefix` when provided
+- otherwise `client_job_descriptor` when provided
+- otherwise `Bulk tent`
+
+The generated counter starts at `start_index` and increments per item.
+
+## Auto-Publish Behavior
+
+Set top-level `auto_publish` to `true` to publish all accepted items after generation succeeds.
+
+Each item can optionally request a different `custom_page_alias`.
+
+Alias rules match `POST /v1/tents`:
+
+- Maximum `100` characters
+- Lowercase letters, numbers, hyphens, underscores, and dots only
+- Must start with a letter or number
+- Must not be a UUID
+- Must not use reserved words such as `api`, `admin`, `submit`, or `assets`
+- Use `/` to publish at the domain root
+
+<Warning>
+  `custom_page_alias` requires top-level `auto_publish: true`. If `auto_publish` is `false`, the affected item is rejected during admission.
+</Warning>
+
+## Polling For Results
+
+Use the returned `bulk_job_id` with `GET /v1/bulk-jobs/{bulkJobId}` to track aggregate progress and read final published URLs.
+
+<Card
+  title="Next: Retrieve Bulk Job Status"
+  icon="arrow-right"
+  href="/api-reference/retrieving-bulk-job-status"
+>
+  Poll the bulk job until all accepted items complete or fail.
+</Card>
