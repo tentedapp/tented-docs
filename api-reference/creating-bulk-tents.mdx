@@ -33,8 +33,8 @@ This endpoint creates a bulk job that fans out template-based tent generations a
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `input_data` | `object` | Yes | Structured personalization data for this tent |
-| `instructions` | `string` | No | Additional item-specific instructions |
+| `input_data` | `object` | No | Structured personalization data for this tent. Required when the template uses variable placeholders |
+| `instructions` | `string` | No | Item-specific instructions for how the tent should be generated |
 | `client_item_id` | `string` | No | Your own per-item identifier for reconciliation |
 | `tent_name` | `string` | No | Overrides batch naming defaults |
 | `custom_page_alias` | `string` | No | Requested published path for this item. Requires top-level `auto_publish: true` |
@@ -107,6 +107,41 @@ curl --request POST \
     ]
   }'
 ```
+
+### Instructions-Only Example
+
+When you don't need structured template variables, you can omit `input_data` and use `instructions` alone:
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/tents/bulk \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "template_id": "tpl_01JABC123XYZ",
+    "client_job_descriptor": "Quick test batch",
+    "default_tent_name_prefix": "test",
+    "auto_publish": true,
+    "items": [
+      {
+        "client_item_id": "test-001",
+        "custom_page_alias": "test-hello",
+        "instructions": "Make the entire body of the page just say Hello World",
+        "include_brand": true
+      },
+      {
+        "client_item_id": "test-002",
+        "custom_page_alias": "test-goodbye",
+        "instructions": "Make the entire body of the page just say Goodbye World",
+        "include_brand": true
+      }
+    ]
+  }'
+```
+
+<Info>
+  Each item must provide at least one of `input_data` or `instructions`. When both are provided, `input_data` is applied first and `instructions` are treated as additional guidance.
+</Info>
 
 ## Response Example
 
