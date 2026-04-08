@@ -1,0 +1,55 @@
+---
+title: "Unpublishing Tents"
+description: "Remove a tent from its public URL through the public API."
+---
+
+## Endpoint
+
+```bash
+POST /v1/tents/{tentId}/unpublish
+```
+
+Use this endpoint to take a published tent offline while keeping the tent and its generation history in Tented.
+
+## Request Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/tents/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/unpublish \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{}'
+```
+
+## Response Example
+
+```json
+{
+  "id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "status": "draft",
+  "updated_at": "2026-04-08T12:50:00.000Z",
+  "message": "Tent unpublished successfully"
+}
+```
+
+## Important Behavior
+
+- Unpublishing clears the public publication projection returned by `GET /v1/tents/{tentId}`
+- The tent remains in Tented and can be published again later
+- If the tent had a custom alias, that alias reservation is removed from the live published surface
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | `tentId` is missing or not a valid UUID |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | The tent does not exist |
+
+<Card
+  title="Back: Publish Tents"
+  icon="arrow-left"
+  href="/api-reference/publishing-tents"
+>
+  Review manual publishing behavior and alias handling.
+</Card>

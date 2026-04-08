@@ -1,0 +1,83 @@
+---
+title: "Deleting Tents"
+description: "Delete a tent and its associated public assets through the public API."
+---
+
+## Endpoint
+
+```bash
+DELETE /v1/tents/{identifier}
+```
+
+`identifier` can be:
+
+- The tent UUID
+- The current published alias for that tent
+- `__index__` for a tent published at the domain root
+
+## Request Examples
+
+Delete by UUID:
+
+```bash
+curl --request DELETE \
+  --url https://api.tented.ai/v1/tents/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1 \
+  --header "Authorization: Bearer $TENTED_API_KEY"
+```
+
+Delete by alias:
+
+```bash
+curl --request DELETE \
+  --url https://api.tented.ai/v1/tents/launch-page \
+  --header "Authorization: Bearer $TENTED_API_KEY"
+```
+
+Delete a root-page tent:
+
+```bash
+curl --request DELETE \
+  --url https://api.tented.ai/v1/tents/__index__ \
+  --header "Authorization: Bearer $TENTED_API_KEY"
+```
+
+## Response Example
+
+```json
+{
+  "message": "Tent deleted successfully",
+  "tent_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1"
+}
+```
+
+## What Gets Removed
+
+Deleting a tent removes the tent record and its related public artifacts, including:
+
+- Uploaded tent assets
+- Published page assets for that tent
+- Alias reservations for published pages
+- Form submission delivery configs tied to the tent
+- Scheduled automations associated with the tent
+
+## Identifier Rules
+
+- If you use a UUID, it must be a valid v4 tent ID
+- If you use an alias, it must match the same alias validation rules as publishing
+- For the root page, use `__index__` in the path segment
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | The identifier is empty or not a valid tent ID / alias |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | No tent in the workspace matches that UUID or alias |
+
+<Card
+  title="Back to API Overview"
+  icon="arrow-left"
+  href="/api-reference/introduction"
+>
+  Review the full public API endpoint map.
+</Card>
