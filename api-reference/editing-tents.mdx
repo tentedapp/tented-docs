@@ -1,0 +1,114 @@
+---
+title: "Editing Tents"
+description: "Create a new generation for an existing tent through the public API."
+---
+
+## Endpoint
+
+```bash
+POST /v1/tents/{tentId}/edit
+```
+
+Use this endpoint to create a new generation for a tent that already has at least one completed or in-progress version.
+
+<Info>
+  `POST /v1/tents/{tentId}/edit` is asynchronous. It queues a new generation and returns immediately with a new `generation_id`.
+</Info>
+
+## Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `prompt` | `string` | Yes | Describes the change you want to make |
+| `include_brand` | `boolean` | No | Pulls workspace brand context into the edit prompt |
+| `auto_publish` | `boolean` | No | Publishes this generation automatically after it succeeds |
+| `custom_page_alias` | `string` | No | Only valid when `auto_publish` is `true` |
+| `asset_ids` | `string[]` | No | Up to 5 existing asset IDs already attached to this tent |
+
+## Request Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/tents/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/edit \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "prompt": "Make the header blue, tighten the copy, and add a testimonial section"
+  }'
+```
+
+## Response Example
+
+`202 Accepted`
+
+```json
+{
+  "id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "generation_id": "01JRF3V2P1A9X5Y6Z7B8C9D0EF",
+  "status": "pending",
+  "updated_at": "2026-04-08T12:30:00.000Z"
+}
+```
+
+## Important Behavior
+
+### The tent must already exist
+
+Edits only work for tents that already have a generation history.
+
+If the tent exists but has never been generated, the API returns:
+
+```json
+{
+  "error": "Invalid request body",
+  "details": {
+    "issues": [
+      {
+        "path": "tent_id",
+        "message": "Tent has no existing generation. Use POST /v1/tents to create the first version."
+      }
+    ]
+  }
+}
+```
+
+### Asset references stay on the same tent
+
+If you pass `asset_ids`, each asset must already belong to the same `tentId`. Missing assets return `404 Not Found`.
+
+### Auto-publish rules match create
+
+If `custom_page_alias` is present, you must also set `auto_publish: true`.
+
+Alias rules are the same as `POST /v1/tents`:
+
+- Maximum `100` characters
+- Lowercase letters, numbers, hyphens, underscores, and dots only
+- Must start with a letter or number
+- Must not be a UUID
+- Must not use reserved words such as `api`, `admin`, `submit`, or `assets`
+- Use `/` to publish at the domain root
+
+### Credits
+
+Editing checks workspace credits before the generation is queued. If the workspace cannot cover the edit, the API returns `429 Too Many Requests`.
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid JSON body or invalid request fields |
+| `400 Bad Request` | `custom_page_alias` was sent without `auto_publish: true` |
+| `400 Bad Request` | The tent exists but has no previous generation |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | The tent does not exist |
+| `404 Not Found` | One of the supplied `asset_ids` does not exist on that tent |
+| `429 Too Many Requests` | Credit limit exceeded |
+
+<Card
+  title="Next: Retrieve Tent Status"
+  icon="arrow-right"
+  href="/api-reference/retrieving-tent-status"
+>
+  Poll the tent until the new generation completes or fails.
+</Card>
