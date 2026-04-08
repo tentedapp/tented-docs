@@ -1,0 +1,114 @@
+---
+title: "Publishing Tents"
+description: "Publish the latest completed generation of a tent through the public API."
+---
+
+## Endpoint
+
+```bash
+POST /v1/tents/{tentId}/publish
+```
+
+Use this endpoint to publish a tent manually after generation has already completed.
+
+## Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `custom_page_alias` | `string \| null` | No | Sets or replaces the published alias. Use `null` to clear an existing alias and publish at the default tent URL |
+| `remove_branding` | `boolean` | No | Requests a branding-free published experience when available for the workspace |
+
+## Request Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/tents/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/publish \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "custom_page_alias": "launch-page"
+  }'
+```
+
+## Successful Response
+
+```json
+{
+  "id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "updated_at": "2026-04-08T12:40:00.000Z",
+  "message": "Generation published successfully",
+  "publication": {
+    "status": "published",
+    "published_url": "https://your-workspace.tented-pages.com/launch-page",
+    "requested_custom_page_alias": "launch-page",
+    "applied_custom_page_alias": "launch-page"
+  }
+}
+```
+
+## No-Op Response
+
+If the tent is already live with the latest completed generation, publish still returns `200 OK` with an explanatory message:
+
+```json
+{
+  "id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "updated_at": "2026-04-08T12:41:00.000Z",
+  "message": "No changes since last publish. This tent is already live with the latest completed generation.",
+  "publication": {
+    "status": "published",
+    "published_url": "https://your-workspace.tented-pages.com/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1"
+  }
+}
+```
+
+## Clearing an Alias
+
+Send `custom_page_alias: null` to remove a previously assigned alias and publish at the default tent URL:
+
+```json
+{
+  "custom_page_alias": null
+}
+```
+
+## Alias Rules
+
+- Maximum `100` characters
+- Lowercase letters, numbers, hyphens, underscores, and dots only
+- Must start with a letter or number
+- Must not be a UUID
+- Must not use reserved words such as `api`, `admin`, `submit`, or `assets`
+- Use `/` to publish at the domain root
+
+## Publish Limit Response
+
+If the workspace cannot publish another tent, the API returns `429 Too Many Requests`:
+
+```json
+{
+  "error": "Publish limit exceeded",
+  "message": "Free users can only have 1 published tent. Upgrade to publish more.",
+  "limit": 1,
+  "current": 1
+}
+```
+
+The same failure is also persisted into `GET /v1/tents/{tentId}` under the `publication` object.
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid request body or invalid `custom_page_alias` |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | The tent does not exist |
+| `429 Too Many Requests` | Publish limit exceeded |
+
+<Card
+  title="Next: Unpublish Tents"
+  icon="arrow-right"
+  href="/api-reference/unpublishing-tents"
+>
+  Remove a published tent from its public URL.
+</Card>

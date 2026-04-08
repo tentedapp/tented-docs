@@ -1,20 +1,26 @@
 ---
 title: "Vibe Coding API Overview"
-description: "Create tents programmatically from prompts or approved templates, attach files, and poll generation status through Tented's public API."
+description: "Create, edit, publish, measure, and delete tents programmatically through Tented's public API."
 ---
 
 ## Overview
 
-Tented's Vibe Coding API lets you create new tents from your own systems without using the app UI. The current public surface is focused on the initial generation workflow:
+Tented's public API lets you manage the full lifecycle of tents from your own systems without using the app UI.
 
-- Create a tent from a prompt
-- Create a tent from an approved template
-- Upload files before generation
-- Poll generation status until it completes or fails
-- Auto-publish the finished tent if you opt in
+The current public surface supports:
+
+- Creating a tent from a prompt
+- Creating a tent from an approved template
+- Uploading files before generation
+- Editing an existing tent
+- Publishing and unpublishing tents
+- Creating bulk tent jobs from one approved template
+- Polling tent and bulk-job status
+- Reading tent and workspace analytics
+- Deleting tents by ID or alias
 
 <Info>
-  The Vibe Coding API is asynchronous. `POST /v1/tents` returns immediately with a pending job, and you then poll `GET /v1/tents/{tentId}` until the status becomes `completed` or `failed`.
+  Public generation endpoints are asynchronous. Create, edit, and bulk-create requests return immediately after admission, and you then poll status endpoints to track progress.
 </Info>
 
 ## Base URL
@@ -29,7 +35,15 @@ All current endpoints live under the `/v1` prefix:
 
 - `POST /v1/tents`
 - `POST /v1/tents/{tentId}/assets`
+- `POST /v1/tents/{tentId}/edit`
+- `POST /v1/tents/{tentId}/publish`
+- `POST /v1/tents/{tentId}/unpublish`
+- `DELETE /v1/tents/{identifier}`
+- `POST /v1/tents/bulk`
+- `GET /v1/bulk-jobs/{bulkJobId}`
 - `GET /v1/tents/{tentId}`
+- `GET /v1/analytics/tent`
+- `GET /v1/analytics/org`
 
 ## Authentication
 
@@ -39,7 +53,7 @@ Authenticate every request with a bearer API key:
 Authorization: Bearer tented_your_api_key
 ```
 
-API keys are scoped to a single Tented workspace. A request can only access tents and assets that belong to the workspace associated with that key.
+API keys are scoped to a single Tented workspace. A request can only access tents, assets, aliases, and analytics that belong to the workspace associated with that key.
 
 <Card
   title="Set up Authentication"
@@ -49,75 +63,30 @@ API keys are scoped to a single Tented workspace. A request can only access tent
   Learn how API keys work, where to create them, and which headers to send.
 </Card>
 
-## Supported Workflow
+## Common Workflows
 
-### 1. Optional: upload files
+### 1. Single-tent flow
 
-If your prompt should reference a brief, logo, PDF, spreadsheet, image, video, or audio file, upload it first:
+- Optionally upload files with `POST /v1/tents/new/assets` or `POST /v1/tents/{tentId}/assets`
+- Create the first version with `POST /v1/tents`
+- Poll progress with `GET /v1/tents/{tentId}`
+- Iterate later with `POST /v1/tents/{tentId}/edit`
+- Publish or unpublish manually with `POST /v1/tents/{tentId}/publish` and `POST /v1/tents/{tentId}/unpublish`
 
-- `POST /v1/tents/new/assets` creates an idle tent and stores the file
-- `POST /v1/tents/{tentId}/assets` attaches another file to an existing tent
+### 2. Bulk template flow
 
-The asset upload response returns:
+- Start a bulk job with `POST /v1/tents/bulk`
+- Poll aggregate progress with `GET /v1/bulk-jobs/{bulkJobId}`
 
-- `actual_tent_id`
-- `asset_id`
+### 3. Measurement and cleanup
 
-You then pass both back to `POST /v1/tents`.
-
-### 2. Create the tent
-
-Send the prompt and any optional generation settings:
-
-```json
-{
-  "name": "Spring campaign landing page",
-  "prompt": "Create a launch page for our spring release with a hero, feature grid, pricing, FAQ, and contact form"
-}
-```
-
-If you already have an approved template in the same workspace, you can start from that template instead:
-
-```json
-{
-  "name": "Spring campaign landing page",
-  "prompt": "Adapt it for our spring release with updated pricing, customer logos, and a contact form",
-  "template_id": "01JPC2YJ5S6M3T5H8XQ4N7R9AB"
-}
-```
-
-The API responds with `202 Accepted`:
-
-```json
-{
-  "id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
-  "status": "pending",
-  "created_at": "2026-03-13T15:30:00.000Z"
-}
-```
-
-### 3. Poll for completion
-
-Call `GET /v1/tents/{tentId}` until the status changes:
-
-- `queued`
-- `generating`
-- `completed`
-- `failed`
-
-While generation is still in progress, Tented returns a `Retry-After: 10` header to guide polling frequency.
-
-## Available Endpoints
-
-- `POST /v1/tents` starts a new tent generation request
-- `POST /v1/tents/{tentId}/assets` uploads a file to a new or existing tent
-- `GET /v1/tents/{tentId}` returns the current generation and publication status for a tent
-
-If you create a tent with a supplied `tent_id`, that tent must still be unused for generation. Once a tent already has a generation, `POST /v1/tents` returns `409 Conflict`.
+- Read tent-level analytics with `GET /v1/analytics/tent`
+- Read workspace-wide analytics with `GET /v1/analytics/org`
+- Delete a tent with `DELETE /v1/tents/{identifier}`
 
 ## Quickstart
 
-### Minimal flow
+### Minimal create flow
 
 ```bash
 curl --request POST \
@@ -141,10 +110,16 @@ curl --request GET \
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Upload Assets" icon="paperclip" href="/api-reference/uploading-assets">
-    Attach files before generation so your prompt can reference them.
-  </Card>
   <Card title="Create Tents" icon="rocket" href="/api-reference/creating-tents">
-    Learn the full request schema, optional fields, and auto-publish behavior.
+    Start a single tent from a prompt, template, or uploaded files.
+  </Card>
+  <Card title="Edit Tents" icon="pen" href="/api-reference/editing-tents">
+    Queue a new generation for an existing tent.
+  </Card>
+  <Card title="Create Bulk Tents" icon="layers" href="/api-reference/creating-bulk-tents">
+    Fan out one approved template across up to 25 items.
+  </Card>
+  <Card title="Read Analytics" icon="chart-bar" href="/api-reference/retrieving-tent-analytics">
+    Fetch tent-level or workspace-wide analytics.
   </Card>
 </CardGroup>

@@ -1,0 +1,108 @@
+---
+title: "Retrieving Tent Analytics"
+description: "Read detailed analytics for a single tent by ID or alias through the public API."
+---
+
+## Endpoint
+
+```bash
+GET /v1/analytics/tent
+```
+
+## Query Parameters
+
+| Parameter | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `tentIdOrAlias` | `string` | Yes | Tent UUID, current published alias, or `/` for a root page |
+| `daysBack` | `integer` | No | Number of days to query. Valid values are `1` through `7`. Invalid values fall back to `7` |
+
+## Request Example
+
+```bash
+curl --request GET \
+  --url "https://api.tented.ai/v1/analytics/tent?tentIdOrAlias=launch-page&daysBack=7" \
+  --header "Authorization: Bearer $TENTED_API_KEY"
+```
+
+## Response Example
+
+```json
+{
+  "tent_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "visits": 11,
+  "pageviews": 17,
+  "date_range": {
+    "start_date": "2026-04-01",
+    "end_date": "2026-04-07",
+    "days": 7
+  },
+  "daily_pageviews": [
+    {
+      "date": "2026-04-07",
+      "pageviews": 17
+    }
+  ],
+  "by_country": [
+    {
+      "country": "Ireland",
+      "views": 17
+    }
+  ],
+  "by_device": [
+    {
+      "device": "desktop",
+      "views": 17
+    }
+  ],
+  "by_browser": [
+    {
+      "browser": "Chrome",
+      "views": 17
+    }
+  ],
+  "by_os": [
+    {
+      "os": "macOS",
+      "views": 17
+    }
+  ],
+  "by_referrer": [
+    {
+      "referrer": "google.com",
+      "views": 17
+    }
+  ],
+  "recent_pageviews": [
+    {
+      "timestamp": "2026-04-07T10:00:00.000Z",
+      "country": "Ireland",
+      "device": "desktop",
+      "browser": "Chrome",
+      "os": "macOS",
+      "referrer": "google.com"
+    }
+  ]
+}
+```
+
+## Notes
+
+- `tentIdOrAlias` accepts a tent UUID or the current published alias
+- Use `/` to query a tent published at the domain root
+- Invalid `daysBack` values do not error; they fall back to `7`
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | `tentIdOrAlias` was not provided |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | The tent or alias does not resolve in the workspace |
+
+<Card
+  title="Next: Retrieve Org Analytics"
+  icon="arrow-right"
+  href="/api-reference/retrieving-org-analytics"
+>
+  Read aggregate analytics across the whole workspace.
+</Card>
