@@ -27,24 +27,25 @@ This endpoint creates a bulk job that fans out template-based tent generations a
 | `default_tent_name_prefix` | `string` | No | Used when an item does not provide `tent_name` |
 | `start_index` | `integer` | No | Starting counter for generated tent names. Defaults to `1` |
 | `auto_publish` | `boolean` | No | Applies to the entire bulk request |
+| `reasoning` | `min \| medium \| high \| max` | No | Controls reasoning effort for the template-based generation pass |
 | `metadata` | `object` | No | Optional job-level metadata echoed back in responses |
 
 ### Item Fields
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `input_data` | `object` | No* | Structured personalization data for this tent |
-| `instructions` | `string` | No* | Item-specific instructions for how the tent should be generated |
+| `input_data` | `object` | Conditionally | Structured personalization data for this tent |
+| `instructions` | `string` | Conditionally | Item-specific instructions for how the tent should be generated |
 | `client_item_id` | `string` | No | Your own per-item identifier for reconciliation |
 | `tent_name` | `string` | No | Overrides batch naming defaults |
 | `custom_page_alias` | `string` | No | Requested published path for this item. Requires top-level `auto_publish: true` |
 | `include_brand` | `boolean` | No | Pulls workspace branding into this item's prompt |
 
-*\*Each item must include at least one of `input_data` or `instructions`. Both can be provided together.*
+Each item must provide at least one of `input_data` or `instructions`.
 
 ## Important Rules
 
-- All items in one bulk request must use the same `template_id`
+- All items in one bulk request use the same `template_id`
 - The template must exist in the same workspace as the API key
 - The template must already be approved and have approved content available
 - Tented generates every `tent_id`; callers cannot supply or override it
@@ -64,6 +65,7 @@ curl --request POST \
     "default_tent_name_prefix": "Acme onboarding",
     "start_index": 1,
     "auto_publish": true,
+    "reasoning": "high",
     "metadata": {
       "source": "crm-import",
       "batch_label": "acme-q2-onboarding"
@@ -91,20 +93,11 @@ curl --request POST \
           "event_time": "10 AM",
           "cta_text": "Schedule your implementation review"
         },
-        "instructions": "Keep it concise and more operations-focused.",
-        "include_brand": true
+        "instructions": "Keep it concise and more operations-focused."
       },
       {
         "client_item_id": "acme-row-003",
-        "custom_page_alias": "acme-onboarding-sarah",
-        "input_data": {
-          "first_name": "Sarah",
-          "company_name": "Acme",
-          "event_time": "2 PM",
-          "cta_text": "Confirm your onboarding session"
-        },
-        "instructions": "Make it warmer and more personal, but keep the same structure.",
-        "include_brand": true
+        "instructions": "Make it warmer and more personal, but keep the same structure."
       }
     ]
   }'
@@ -112,7 +105,7 @@ curl --request POST \
 
 ### Instructions-Only Example
 
-When you don't need structured template variables, you can omit `input_data` and use `instructions` alone:
+When you do not need structured template variables, you can omit `input_data` and use `instructions` alone:
 
 ```bash
 curl --request POST \
@@ -142,7 +135,7 @@ curl --request POST \
 ```
 
 <Info>
-  Each item must provide at least one of `input_data` or `instructions`. You can provide both — `input_data` is applied first and `instructions` are treated as additional guidance.
+  Each item must provide at least one of `input_data` or `instructions`. You can provide both; `input_data` is applied first and `instructions` are treated as additional guidance.
 </Info>
 
 ## Response Example
@@ -170,7 +163,7 @@ curl --request POST \
       "index": 1,
       "client_item_id": "acme-row-002",
       "tent_id": "85833f2b-40ba-4af4-b820-cf13f7356d7a",
-      "tent_name": "Acme onboarding 2",
+      "tent_name": "Acme onboarding (2)",
       "custom_page_alias": "acme-onboarding-michael",
       "status": "accepted"
     },
@@ -178,8 +171,7 @@ curl --request POST \
       "index": 2,
       "client_item_id": "acme-row-003",
       "tent_id": "53e8237e-0c87-495d-8d10-946db64dbf8d",
-      "tent_name": "Acme onboarding 3",
-      "custom_page_alias": "acme-onboarding-sarah",
+      "tent_name": "Acme onboarding (3)",
       "status": "accepted"
     }
   ],
@@ -201,31 +193,22 @@ Bulk requests are not all-or-nothing. Individual items can be rejected during ad
   "status": "accepted",
   "template_id": "tpl_01JABC123XYZ",
   "auto_publish": true,
-  "accepted_count": 2,
+  "accepted_count": 1,
   "rejected_count": 1,
   "items": [
     {
       "index": 0,
-      "client_item_id": "acme-row-001",
+      "client_item_id": "valid-row",
       "tent_id": "b6f8d617-7cfe-4d63-a8e9-5d971780d57f",
-      "tent_name": "Acme Onboarding Page 1",
-      "custom_page_alias": "acme-onboarding-jane",
+      "tent_name": "Bulk Tent (1)",
       "status": "accepted"
     },
     {
       "index": 1,
-      "client_item_id": "acme-row-002",
+      "client_item_id": "invalid-row",
       "status": "rejected",
       "error_code": "INVALID_ITEM",
-      "message": "Invalid custom_page_alias"
-    },
-    {
-      "index": 2,
-      "client_item_id": "acme-row-003",
-      "tent_id": "53e8237e-0c87-495d-8d10-946db64dbf8d",
-      "tent_name": "Acme onboarding 3",
-      "custom_page_alias": "acme-onboarding-sarah",
-      "status": "accepted"
+      "message": "Invalid request body"
     }
   ],
   "created_at": "2026-03-25T14:30:00.000Z"
@@ -240,13 +223,13 @@ Possible item-level rejection codes include:
 
 ## Naming Behavior
 
-If an item omits `tent_name`, Tented generates a name using the batch defaults:
+If an item omits `tent_name`, Tented generates a name using:
 
 - `default_tent_name_prefix` when provided
 - otherwise `client_job_descriptor` when provided
-- otherwise `Bulk tent`
+- otherwise `Bulk Tent`
 
-The generated counter starts at `start_index` and increments per item.
+The generated counter starts at `start_index` and is rendered as `Prefix (N)`.
 
 ## Auto-Publish Behavior
 

@@ -1,0 +1,111 @@
+---
+title: "Retrieving Org Analytics"
+description: "Read aggregate analytics across all published tents in a workspace through the public API."
+---
+
+## Endpoint
+
+```bash
+GET /v1/analytics/org
+```
+
+## Query Parameters
+
+| Parameter | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `daysBack` | `integer` | No | Number of days to query. Valid values are `1` through `7`. Invalid values fall back to `7` |
+
+## Request Example
+
+```bash
+curl --request GET \
+  --url "https://api.tented.ai/v1/analytics/org?daysBack=7" \
+  --header "Authorization: Bearer $TENTED_API_KEY"
+```
+
+## Response Example
+
+```json
+{
+  "tent_id": "org",
+  "visits": 24,
+  "pageviews": 39,
+  "date_range": {
+    "start_date": "2026-04-01",
+    "end_date": "2026-04-07",
+    "days": 7
+  },
+  "daily_pageviews": [
+    {
+      "date": "2026-04-07",
+      "pageviews": 39
+    }
+  ],
+  "by_country": [
+    {
+      "country": "Ireland",
+      "views": 21
+    }
+  ],
+  "by_device": [
+    {
+      "device": "desktop",
+      "views": 28
+    }
+  ],
+  "by_browser": [
+    {
+      "browser": "Chrome",
+      "views": 30
+    }
+  ],
+  "by_os": [
+    {
+      "os": "macOS",
+      "views": 27
+    }
+  ],
+  "by_referrer": [
+    {
+      "referrer": "google.com",
+      "views": 19
+    }
+  ],
+  "by_path": [
+    {
+      "path": "/launch-page",
+      "views": 9
+    }
+  ],
+  "recent_pageviews": [
+    {
+      "timestamp": "2026-04-07T10:00:00.000Z",
+      "country": "Ireland",
+      "device": "desktop",
+      "browser": "Chrome",
+      "os": "macOS",
+      "referrer": "google.com"
+    }
+  ]
+}
+```
+
+## Notes
+
+- `tent_id` is always `"org"` for this endpoint
+- `by_path` is only present on the organization-wide response
+- Invalid `daysBack` values fall back to `7`
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `401 Unauthorized` | Missing or invalid bearer token |
+
+<Card
+  title="Back: Tent Analytics"
+  icon="arrow-left"
+  href="/api-reference/retrieving-tent-analytics"
+>
+  Review the single-tent analytics query endpoint.
+</Card>
