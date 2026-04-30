@@ -81,7 +81,8 @@
               "api-reference/retrieving-bulk-job-status",
               "api-reference/retrieving-tent-status",
               "api-reference/retrieving-tent-analytics",
-              "api-reference/retrieving-org-analytics"
+              "api-reference/retrieving-org-analytics",
+              "api-reference/managing-contacts"
             ]
           }
         ]
