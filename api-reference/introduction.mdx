@@ -1,6 +1,6 @@
 ---
 title: "Vibe Coding API Overview"
-description: "Create, edit, publish, measure, and delete tents programmatically through Tented's public API."
+description: "Create, edit, publish, measure, and delete tents, plus manage contacts, through Tented's public API."
 ---
 
 ## Overview
@@ -18,6 +18,7 @@ The current public surface supports:
 - Polling tent and bulk-job status
 - Reading tent and workspace analytics
 - Deleting tents by ID or alias
+- Creating, updating, and deleting contacts in batches
 
 <Info>
   Public generation endpoints are asynchronous. Create, edit, and bulk-create requests return immediately after admission, and you then poll status endpoints to track progress.
@@ -44,6 +45,10 @@ All current endpoints live under the `/v1` prefix:
 - `GET /v1/tents/{tentId}`
 - `GET /v1/analytics/tent`
 - `GET /v1/analytics/org`
+- `POST /v1/contacts`
+- `POST /v1/contacts/update`
+- `POST /v1/contacts/delete`
+- `DELETE /v1/contacts`
 
 ## Authentication
 
@@ -84,6 +89,12 @@ API keys are scoped to a single Tented workspace. A request can only access tent
 - Read workspace-wide analytics with `GET /v1/analytics/org`
 - Delete a tent with `DELETE /v1/tents/{identifier}`
 
+### 4. Contact sync
+
+- Create up to 25 contacts with `POST /v1/contacts`
+- Update up to 25 contacts with `POST /v1/contacts/update`
+- Delete up to 25 contacts with `POST /v1/contacts/delete` or `DELETE /v1/contacts`
+
 ## Quickstart
 
 ### Minimal create flow
@@ -121,5 +132,8 @@ curl --request GET \
   </Card>
   <Card title="Read Analytics" icon="chart-bar" href="/api-reference/retrieving-tent-analytics">
     Fetch tent-level or workspace-wide analytics.
+  </Card>
+  <Card title="Manage Contacts" icon="users" href="/api-reference/managing-contacts">
+    Create, update, and delete contacts in batches.
   </Card>
 </CardGroup>
