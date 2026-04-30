@@ -1,0 +1,360 @@
+---
+title: "Managing Contacts"
+description: "Create, update, and delete contacts through the public API in batches of up to 25 records."
+---
+
+## Endpoints
+
+```bash
+POST /v1/contacts
+POST /v1/contacts/update
+POST /v1/contacts/delete
+DELETE /v1/contacts
+```
+
+Use these endpoints to sync CRM contacts from external systems. Each request accepts an `items` array with up to `25` records.
+
+<Info>
+  Contact writes support partial success. Tented processes each item independently and returns accepted or rejected results in request order.
+</Info>
+
+## Create Contacts
+
+```bash
+POST /v1/contacts
+```
+
+### Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `items` | `array` | Yes | Between `1` and `25` contacts |
+
+### Create Item Fields
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `email` | `string` | Conditionally | Either `email` or `phone` is required |
+| `phone` | `string` | Conditionally | Either `email` or `phone` is required |
+| `client_item_id` | `string` | No | Your own per-item identifier for reconciliation |
+| `display_name` | `string` | No | Maximum `255` characters |
+| `first_name` | `string` | No | Maximum `255` characters |
+| `last_name` | `string` | No | Maximum `255` characters |
+| `company` | `string` | No | Maximum `255` characters |
+| `job_title` | `string` | No | Maximum `255` characters |
+| `address` | `string` | No | Maximum `500` characters |
+| `address2` | `string` | No | Maximum `255` characters |
+| `city` | `string` | No | Maximum `255` characters |
+| `state` | `string` | No | Maximum `255` characters |
+| `country` | `string` | No | Maximum `255` characters |
+| `zip_code` | `string` | No | Maximum `50` characters |
+| `lead_status` | `string` | No | Maximum `100` characters |
+| `lifecycle_stage` | `string` | No | Maximum `100` characters |
+| `tented_score` | `number \| null` | No | Optional contact score |
+| `unsubscribed` | `boolean` | No | Defaults to `false` when omitted |
+| `marketing_email_subscribed` | `boolean \| null` | No | Email subscription state |
+| `marketing_sms_subscribed` | `boolean \| null` | No | SMS subscription state |
+
+## Create Request Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/contacts \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "items": [
+      {
+        "client_item_id": "crm-row-001",
+        "email": "jane@example.com",
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "company": "Acme",
+        "job_title": "CEO"
+      },
+      {
+        "client_item_id": "crm-row-002",
+        "phone": "+15551234567",
+        "display_name": "Sam Rivera"
+      }
+    ]
+  }'
+```
+
+## Create Response Example
+
+`201 Created`
+
+```json
+{
+  "status": "completed",
+  "created_count": 2,
+  "rejected_count": 0,
+  "items": [
+    {
+      "index": 0,
+      "client_item_id": "crm-row-001",
+      "contact_id": "11111111-1111-4111-8111-111111111111",
+      "status": "created",
+      "contact": {
+        "contact_id": "11111111-1111-4111-8111-111111111111",
+        "display_name": "Jane Doe",
+        "first_name": "Jane",
+        "last_name": "Doe",
+        "email": "jane@example.com",
+        "phone": null,
+        "company": "Acme",
+        "job_title": "CEO",
+        "original_source": "Public API",
+        "created_at": "2026-04-30T12:00:00.000Z",
+        "updated_at": "2026-04-30T12:00:00.000Z"
+      }
+    },
+    {
+      "index": 1,
+      "client_item_id": "crm-row-002",
+      "contact_id": "22222222-2222-4222-8222-222222222222",
+      "status": "created",
+      "contact": {
+        "contact_id": "22222222-2222-4222-8222-222222222222",
+        "display_name": "Sam Rivera",
+        "email": null,
+        "phone": "+15551234567",
+        "original_source": "Public API",
+        "created_at": "2026-04-30T12:00:00.000Z",
+        "updated_at": "2026-04-30T12:00:00.000Z"
+      }
+    }
+  ]
+}
+```
+
+## Duplicate Contacts
+
+Tented checks normalized email and phone values before creating a contact. If an item matches an existing contact, that item is rejected with `error_code: "conflict"`.
+
+```json
+{
+  "index": 0,
+  "client_item_id": "crm-row-001",
+  "status": "rejected",
+  "error_code": "conflict",
+  "message": "Contact already exists",
+  "existing_contact": {
+    "contact_id": "11111111-1111-4111-8111-111111111111",
+    "display_name": "Jane Doe",
+    "email": "jane@example.com",
+    "phone": null
+  }
+}
+```
+
+## Update Contacts
+
+```bash
+POST /v1/contacts/update
+```
+
+### Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `items` | `array` | Yes | Between `1` and `25` update records |
+
+### Update Item Fields
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `contact_id` | `uuid` | Yes | Contact to update |
+| `client_item_id` | `string` | No | Your own per-item identifier for reconciliation |
+| `email` | `string \| null` | No | Set to `null` to clear, as long as phone remains present |
+| `phone` | `string \| null` | No | Set to `null` to clear, as long as email remains present |
+| `display_name` | `string \| null` | No | Maximum `255` characters |
+| `first_name` | `string` | No | Maximum `255` characters |
+| `last_name` | `string` | No | Maximum `255` characters |
+| `email_domain` | `string \| null` | No | Usually derived automatically from email |
+| `company` | `string` | No | Maximum `255` characters |
+| `job_title` | `string` | No | Maximum `255` characters |
+| `address` | `string` | No | Maximum `500` characters |
+| `address2` | `string` | No | Maximum `255` characters |
+| `city` | `string` | No | Maximum `255` characters |
+| `state` | `string` | No | Maximum `255` characters |
+| `country` | `string` | No | Maximum `255` characters |
+| `zip_code` | `string` | No | Maximum `50` characters |
+| `original_source` | `string \| null` | No | Maximum `255` characters |
+| `original_source_detail` | `string \| null` | No | Maximum `255` characters |
+| `lead_status` | `string` | No | Maximum `100` characters |
+| `lifecycle_stage` | `string` | No | Maximum `100` characters |
+| `tented_score` | `number \| null` | No | Optional contact score |
+| `unsubscribed` | `boolean` | No | Unsubscribe flag |
+| `marketing_email_subscribed` | `boolean \| null` | No | Email subscription state |
+| `marketing_sms_subscribed` | `boolean \| null` | No | SMS subscription state |
+| `marketing_email_invalid` | `boolean` | No | Email validity flag |
+| `marketing_sms_invalid` | `boolean` | No | SMS validity flag |
+| `custom_fields` | `object` | No | Editable custom fields by API name |
+
+<Warning>
+  A contact must always have at least one valid email or phone. An update that clears both identity fields is rejected for that item.
+</Warning>
+
+## Update Request Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/contacts/update \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "items": [
+      {
+        "client_item_id": "crm-row-001",
+        "contact_id": "11111111-1111-4111-8111-111111111111",
+        "company": "Acme Enterprise",
+        "lead_status": "qualified",
+        "custom_fields": {
+          "favorite_color": "Green"
+        }
+      }
+    ]
+  }'
+```
+
+## Update Response Example
+
+`200 OK`
+
+```json
+{
+  "status": "completed",
+  "updated_count": 1,
+  "rejected_count": 0,
+  "items": [
+    {
+      "index": 0,
+      "client_item_id": "crm-row-001",
+      "contact_id": "11111111-1111-4111-8111-111111111111",
+      "status": "updated",
+      "contact": {
+        "contact_id": "11111111-1111-4111-8111-111111111111",
+        "email": "jane@example.com",
+        "company": "Acme Enterprise",
+        "lead_status": "qualified",
+        "updated_at": "2026-04-30T12:05:00.000Z"
+      }
+    }
+  ]
+}
+```
+
+## Delete Contacts
+
+```bash
+POST /v1/contacts/delete
+DELETE /v1/contacts
+```
+
+Use `POST /v1/contacts/delete` if your HTTP client does not support request bodies on `DELETE`.
+
+### Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `items` | `array` | Yes | Between `1` and `25` delete records |
+
+### Delete Item Fields
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `contact_id` | `uuid` | Yes | Contact to delete |
+| `client_item_id` | `string` | No | Your own per-item identifier for reconciliation |
+
+## Delete Request Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/contacts/delete \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "items": [
+      {
+        "client_item_id": "crm-row-001",
+        "contact_id": "11111111-1111-4111-8111-111111111111"
+      }
+    ]
+  }'
+```
+
+## Delete Response Example
+
+`200 OK`
+
+```json
+{
+  "status": "completed",
+  "deleted_count": 1,
+  "rejected_count": 0,
+  "items": [
+    {
+      "index": 0,
+      "client_item_id": "crm-row-001",
+      "contact_id": "11111111-1111-4111-8111-111111111111",
+      "status": "deleted"
+    }
+  ]
+}
+```
+
+## Batch Response Format
+
+Every contacts write endpoint returns:
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `status` | `string` | Always `completed` after the request has been processed |
+| `created_count` | `number` | Present on create responses |
+| `updated_count` | `number` | Present on update responses |
+| `deleted_count` | `number` | Present on delete responses |
+| `rejected_count` | `number` | Number of rejected items |
+| `items` | `array` | Per-item results in request order |
+
+Rejected items include:
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `index` | `number` | Zero-based item index from the request |
+| `client_item_id` | `string` | Returned when supplied |
+| `contact_id` | `uuid` | Returned when supplied |
+| `status` | `string` | `rejected` |
+| `error_code` | `string` | `bad_request`, `not_found`, `conflict`, or `error` |
+| `message` | `string` | Human-readable failure reason |
+| `existing_contact` | `object` | Returned for duplicate conflicts |
+
+## Common Item-Level Rejections
+
+| Error Code | Cause |
+| --- | --- |
+| `bad_request` | No fields to update |
+| `bad_request` | Update would remove both email and phone |
+| `bad_request` | Custom field is missing, inactive, non-editable, or has an invalid value |
+| `not_found` | Contact does not exist in the workspace |
+| `conflict` | Email or phone matches another existing contact |
+
+## Common Request Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid JSON body |
+| `400 Bad Request` | Request body is missing |
+| `400 Bad Request` | `items` is missing, empty, or contains more than `25` records |
+| `400 Bad Request` | A create item has neither `email` nor `phone` |
+| `400 Bad Request` | Invalid email, phone, UUID, or field format |
+| `401 Unauthorized` | Missing or invalid bearer token |
+
+<Card
+  title="Back to API Overview"
+  icon="arrow-left"
+  href="/api-reference/introduction"
+>
+  Review the full Vibe Coding API endpoint map.
+</Card>
