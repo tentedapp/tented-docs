@@ -5,51 +5,65 @@ description: "Configure your workspace settings and team preferences"
 
 ## Workspace Settings Overview
 
-Workspace settings control your company information, integrations, and Tented plan. You can also view your usage from this page. 
+Workspace settings control your company information, branding, team, integrations, and Tented plan — everything shared by your whole workspace.
 
-Workspace settings are accessible from any page other than the tent editor. Click on your **profile icon** in the bottom-left corner, then select **Workspace Settings** from the menu that opens.
+Click your **profile icon** in the bottom-left corner, then select **Workspace Settings** from the menu that opens.
 
-  ![A screenshot of the **Workspace Settings** menu item.](../images/workspace-settings-access.png)
+![A screenshot of the **Workspace Settings** menu item.](../images/workspace-settings-access.png)
 
-This page describes the various sections of the **Workspace Settings** page and the options available in each section.
+![A screenshot of the Workspace Settings page showing Workspace Details, Company Information, Team & Billing, and Usage sections.](../images/workspace-settings.png)
 
-  ![A screenshot of the **Workspace Settings** page item.](../images/workspace-settings.png)
+## Workspace Details
 
-**Workspace Details:**
-- **Workspace Name:** Set or update your workspace name.
-- **Workspace Slug:** A unique identifier for your workspace. Thiis is used as a prefix in URLs and cannot be changed.
+- **Workspace Name**: The internal name of your workspace, used in system notifications like user invites.
+- **Workspace Slug**: A unique identifier used as the prefix for your published tents (e.g., `t8rvby15uq.tented-pages.com/...`). Contact support to request a change.
+- **Branded Domain**: The CNAME alias from your custom domain for published tents. See [Custom Domains](/configuring-tented/custom-domains).
 
-**Company Information:**
-- **Company Name:** Set or update your company name.
-- **Website:** Add your company website.
-- **Company Description**: Provide a brief description of your company.
+## Company Information
 
-**Brand:**
- - **Primary Brand Color**: Your main brand color. This color is used for buttons.
- - **Brand Logo**: The logo that represents your brand. It should be a PNG or SVG file with a 3:1 aspect ratio and a transparent background.
- - **Brand Icon**: A smaller icon version of your logo. It should be a PNG or SVG file with a 1:1 (square) aspect ratio and a transparent background.
- - **Brand guidelines**: Some brief information to help the AI understand your brand personality. For example, "professional and modern" or "playful and creative".
+Give Tented context for on-brand AI generation:
+
+- **Company Name** and **Website**
+- **Company Description**: A brief description of what your company does.
+
+## Brand
+
+- **Primary Brand Color**: Your main brand color (used for buttons and accents).
+- **Brand Logo**: PNG, JPG, or SVG with a 3:1 aspect ratio and transparent background (max 2MB).
+- **Brand Icon**: PNG, SVG, or ICO with a 1:1 (square) aspect ratio (max 1MB).
+- **Brand Guidelines**: Free-text guidance the AI follows when generating content — fonts to prefer, tone, things to avoid.
 
 ![A screenshot of the **Brand** section on the **Workspace Settings** page.](../images/workspace-settings-brand.png)
 
- **Billing:**
-  - **Current Plan**: Displays your current Tented plan.
-  - **Plans & Billng**: View available plans, check your renewal date, manage your subscription, and view past invoices.
+## People
 
-**Usage:**
-- **Published Tents**: Displays the number of published tents in your workspace.
-- **Daily Free Credits Used:** Shows the number of free AI generation credits used today.
-- **Plan Credits Used:** Shows the number of paid AI generation credits used this month.
+A quick view of your contact database, with **People database size** and **Custom fields used**. Click **Manage Fields** to add and manage [standard and custom contact fields](/people/contact-fields).
 
-**Integrations:**
-This section shows the third-party services connected to your Tented workspace. You can also connect or disconnect services here by clicking **Manage Integrations**. Supported integrations include:
-- **Slack**: [Connect your Slack account](../integrations/connecting-slack) to receive notifications about form submissions.
-- **Microsoft Teams**: [Connect your Microsoft Teams account](../integrations/connecting-microsoft-teams) to receive notifications about form submissions.
+## Email
+
+Shows your email sending status (with a **Verified** badge once your domain checks out). Click **Manage Email** to configure your sending domain, sender profile, default headers, and unsubscribe footer — the full walkthrough is in [Setting Up Email](/configuring-tented/email-setup).
+
+## Team & Billing
+
+- **Active Users** and **Manage Users** — open [Team Management](/configuring-tented/managing-users) to invite and manage teammates.
+- **Current Plan** and **Plans & Billing** — see [Managing Your Subscription](/billing-subscriptions/managing-subscription).
+
+## Usage
+
+- **Published Tents**: How many tents you've published against your plan's limit.
+- **Daily Free Credits Used**: Free AI generation credits used today.
+- **Plan Credits Used**: Paid AI credits used this billing period.
+
+For deeper usage analytics, see [Viewing Current Usage](/billing-subscriptions/viewing-usage).
+
+## API
+
+Click **Manage API** to create API keys and monitor credits for REST API and agent access. See the [API Reference](/api-reference/introduction).
 
 <Card
-  title="Next: Custom Domains"
+  title="Next: Setting Up Email"
   icon="arrow-right"
-  href="/configuring-tented/custom-domains"
+  href="/configuring-tented/email-setup"
 >
-  Learn how to configure custom domains and DNS redirects for your tents.
+  Verify your sending domain and sender details for marketing email.
 </Card>

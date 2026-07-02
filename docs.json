@@ -32,6 +32,7 @@
               "working-with-tents/previewing-tents",
               "working-with-tents/publishing-tents",
               "working-with-tents/viewing-form-submissions",
+              "working-with-tents/form-automations",
               "working-with-tents/managing-tents"
             ]
           },
@@ -39,13 +40,14 @@
             "group": "People & Lists",
             "pages": [
               "people/managing-contacts",
+              "people/importing-contacts",
+              "people/contact-fields",
               "people/working-with-lists"
             ]
           },
           {
             "group": "Email",
             "pages": [
-              "email/email-setup",
               "email/creating-emails",
               "email/email-templates",
               "email/email-blasts",
@@ -60,6 +62,7 @@
               "configuring-tented/user-permissions",
               "configuring-tented/user-settings",
               "configuring-tented/workspace-settings",
+              "configuring-tented/email-setup",
               "configuring-tented/custom-domains"
             ]
           },
@@ -74,7 +77,9 @@
           {
             "group": "Connectors",
             "pages": [
-              "integrations/connecting-microsoft-teams"
+              "integrations/connecting-slack",
+              "integrations/connecting-microsoft-teams",
+              "integrations/setting-up-email-notifications"
             ]
           }
         ]

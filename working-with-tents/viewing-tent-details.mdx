@@ -5,56 +5,62 @@ description: "Navigate and understand the tent details page"
 
 ## Tent Details Overview
 
-The **Tent Details** page provides a comprehensive view of your tent's information, status, and management options. This is your central hub for understanding and controlling your tent.
+The **Tent Details** page provides a comprehensive view of your tent's information, status, and management options. This is your central hub for understanding and controlling your tent. Open it from the **Tents** page by clicking any tent's name.
 
-    ![A screenshot of the **Tent Details** page.](../images/tent-details.png)
+![A screenshot of the Tent Details page showing the tent preview, details panel, published status, and live URL.](../images/tent-details.png)
 
 ## Page Layout
 
 ### Header Section
 
-The header displays essential tent information.
+The header displays essential tent information:
 
-- **Tent Name**: The name of the tent. Click on it to rename the tent.
-- **Status Badge**: Shows the current status of the tent. Statuses include:
-  - **Draft**: The tent is being created or edited.
-  - **Published**: The tent is live on the web.
-- The unique **URL** for the tent is also shown when the tent is published.
+- **Tent Name**: The name of the tent. Double-click it to rename the tent.
+- **Status Badge**: **Draft** (being created or edited) or **Published** (live on the web).
+- **Live URL**: Shown when the tent is published — click it to open the live page.
 
 ### Action Buttons
 
-The following options offer essential functionality for editing, viewing, and controlling its publication status and data.
+- **Edit**: Opens the [tent editor](/working-with-tents/understanding-tent-editor), where you make changes through chat or direct code editing.
+- **Tent Actions**: A dropdown with everything else:
 
-- **Edit**: Opens the tent editor where you can make changes through chat or direct code editing.
-- **Tent Actions**: Opens the Tent Actions dropdown menu.
-- **Preview**: Opens a preview window to see how your tent looks on the web.
-- **View Form Submissions**: Opens a window to view form submission data and download a CSV file.
-- **Manage Automations**: Opens a window to view and add automations. Use this area to set up form submission notifications in Slack or Teams.
-  (../images/automation-select.png)
-- **Download Code**: Downloads the code for the tent to your device.
-- **Clone**: Creates a copy of your tent for variations or A/B testing.
-- **Unpublish**: Unpublishes your tent from the web.
-- **Rename**: Opens a window for renaming the tent. You can also double-click the tent name in the header to rename it.
-- **Delete**: Deletes the tent.
+![A screenshot of the Tent Actions menu with Preview, View Form Submissions, Manage Automations, Add Password, Download Code, Clone, Save as New Template, Customize URL, Unpublish, Rename, and Delete options.](../images/tent-actions-menu.png)
+
+| Action | What it does |
+|---|---|
+| **Preview** | See how your tent looks on the web |
+| **View Form Submissions** | View and export [form data](/working-with-tents/viewing-form-submissions) |
+| **Manage Automations** | Set up [form automations](/working-with-tents/form-automations) — Slack, Teams, email, webhooks |
+| **Add Password** | Password-protect the published page |
+| **Download Code** | Download the tent's code |
+| **Clone** | Copy the tent for variations or A/B testing |
+| **Save as New Template** | Turn this tent into a reusable template |
+| **Customize URL** | Change the published URL slug |
+| **Unpublish** | Take the tent off the web |
+| **Rename / Delete** | Housekeeping |
 
 ## Information Tiles
 
-The **Tent Details** page is organized into several tiles, each providing specific information about your tent. A preview of the tent appears near the top left.
-
 ### Tent Details
-- **Tent ID**: Unique identifier for the tent, which you can copy by hovering and selecting **Copy ID**
-- **Created**: Timestamp of when the tent was created
-- **Tent Visibility**: Whether the tent is Public or Private
-- **Last Updated**: Timestamp of the most recent changes
-- **Created By**: User who originally created the tent
-- **Total Generations**: Number of generations created for this tent
-- **Original Prompt**: Initial prompt used to generate the tent, which you can expand and copy by hovering and selecting the **expand icon**
 
-### Other Tiles
+- **Tent ID**: Unique identifier (hover to **Copy ID**) — you'll use this with the [API](/api-reference/introduction)
+- **Created / Last Updated**: Timestamps
+- **Tent Visibility**: Public or Private
+- **Created By**: Who made it
+- **Total Generations**: How many AI generations this tent has been through
+- **Original Prompt**: The prompt that started it all (hover to expand and copy)
 
-- **Page Views**: Total number of page views in the last 7 days and a **View Tent Analytics** button for more details
-- **Form Submissions**: Form submission count and a **View Form Data** button for viewing and downloading data
-- **Automations**: The automations set up for this tent and an **Add Automation** button to create new ones
+### Activity Cards
+
+Across the bottom you'll find three live cards:
+
+![A screenshot of the Page Views, Form Submissions, and Automations cards with their View Tent Analytics, View Form Data, and Add Automation buttons.](../images/tent-details-cards.png)
+
+- **Page Views** — traffic for the last 7 days, with **View Tent Analytics** for the full picture: recent pageviews (with location, device, and browser) and a views-by-day chart.
+- **Form Submissions** — total submissions, with **View Form Data** to [inspect and export them](/working-with-tents/viewing-form-submissions).
+- **Automations** — your active [form automations](/working-with-tents/form-automations) at a glance, with **Add Automation** to create more.
+
+![A screenshot of the Tent Analytics window showing total page views, recent pageviews with device details, and a page views by day chart.](../images/tent-analytics.png)
 
 <Card
   title="Next: Understanding the Tent Editor"
