@@ -1,0 +1,63 @@
+---
+title: "Personalization Tokens"
+description: "Every token you can use to tailor emails to each recipient"
+---
+
+## What are tokens?
+
+Tokens are placeholders wrapped in double curly braces — like `{{contact.firstName}}` — that Tented swaps for real values when each email is sent. They work in the **subject**, **preheader**, and anywhere in the **body**, so every recipient gets a message that feels written for them.
+
+This page is the full reference. For the how-to of inserting them, see [Creating Emails](/email/creating-emails#subject-lines-preheaders-and-personalization).
+
+## Contact tokens
+
+Reference any [standard or custom contact field](/people/contact-fields) by its API name:
+
+```
+{{contact.firstName}}
+{{contact.company}}
+{{contact.plan_tier}}   ← a custom field
+```
+
+**Fallbacks.** A token resolves to an empty string when a contact is missing that value. For anything a reader will see, add a default so you never ship "Hi ," :
+
+```
+Hi {{contact.firstName:default=there}},
+```
+
+The easiest way to get the syntax right is the **Personalize** button in the editor — pick the field, set an optional default, and it inserts the token for you.
+
+## Sender-profile tokens
+
+These pull from your [Sender Profile](/email/email-setup) and are mainly used in the unsubscribe footer, but you can use them anywhere:
+
+| Token | Resolves to |
+|---|---|
+| `{{tented.company}}` | Your legal company name |
+| `{{tented.address}}` | Your mailing address |
+| `{{tented.privacyUrl}}` | Your privacy policy URL |
+| `{{tented.unsubscribeOneClickLink}}` | Each recipient's one-click unsubscribe link (**required** in the footer) |
+
+## Campaign dynamic tokens (flows only)
+
+Inside a [triggered flow](/email/triggered-flows), earlier steps can hand values to later emails through `{{campaign.dynamic.*}}` tokens. The headline example is the **Create Tent** step: with **Auto-approve** on, it publishes a personalized page and exposes its URL as:
+
+```
+{{campaign.dynamic.tentURL}}
+```
+
+Link a later **Send Email** step's button to that token and every contact's email points to *their own* generated page. A second Create Tent step would expose `{{campaign.dynamic.tentURL2}}`, and so on. Full walkthrough in [The Create Tent step](/email/triggered-flows#the-create-tent-step).
+
+## Before you send
+
+- **Preview with real data** — click **Preview as** in the editor and pick a contact to see tokens resolved.
+- **Flows validate tokens** — when you activate a flow, Tented flags emails that reference invalid or inactive fields, so a typo can't ship. Fix the flagged token and re-activate.
+- **Missing values are silent** — without a `:default=`, an absent value simply disappears, which can leave odd spacing or punctuation. Default anything visible.
+
+<Card
+  title="Back to: Creating Emails"
+  icon="arrow-left"
+  href="/email/creating-emails"
+>
+  The full email editor workflow.
+</Card>

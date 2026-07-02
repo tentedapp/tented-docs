@@ -40,9 +40,13 @@ Hover over any part of the email and you'll see **Click to edit** — handy for 
 Fill in the **Subject** and **Preheader** fields in the header bar. A few niceties built in:
 
 - The subject field has a **50-character guide** — stay under it and your subject won't get clipped on mobile.
-- The `{}` **Personalize** button inserts **personalization tokens** — any standard or [custom contact field](/people/contact-fields), in the form `{{contact.firstName}}`. They work in the subject, preheader, and anywhere in the body.
+- The `{}` **Personalize** button inserts **personalization tokens** — any standard or [custom contact field](/people/contact-fields), in the form `{{contact.firstName}}`. They work in the subject, preheader, and anywhere in the body. (Full token reference: [Personalization Tokens](/email/personalization).)
 - Tokens resolve to an empty string when a contact is missing the value, so add a fallback for anything visible: `{{contact.firstName:default=there}}` renders as "there" when there's no first name.
 - Per-email **From/Reply-to overrides**: any email can use its own sender details instead of the workspace defaults.
+
+Click **Personalize** and you'll get a small builder — pick the field, set an optional default, and it inserts the token for you:
+
+![A screenshot of the personalization popover with a Field dropdown set to First Name, a Default value field, and the resulting token.](../images/email-personalize-popover.png)
 
 To see personalization with real data, click **Preview as** and pick a contact — Tented uses their contact and activity data as context.
 

@@ -58,6 +58,28 @@ Wait steps keep journeys humane — space your sends out instead of firing every
 
 ![A screenshot of a flow canvas showing Trigger, Send Email, and a Wait step configured for 1 day.](../images/flow-wait-step.png)
 
+### The Create Tent step
+
+The **Create Tent** step generates a *personalized landing page for each contact* as they pass through the flow — a unique page per person, built from their contact data.
+
+![A screenshot of the Configure Create Tent panel showing Source, a personalized Prompt, an Auto-approve checkbox, a URL path field, and a Published URL token.](../images/flow-create-tent-step.png)
+
+Configure it with:
+
+- **Source** — **From scratch** (generate with AI from a prompt) or **From template** (copy an approved tent template, no generation credits).
+
+  ![A screenshot of the Source dropdown showing From scratch and From template options.](../images/flow-create-tent-source.png)
+
+- **Prompt** — what to generate. Click **Personalize** to drop in [contact tokens](/email/creating-emails#subject-lines-preheaders-and-personalization) like `{{contact.firstName}}`, so every contact gets a page tailored to them.
+- **Tent name** and **URL path** — both optional and both personalizable; a blank URL path falls back to the tent ID.
+- **Auto-approve** — publish the generated tent automatically, so it's live the moment it's created.
+
+<Tip>
+  **Use the new page's URL in a later email.** When **Auto-approve** is on, the step publishes the tent and stores its live URL in a token — shown in the panel as the **Published URL token**, `{{campaign.dynamic.tentURL}}`. Reference that token in any **Send Email** step *after* the Create Tent step, and each contact's email links to their own personalized page.
+
+  A typical shape: **Create Tent** (auto-approve, prompt personalized with `{{contact.firstName}}`) → **Send Email** whose CTA links to `{{campaign.dynamic.tentURL}}`. If you have more than one Create Tent step, the second becomes `{{campaign.dynamic.tentURL2}}`, and so on.
+</Tip>
+
 ## Activate it
 
 Click **Activate** and your flow goes live: from now on, contacts matching a trigger are enrolled automatically and start moving through the steps.
@@ -70,9 +92,19 @@ Click **Activate** and your flow goes live: from now on, contacts matching a tri
 
 ## Track performance
 
-The **Overview** tab shows your flow's vitals: total contacts entered, how many are currently waiting, the most recent entry, who's parked at each Wait step, and per-email stats (sent, delivered, opened, clicked, bounced, unsubscribed, spam). **View all runs** gives you the contact-by-contact detail.
+The **Overview** tab shows your flow's vitals: total contacts entered, how many are currently waiting, the most recent entry, who's parked at each Wait step, and per-email stats (sent, delivered, opened, clicked, bounced, unsubscribed, spam).
 
 ![A screenshot of flow analytics showing one contact entered, one currently waiting at the 1-day Wait step, and the Send Email step at 100 percent delivered.](../images/flow-analytics.png)
+
+### See every run
+
+The **History** tab lists every contact who's been through the flow — their status (In Flow, Completed, Exited), when they entered, and when they left. Filter by status or date range, and click **Export** for a CSV.
+
+![A screenshot of the flow History tab showing one run with an In Flow status and a View Run Details button.](../images/flow-history-runs.png)
+
+Click **View Run Details** on any run to see that contact's exact path through the flow — a step-by-step timeline of what happened and when (entered flow, email sent, wait, email delivered), with the contact's current position highlighted.
+
+![A screenshot of the Run details timeline showing Entered flow, Email sent, Wait, and Email delivered events with timestamps.](../images/flow-run-details.png)
 
 ## Flow or blast?
 
