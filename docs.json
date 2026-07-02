@@ -33,6 +33,7 @@
               "working-with-tents/publishing-tents",
               "working-with-tents/viewing-form-submissions",
               "working-with-tents/form-automations",
+              "working-with-tents/tent-templates",
               "working-with-tents/managing-tents"
             ]
           },
@@ -50,6 +51,7 @@
             "pages": [
               "email/email-setup",
               "email/creating-emails",
+              "email/personalization",
               "email/email-templates",
               "email/email-blasts",
               "email/triggered-flows"
@@ -63,6 +65,8 @@
               "configuring-tented/user-permissions",
               "configuring-tented/user-settings",
               "configuring-tented/workspace-settings",
+              "configuring-tented/analytics",
+              "configuring-tented/api-keys",
               "configuring-tented/custom-domains"
             ]
           },
@@ -79,7 +83,8 @@
             "pages": [
               "integrations/connecting-slack",
               "integrations/connecting-microsoft-teams",
-              "integrations/setting-up-email-notifications"
+              "integrations/setting-up-email-notifications",
+              "integrations/webhooks"
             ]
           }
         ]

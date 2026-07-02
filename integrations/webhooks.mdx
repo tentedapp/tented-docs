@@ -1,0 +1,67 @@
+---
+title: "Webhooks"
+description: "Send tent form submissions and flow events to your own endpoints"
+---
+
+## Two places webhooks fire
+
+Tented can call your own HTTP endpoint in two situations — great for pushing leads into a CRM, kicking off a Zapier/Make scenario, or notifying a custom service:
+
+1. **Form automations** — a **Send Webhook Request** action fires every time a [tent form](/working-with-tents/form-automations) is submitted.
+2. **Triggered flows** — a **Send Webhook** step fires as a contact reaches that point in a [flow](/email/triggered-flows).
+
+Both let you choose the HTTP method (POST, PUT, or GET), optionally add **JWT authentication** (Tented stores your token securely and sends it as a bearer token), and add your own **custom fields** to the payload.
+
+## Form-automation webhook payload
+
+When a form is submitted, Tented POSTs JSON like this to your endpoint:
+
+```json
+{
+  "tentId": "45977a6f-87b6-48a4-8607-11727bee2020",
+  "formId": "registerForm",
+  "timestamp": "2026-07-02T20:10:00.000Z",
+  "formData": {
+    "name": "Justin Cooperman",
+    "email": "justin.cooperman@tented.ai",
+    "company": "Tented, Inc."
+  }
+}
+```
+
+- `formData` holds the submitted fields, keyed by your form's field names.
+- Any **custom fields** you configure on the webhook are merged into the top level of the payload alongside these.
+
+## Flow webhook payload
+
+A **Send Webhook** step in a flow sends a richer payload with the flow and contact context:
+
+```json
+{
+  "event": "flow_step",
+  "orgId": "…",
+  "campaignId": "…",
+  "membershipId": "…",
+  "contactId": "…",
+  "nodeId": "…",
+  "nodeType": "send_webhook",
+  "timestamp": "2026-07-02T20:10:00.000Z",
+  "contact": {
+    "contactId": "…",
+    "email": "justin.cooperman@tented.ai",
+    "displayName": "Justin Cooperman"
+  }
+}
+```
+
+- If the flow was entered via a form submission, the form data travels along in the payload too.
+- **Custom fields** on the webhook node are rendered (with [contact tokens](/email/creating-emails#subject-lines-preheaders-and-personalization) like `{{contact.firstName}}`) and merged into the top level.
+
+## Setting one up
+
+- **Form automation:** on a tent's **Tent Details** page, **Add Automation > Trigger: Form Submission > Action: Send Webhook Request**, then enter your endpoint URL, method, and any auth or custom fields. Full steps in [Form Automations](/working-with-tents/form-automations).
+- **Flow step:** in the [flow builder](/email/triggered-flows), add a **Send Webhook** step and configure it the same way.
+
+<Tip>
+  Testing? Point the webhook at a request-inspector service (like a RequestBin URL) first to see the exact payload your endpoint will receive, then swap in your real endpoint.
+</Tip>
