@@ -1,0 +1,98 @@
+---
+title: "Creating Emails"
+description: "Generate beautiful, personalized marketing emails by chatting with AI"
+---
+
+## Emails, the Tented way
+
+If you've built a tent, you already know how to build an email: describe what you want, iterate in chat, and watch the preview update live. Every email Tented generates uses battle-tested HTML — bulletproof tables, MSO conditionals for Outlook, dark-mode hooks — so it renders cleanly across Gmail, Outlook, Apple Mail, Yahoo, and friends.
+
+## Create your first email
+
+1. Go to **Email** in the sidebar.
+2. Click **Add > Create Email**.
+3. Name your email, and optionally pick an [approved template](/email/email-templates) as your starting point.
+
+![A screenshot of the Create Email dialog with an email name and optional template picker.](../images/email-create-dialog.png)
+
+You'll land in the email editor: chat on the left, live preview on the right, with your default from name and address already filled in from [email settings](/email/email-setup).
+
+![A screenshot of the email editor showing the chat panel, header fields for from, reply-to, subject and preheader, and a starter email preview.](../images/email-editor-blank.png)
+
+## Ask for what you want
+
+Describe the email in the chat box, the same way you'd brief a colleague:
+
+> "Write a friendly launch announcement for our new feature 'Predictive Scheduling'. Include a hero headline, 3 short benefit bullets, and a call-to-action button linking to our site. Personalize the greeting with the recipient's first name."
+
+![A screenshot of a generated launch announcement email with a personalized greeting, benefit bullets, and a call-to-action button, alongside the AI's summary of what it created.](../images/email-editor-generated.png)
+
+Keep chatting to refine it — "make the tone more playful," "swap the bullets for a comparison table," "add a P.S. line." Each request creates a new generation you can review or roll back.
+
+### Edit sections directly
+
+Hover over any part of the email and you'll see **Click to edit** — handy for quick text tweaks without a round-trip through the AI.
+
+![A screenshot of the email preview showing the Click to edit affordance on a paragraph.](../images/email-click-to-edit.png)
+
+## Subject lines, preheaders, and personalization
+
+Fill in the **Subject** and **Preheader** fields in the header bar. A few niceties built in:
+
+- The subject field has a **50-character guide** — stay under it and your subject won't get clipped on mobile.
+- The `{}` button inserts **personalization tokens** like `{{first_name}}` — they work in the subject, preheader, and anywhere in the body.
+- Per-email **From/Reply-to overrides**: any email can use its own sender details instead of the workspace defaults.
+
+To see personalization with real data, click **Preview as** and pick a contact — Tented uses their contact and activity data as context.
+
+![A screenshot of the Preview as menu showing Contact Personalization with a searchable list of contacts.](../images/email-preview-as-contact.png)
+
+## Check it on mobile (and in code)
+
+- The **mobile preview** button renders your email at real device dimensions, with a device picker.
+- **Code mode** (`<>`) shows the full HTML and a plain-text view. Advanced users can edit the code directly.
+
+![A screenshot of the mobile preview showing the email rendered at iPhone dimensions.](../images/email-mobile-preview.png)
+
+![A screenshot of code mode showing the email's HTML with MSO conditionals and meta tags.](../images/email-code-mode.png)
+
+## Generation history
+
+The clock icon opens **Generation History** — every AI generation of this email, with **Preview** and **Revert** so you can compare and restore past versions, just like tents.
+
+![A screenshot of the Generation History panel listing generations with Preview and Revert actions.](../images/email-generation-history.png)
+
+## Approve it
+
+Here's the one concept that's different from tents: **emails must be approved before they can send**. Approval freezes a known-good version — the one your blasts and flows will actually deliver.
+
+Click **Approve** in the top-right corner and confirm.
+
+![A screenshot of the Approve email confirmation dialog.](../images/email-approve-dialog.png)
+
+A few things to know about approval:
+
+- Your Emails list shows each email's status — **Draft** or **Approved**.
+- After approving, you can keep editing safely: draft changes **aren't included in sends** until you click **Approve Update**.
+- Blasts and flows only offer approved emails (or brand-new ones you compose inline).
+
+![A screenshot of the Emails list showing an email with an APPROVED status badge.](../images/email-emails-list.png)
+
+## What's next?
+
+<Columns cols={2}>
+  <Card
+    title="Send it to an audience"
+    icon="bullhorn"
+    href="/email/email-blasts"
+  >
+    Pick a list, pick a time, and launch your first email blast.
+  </Card>
+  <Card
+    title="Automate it"
+    icon="diagram-project"
+    href="/email/triggered-flows"
+  >
+    Send it automatically when contacts hit a trigger, as part of a multi-step flow.
+  </Card>
+</Columns>

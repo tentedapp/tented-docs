@@ -1,0 +1,79 @@
+---
+title: "Triggered Flows"
+description: "Build automated, multi-step email journeys on a visual canvas"
+---
+
+## What's a triggered flow?
+
+A **triggered flow** is marketing automation on autopilot: contacts enter when they match a trigger, then move through the steps you've laid out — sending emails, waiting, branching, updating fields — until they reach the end. Welcome series, onboarding sequences, re-engagement campaigns: this is where they live.
+
+Head to **Email > Campaigns** and click **Create Triggered Flow**. Name it, and you land on the visual flow builder with three tabs: **Overview** (analytics), **Edit Flow** (the canvas), and **History**.
+
+## Set the trigger
+
+Click the **Trigger** node to choose how contacts enter:
+
+![A screenshot of the flow builder showing the Setup Flow Trigger panel with six trigger types and the trigger node on the canvas.](../images/flow-triggers.png)
+
+- **Added to Static List** — the classic welcome-series trigger
+- **Removed from Static List**
+- **Date Based** — on, before, or after a contact date field
+- **Contact Created** — the moment someone new hits your database
+- **Contact Updated** — when a contact field changes
+- **Form Submitted** — when a visitor submits a form on one of your tents 🏕️
+
+You can stack multiple triggers on one flow with **+ Add trigger**.
+
+### Qualification rules
+
+Below the triggers you'll find **Qualification rules** — the fine print of who gets in:
+
+- **Re-entry policy**: allow contacts to go through the flow again after they finish (or block them to once ever).
+- **Disqualification rules**: audience rules that keep matching contacts *out* — for example, exclude anyone whose lifecycle stage is already "Customer" from a lead-nurture flow.
+
+![A screenshot of the Qualification rules panel showing the re-entry policy options and disqualification rules.](../images/flow-qualification-rules.png)
+
+## Build the steps
+
+Click **+** anywhere on the canvas to add a step. You've got a full automation toolkit:
+
+![A screenshot of the step palette showing Send Email, Wait, Update Contact, Add to List, Remove from List, Condition, Create Tent, Send Webhook, and Drop from Flow.](../images/flow-steps-palette.png)
+
+| Step | What it does |
+|---|---|
+| **Send Email** | Send an approved (or inline) email |
+| **Wait** | Pause for a duration, or until a contact date field |
+| **Update Contact** | Set contact field values |
+| **Add to List / Remove from List** | Manage static list membership |
+| **Condition** | Branch the journey based on audience rules |
+| **Create Tent** | Generate a personalized landing page for the contact |
+| **Send Webhook** | Call an external endpoint |
+| **Drop from Flow** | Exit the contact early |
+
+For a Send Email step, pick any **approved** email — the same approval rule as blasts — or compose one inline. There's also an operational-send toggle for non-marketing notices.
+
+![A screenshot of the Configure Send Email panel with an approved email selected and the flow canvas showing Trigger, Send Email, and End nodes.](../images/flow-send-email-step.png)
+
+Wait steps keep journeys humane — space your sends out instead of firing everything at once:
+
+![A screenshot of a flow canvas showing Trigger, Send Email, and a Wait step configured for 1 day.](../images/flow-wait-step.png)
+
+## Activate it
+
+Click **Activate** and your flow goes live: from now on, contacts matching a trigger are enrolled automatically and start moving through the steps.
+
+![A screenshot of an active flow with the ACTIVE badge and a banner noting the flow must be paused before making changes.](../images/flow-active.png)
+
+<Note>
+  Active flows are locked for editing — hit **Pause** first if you need to make changes, then reactivate. Triggers fire on *new* events after activation; contacts already on a list won't enter an "Added to Static List" flow retroactively.
+</Note>
+
+## Track performance
+
+The **Overview** tab shows your flow's vitals: total contacts entered, how many are currently waiting, the most recent entry, who's parked at each Wait step, and per-email stats (sent, delivered, opened, clicked, bounced, unsubscribed, spam). **View all runs** gives you the contact-by-contact detail.
+
+![A screenshot of flow analytics showing one contact entered, one currently waiting at the 1-day Wait step, and the Send Email step at 100 percent delivered.](../images/flow-analytics.png)
+
+## Flow or blast?
+
+Reach for a **blast** when it's one message, one audience, one moment — a launch, a newsletter issue. Reach for a **flow** when the sending should happen *by itself* whenever someone qualifies — welcomes, nurtures, onboarding. Most teams end up with both.

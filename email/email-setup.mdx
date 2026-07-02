@@ -1,0 +1,69 @@
+---
+title: "Setting Up Email"
+description: "Verify your sending domain and sender details so you can start sending marketing email"
+---
+
+## Before you send
+
+Tented sends marketing email from **your own domain** — which means better deliverability and emails that are unmistakably yours. Before your first campaign, there's a one-time setup: verify a sending domain and fill out your sender profile. Sending is blocked until your domain is verified, so this is step one.
+
+Everything lives in one place: click your profile in the bottom-left corner, choose **Workspace Settings**, then click **Manage Email** (or go straight to **Settings > Email**).
+
+## 1. Verify your sending domain
+
+Add a domain you own, and Tented generates the DNS records that let mailbox providers verify your email is legit — SPF, DKIM, and DMARC.
+
+![A screenshot of the Sending Domain section showing a verified domain with its DNS records for Mail/SPF, DKIM, and DMARC all marked Verified.](../images/email-settings-domain.png)
+
+1. Enter your domain (for example, `yourcompany.com`).
+2. Copy each generated record — a few CNAMEs and a TXT — into your DNS provider (GoDaddy, Cloudflare, Namecheap, etc.).
+3. Click **Re-check**. DNS changes can take a little while to propagate, so don't panic if it's not instant.
+
+Once every record shows **Verified**, you can send from any address on that domain — `hello@yourcompany.com`, `news@yourcompany.com`, whatever fits.
+
+<Warning>
+  Sending is blocked until your domain is fully verified. If a record stays unverified, double-check for typos and make sure your DNS provider isn't proxying the CNAME records.
+</Warning>
+
+## 2. Complete your sender profile
+
+Anti-spam laws like CAN-SPAM and CASL require every promotional email to include your contact information — including a physical mailing address. Your sender profile is where Tented gets it:
+
+- **Legal company name** and **support contact email**
+- **Street address**, city, postal code, state, and country
+- **Privacy policy URL** (optional, but a nice touch)
+
+![A screenshot of the Sender Profile form with legal company name, support email, and mailing address fields, marked Complete.](../images/email-settings-sender-profile.png)
+
+These details are automatically merged into your email footers at send time, so you're compliant without thinking about it.
+
+## 3. Set your default email headers
+
+Save yourself some typing: set a default **from name**, **from address**, and **reply-to**. Every new email starts pre-filled with these, and you can always override them on a specific email before sending.
+
+![A screenshot of the Default Email Headers section and the Unsubscribe Footer editor with its HTML template.](../images/email-settings-defaults-footer.png)
+
+## 4. Review the unsubscribe footer
+
+Marketing emails must include a working unsubscribe link. Tented auto-appends a footer to any email that doesn't already include its own — and you can customize its HTML here.
+
+The footer supports tokens that are filled from your sender profile at send time:
+
+- `{{tented.company}}` — your legal company name
+- `{{tented.address}}` — your mailing address
+- `{{tented.privacyUrl}}` — your privacy policy URL
+- `{{tented.unsubscribeOneClickLink}}` — **required** — each recipient's personal one-click unsubscribe link
+
+<Note>
+  When a contact unsubscribes, Tented flips their **Unsubscribed** field and quietly excludes them from future marketing sends. You don't need to manage suppression lists yourself.
+</Note>
+
+## You're ready to send 🎉
+
+<Card
+  title="Next: Creating Emails with AI"
+  icon="arrow-right"
+  href="/email/creating-emails"
+>
+  Describe the email you want and watch Tented write and design it for you.
+</Card>

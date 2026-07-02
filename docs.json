@@ -32,8 +32,24 @@
               "working-with-tents/previewing-tents",
               "working-with-tents/publishing-tents",
               "working-with-tents/viewing-form-submissions",
-              "working-with-tents/managing-tents",
-              "working-with-tents/tent-settings"
+              "working-with-tents/managing-tents"
+            ]
+          },
+          {
+            "group": "People & Lists",
+            "pages": [
+              "people/managing-contacts",
+              "people/working-with-lists"
+            ]
+          },
+          {
+            "group": "Email",
+            "pages": [
+              "email/email-setup",
+              "email/creating-emails",
+              "email/email-templates",
+              "email/email-blasts",
+              "email/triggered-flows"
             ]
           },
           {
