@@ -5,69 +5,58 @@ description: "Publish your tent and make it live on the web"
 
 ## Publishing Overview
 
-Publishing your tent makes it available on the web with a unique URL that you can share with your audience. The publishing process is simple and fast, taking just a few clicks to go from draft to live landing page.
+Publishing your tent makes it available on the web with a unique URL that you can share with your audience. The process takes a few clicks — and the publish dialog packs some useful options worth knowing about.
 
 ## Publishing Process
 
-### Initial Publishing
+Make sure you [preview your tent](/working-with-tents/previewing-tents) first. Then, in the tent editor, click **Publish** at the top right.
 
-Make sure you [preview your tent](previewing-tents) first.
+![A screenshot of the Ready to publish dialog with the Made with Tented badge toggle, password protection, and a custom URL field.](../images/publish-dialog.png)
 
-There are two ways to publish your tent to the web.
+The dialog gives you three options before you go live:
 
-**From the tent editor:**
-1. Click **Publish** at the top right of the screen.
-2. Confirm publishing in the dialog box.
-     ![A screenshot of the tent editor with the **Publish** button highlighted and confirmation dialog shown.](../images/publish.png)
-3. Wait for the publishing process to complete.
-4. Copy the live URL provided.
-5. Click **OK** to finish.
+- **Remove "Made with Tented" badge** — hide the badge on your published page (available on paid plans).
+- **Password protection** — click **Add Password** to gate the page. Great for internal reviews and client previews.
+- **Customize URL** — replace the auto-generated ID with a friendly slug, like `/launch-webinar`. You can also change it later via **Tent Actions > Customize URL**.
 
-**From the Tent Details page:**
-1. Select **Tent Actions > Publish** at the top right.
-  ![A screenshot of the **Tent Details** page with the **Publish** button highlighted.](../images/publish-from-tent-details.png)
-2. Confirm publishing in the dialog box.
-3. Wait for the publishing process to complete.
-4. Copy the live URL provided.
-5. Click **OK** to finish.
+Click **Publish**, and within seconds you'll get your live URL:
 
-    ![A screenshot of the **Tent Details** page with the **Live URL** and **Ok** button shown.](../images/publish-confirmation-tent-details.png)
+![A screenshot of the Tent Published confirmation showing the live URL.](../images/tent-published.png)
 
-### About Domains and URLs
+Your tent is now accessible worldwide. In the editor, the status badge switches to **Published**, and you'll see **View Live URL** and **Publish Update** buttons at the top.
 
-When you publish a tent, you can choose from three domain options for your tent's URL:
+![A screenshot of a published tent live on the web at its custom URL.](../images/published-tent-live.png)
+
+<Note>
+  Once published, edits don't go live automatically — keep iterating safely in the editor, then click **Publish Update** when you're ready to ship the changes.
+</Note>
+
+## About Domains and URLs
 
 <AccordionGroup>
-  <Accordion icon="globe" title="Default Domain">
-    Your tent gets a unique URL on the tented.ai domain:
-    - Format: `https://[workspace-slug].tented-pages.com/[unique-id]`
-    - SEO-friendly URLs
+  <Accordion icon="globe" title="Default domain">
+    Your tent gets a unique URL on your workspace's subdomain:
+    - Format: `https://[workspace-slug].tented-pages.com/[custom-slug-or-id]`
     - SSL certificate included
     - Global CDN for fast loading
   </Accordion>
-  
-  <Accordion icon="link" title="Custom Subdomain">
-    Use your own subdomain (coming soon):
-    - Format: `https://yourname.tented-pages.com/[unique-id]`
-    - Branded URL structure
-    - Easy to remember and share
-    - Professional appearance
-  </Accordion>
-  
-  <Accordion icon="shield" title="Custom Domain">
-    Use your own domain with DNS redirects:
-    - Point your domain to tented.ai
-    - Maintain your brand identity
-    - Professional custom URLs
-    - Full control over domain
 
-    For details, see our [Custom Domains](../configuring-tented/custom-domains) guide.
+  <Accordion icon="link" title="Custom URL slug">
+    Pick the path yourself in the publish dialog (or via **Tent Actions > Customize URL**) — `/launch-webinar` beats `/45977a6f-87b6...` on any billboard.
+  </Accordion>
+
+  <Accordion icon="shield" title="Branded custom domain">
+    Serve tents from your own domain with a CNAME alias (paid plans). See our [Custom Domains](/configuring-tented/custom-domains) guide.
   </Accordion>
 </AccordionGroup>
 
 ## Publishing Updates
 
-When you publish updates to an existing tent, several key components remain stable to ensure continuity. Specifically, your tent URL remains unchanged, all form submission data is preserved, analytics data continues tracking seamlessly, and your existing SEO rankings are maintained. This continuity allows you to update your content without disrupting performance metrics or accessibility.
+When you publish updates to an existing tent, the important things stay stable: your URL doesn't change, form submission data is preserved, and analytics keep tracking seamlessly. Update your content as often as you like without disrupting anything.
+
+## Unpublishing
+
+Changed your mind? **Tent Actions > Unpublish** takes the page off the web — the URL goes inactive and the tent returns to **Draft**. You can republish anytime.
 
 <Card
   title="Next: Viewing Form Submissions"
