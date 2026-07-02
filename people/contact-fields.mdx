@@ -26,7 +26,7 @@ Standard fields are built in — they can't be renamed or removed, and every con
 | **Email & SMS status** | Unsubscribed, Marketing Email Subscribed, Marketing SMS Subscribed, Marketing Email Invalid, Marketing SMS Invalid |
 | **Timestamps** | Last Activity, Created, Updated |
 
-Each field has an **API name** (like `firstName` or `lifecycleStage`) you'll use with the [API](/api-reference/managing-contacts) and see in CSV exports.
+Each field has an **API name** (like `firstName` or `lifecycleStage`) you'll use with the [API](/api-reference/managing-contacts), see in CSV exports, and reference in [email personalization tokens](/email/creating-emails#subject-lines-preheaders-and-personalization) — `{{contact.firstName}}`.
 
 <Note>
   The subscription fields (like **Unsubscribed**) are managed by Tented's email pipeline — they update automatically when contacts unsubscribe, and marketing sends respect them without any work on your part.
