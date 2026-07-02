@@ -48,6 +48,7 @@
           {
             "group": "Email",
             "pages": [
+              "email/email-setup",
               "email/creating-emails",
               "email/email-templates",
               "email/email-blasts",
@@ -62,7 +63,6 @@
               "configuring-tented/user-permissions",
               "configuring-tented/user-settings",
               "configuring-tented/workspace-settings",
-              "configuring-tented/email-setup",
               "configuring-tented/custom-domains"
             ]
           },
