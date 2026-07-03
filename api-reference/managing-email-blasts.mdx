@@ -1,0 +1,333 @@
+---
+title: "Managing Email Blasts"
+description: "Create a blast, attach an audience and an approved email, then schedule or send it through the public API."
+---
+
+## Endpoints
+
+```bash
+GET    /v1/email-blasts
+POST   /v1/email-blasts
+GET    /v1/email-blasts/{blastId}
+PATCH  /v1/email-blasts/{blastId}
+DELETE /v1/email-blasts/{blastId}
+PUT    /v1/email-blasts/{blastId}/audience
+PUT    /v1/email-blasts/{blastId}/email
+POST   /v1/email-blasts/{blastId}/schedule
+POST   /v1/email-blasts/{blastId}/send-now
+POST   /v1/email-blasts/{blastId}/unschedule
+POST   /v1/email-blasts/{blastId}/archive
+GET    /v1/email-blasts/{blastId}/contacts
+POST   /v1/email-blasts/{blastId}/contacts/export
+GET    /v1/email-blasts/{blastId}/contacts/export/{exportId}
+```
+
+A blast is a one-time send of an email to an audience. The typical workflow is:
+
+1. Create a draft blast
+2. Attach an audience with `PUT .../audience`
+3. Attach an email with `PUT .../email`
+4. Schedule it or send it now
+
+Blast `status` moves through `draft` → `scheduled` → `sending` → `sent`, with `failed`, `cancelled`, and `archived` as side exits. The audience and email are only editable while the blast is a `draft`.
+
+## Create a Blast
+
+```bash
+POST /v1/email-blasts
+```
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | `string` | Yes | Internal display name, `1`-`200` characters |
+| `description` | `string \| null` | No | Maximum `1000` characters |
+
+Returns `201 Created` with the blast object.
+
+## Set the Audience
+
+```bash
+PUT /v1/email-blasts/{blastId}/audience
+```
+
+Reference an existing contact list, or create a new list and attach it in one call. This replaces any previously attached audience. Returns `200 OK` with the updated [blast object](#blast-object).
+
+### Existing List
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `source` | `string` | Yes | `existing` |
+| `list_id` | `uuid` | Yes | An existing static or dynamic contact list |
+
+### Inline Static List
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `source` | `string` | Yes | `inline` |
+| `kind` | `string` | Yes | `static` |
+| `name` | `string` | No | `1`-`255` characters. Defaults to `"<blast name> (campaign <id>)"` |
+| `description` | `string \| null` | No | Maximum `1000` characters |
+| `contact_ids` | `uuid[]` | Yes | Contacts to seed the list with, maximum `500` per request |
+
+### Inline Dynamic List
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `source` | `string` | Yes | `inline` |
+| `kind` | `string` | Yes | `dynamic` |
+| `name` | `string` | No | `1`-`255` characters |
+| `description` | `string \| null` | No | Maximum `1000` characters |
+| `rules` | `object` | Yes | Segment rule tree — membership is computed continuously |
+
+### Audience Rules
+
+Dynamic audiences are defined by a rule tree of groups and conditions. Rule objects use **camelCase** keys, unlike the rest of the public API — they pass through to the segment engine verbatim.
+
+```json
+{
+  "kind": "group",
+  "operator": "and",
+  "conditions": [
+    {"kind": "condition", "source": "contact", "field": "state", "operator": "equals", "value": "CA"},
+    {"kind": "condition", "source": "list_membership", "listId": "11111111-1111-4111-8111-111111111111", "operator": "is_member"}
+  ]
+}
+```
+
+Each condition reads one `source`:
+
+| Source | Selector | Operators |
+| --- | --- | --- |
+| `contact` | `field` — a standard contact field key in camelCase (e.g. `leadStatus`, `tentedScore`, `createdAt`) | Per field type: strings take `equals`, `not_equals`, `contains`, `not_contains`, `starts_with`, `ends_with`; numbers and dates take `equals`, `not_equals`, `greater_than(_or_equal)`, `less_than(_or_equal)`; booleans take `is_true`, `is_false`. All types take `is_empty` / `is_not_empty` |
+| `custom_field` | `fieldDefinitionId` — an active custom field definition ID | Same value operators as `contact` |
+| `activity` | `activityType` (e.g. `form_submission`), optional `timeWindow` (`{"amount": 30, "unit": "day"}`) | `has_activity`, `has_no_activity` |
+| `list_membership` | `listId` — a static list | `is_member`, `is_not_member` |
+
+Groups combine children with `operator: "and"` (default) or `"or"` and can nest up to `5` levels deep, with at most `100` nodes per tree. Shorthand operator aliases (`eq`, `neq`, `gt`, `gte`, `lt`, `lte`, `member_of`, `occurred`, ...) are accepted. `email_step` conditions are not allowed in audiences — they only work inside [flow condition steps](/api-reference/managing-triggered-flows#condition-rules).
+
+## Set the Email
+
+```bash
+PUT /v1/email-blasts/{blastId}/email
+```
+
+Reference an existing email with `{"source": "existing", "email_id": "..."}`, or create one inline:
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `source` | `string` | Yes | `inline` |
+| `name` | `string` | No | Defaults to `"<blast name> Email"` |
+| `subject` | `string` | No | `1`-`998` characters. Must be set before the blast can send |
+| `template_id` | `uuid` | No | Seed content and default headers from an approved template. Mutually exclusive with `html` |
+| `html` | `string` | No | Seed content from your own HTML, up to `2 MB`. Mutually exclusive with `template_id` |
+| `preview_text` | `string` | No | Maximum `200` characters |
+| `from_name` | `string` | No | Maximum `120` characters. Must be set before the blast can send |
+| `from_address` | `string` | No | Must be set before the blast can send; domain must be verified |
+| `reply_to_email` | `string` | No | Must be set before the blast can send |
+
+Omit both `template_id` and `html` for a blank branded scaffold. Returns `200 OK` with the updated [blast object](#blast-object).
+
+<Info>
+  The attached email must be **approved** before the blast can be scheduled or sent. Inline emails start as drafts — take the `email.email_id` from the response and approve it via [`POST /v1/emails/{emailId}/approve`](/api-reference/managing-emails#approve-and-unapprove).
+</Info>
+
+## Approval Readiness
+
+`GET /v1/email-blasts/{blastId}` on a draft includes an `approval_readiness` object listing what still blocks sending:
+
+```json
+{
+  "approval_readiness": {
+    "ready": false,
+    "missing": ["email_approval", "schedule"],
+    "warnings": ["empty_static_audience"]
+  }
+}
+```
+
+Scheduling or sending a blast that is not ready returns `400 Bad Request` with `error_code: "campaign_not_ready"` and the same `approval_readiness` details.
+
+## Schedule a Blast
+
+```bash
+POST /v1/email-blasts/{blastId}/schedule
+```
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `scheduled_at` | `string` | Yes | ISO-8601 datetime with timezone offset, e.g. `2026-07-10T09:00:00-07:00`. Must be in the future |
+| `operational` | `boolean` | No | Defaults to `false` — see below |
+
+Returns `200 OK` with the blast in `scheduled` status. Use `POST .../unschedule` to cancel a scheduled send and return the blast to `draft`.
+
+<Warning>
+  Setting `operational: true` marks the send as transactional: unsubscribed contacts are **not** suppressed and the unsubscribe footer is skipped. Only use it for non-marketing mail such as receipts and service notices.
+</Warning>
+
+## Send Now
+
+```bash
+POST /v1/email-blasts/{blastId}/send-now
+```
+
+Accepts the same optional `operational` flag and starts the send immediately through the async pipeline. Returns `202 Accepted` with the blast in `sending` status; poll `GET /v1/email-blasts/{blastId}` for progress counters.
+
+## Blast Object
+
+`200 OK`
+
+```json
+{
+  "blast_id": "e6a1e6de-6a2e-4a3a-9a01-3f1c2b4d5e6f",
+  "type": "email_blast",
+  "name": "July launch",
+  "description": null,
+  "status": "sent",
+  "audience_list_id": "11111111-1111-4111-8111-111111111111",
+  "audience_source": "existing",
+  "audience": {
+    "list_id": "11111111-1111-4111-8111-111111111111",
+    "source": "existing",
+    "name": "Newsletter subscribers",
+    "kind": "static",
+    "member_count": 1250
+  },
+  "email_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "email_source": "existing",
+  "email": {
+    "email_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+    "source": "existing",
+    "name": "July launch email",
+    "status": "approved",
+    "subject": "The July release is here",
+    "current_version": 3,
+    "approved_version": 3
+  },
+  "operational": false,
+  "scheduled_at": "2026-07-10T16:00:00.000Z",
+  "approved_at": "2026-07-08T09:12:00.000Z",
+  "approved_email_version": 3,
+  "sent_at": "2026-07-10T16:04:12.000Z",
+  "send_mode": "scheduled",
+  "details": {
+    "blast_recipient_count": 1250,
+    "blast_sent_count": 1248,
+    "blast_failed_count": 0,
+    "blast_blocked_count": 2,
+    "blast_qualified_count": 1250,
+    "blast_audience_truncated": false,
+    "blast_delivered_count": 1240,
+    "blast_opened_count": 611,
+    "blast_clicked_count": 187,
+    "blast_bounced_count": 8,
+    "blast_spam_count": 0,
+    "blast_unsubscribed_count": 3
+  },
+  "created_at": "2026-07-08T09:00:00.000Z",
+  "updated_at": "2026-07-10T16:20:00.000Z"
+}
+```
+
+## List Blasts
+
+```bash
+GET /v1/email-blasts
+```
+
+| Parameter | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `status` | `string` | `any` | `any`, `draft`, `scheduled`, `sending`, `sent`, `failed`, `cancelled`, or `archived` |
+| `archived` | `string` | `exclude` | `exclude`, `include`, or `only` |
+| `sort_by` | `string` | `updated_at` | `updated_at`, `created_at`, `scheduled_at`, or `name` |
+| `sort_order` | `string` | `desc` | `asc` or `desc` |
+| `page` | `number` | `1` | 1-based page number |
+| `limit` | `number` | `25` | Page size, `1`-`100` |
+| `search` | `string` | — | Case-insensitive name search |
+
+Responses contain `blasts` and a `pagination` object with `page`, `limit`, `total`, and `totalPages`.
+
+## Recipients and Engagement
+
+```bash
+GET /v1/email-blasts/{blastId}/contacts
+```
+
+Page through a blast's contacts by engagement `category`: `recipients` (everyone prepared for the send, the default), `sent`, `delivered`, `opened`, `clicked`, `bounced`, `unsubscribed`, or `spam`. Also accepts `page`, `limit`, `search`, `sort` (engagement `*_at` timestamps sort contacts without that event last), and `order`.
+
+Responses contain `contacts` and a `pagination` object:
+
+```json
+{
+  "contacts": [
+    {
+      "recipient_id": "01JZ9J8Q2K7X4W1R5T3V6Y0ZBM",
+      "contact_id": "22222222-2222-4222-8222-222222222222",
+      "display_name": "Jane Doe",
+      "email": "jane@example.com",
+      "contact_deleted": false,
+      "sent_at": "2026-07-10T16:04:12.000Z",
+      "delivered_at": "2026-07-10T16:04:15.000Z",
+      "opened_at": "2026-07-10T17:22:03.000Z",
+      "clicked_at": null,
+      "clicked_url": null,
+      "bounced_at": null,
+      "unsubscribed_at": null,
+      "complained_at": null
+    }
+  ],
+  "pagination": {"page": 1, "limit": 25, "total": 611, "totalPages": 25}
+}
+```
+
+### Export to CSV
+
+```bash
+POST /v1/email-blasts/{blastId}/contacts/export?category=opened
+GET  /v1/email-blasts/{blastId}/contacts/export/{exportId}
+```
+
+Starting an export returns `202 Accepted` with an `export` job. Poll the job until `status` is `completed`, then fetch the file from its `download_url`:
+
+```json
+{
+  "export": {
+    "export_id": "01JZ9H2M7Q3W8R5T1V6X0YKZ4B",
+    "status": "completed",
+    "file_name": "july-launch-opened.csv",
+    "row_count": 611,
+    "error_message": null,
+    "download_url": "https://...",
+    "created_at": "2026-07-11T10:00:00.000Z",
+    "updated_at": "2026-07-11T10:00:09.000Z",
+    "completed_at": "2026-07-11T10:00:09.000Z"
+  }
+}
+```
+
+## Rename, Archive, Delete
+
+- `PATCH /v1/email-blasts/{blastId}` updates `name` and/or `description`.
+- `POST /v1/email-blasts/{blastId}/archive` archives a blast that is not mid-send.
+- `DELETE /v1/email-blasts/{blastId}` deletes it and returns `{"blast_id": "...", "deleted": true}`. Scheduled blasts must be unscheduled first, and archived blasts cannot be deleted.
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid JSON body or field validation failure |
+| `400 Bad Request` | The ID belongs to a triggered flow, not a blast (`campaign_not_blast`) |
+| `400 Bad Request` | Blast is not ready to schedule or send (`campaign_not_ready`, with `approval_readiness` details) |
+| `400 Bad Request` | `scheduled_at` is in the past (`campaign_schedule_in_past`) |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | Blast does not exist in the workspace (`campaign_not_found`) |
+| `409 Conflict` | Audience or email edited outside `draft` status (`campaign_not_editable`) |
+| `409 Conflict` | Invalid lifecycle transition, e.g. unscheduling a blast that is not scheduled (`campaign_invalid_state_transition`) |
+| `409 Conflict` | Deleting a scheduled or archived blast (`campaign_not_deletable`) |
+
+<Card
+  title="Next: Manage Triggered Flows"
+  icon="arrow-right"
+  href="/api-reference/managing-triggered-flows"
+>
+  Automate multi-step email journeys that enroll contacts on triggers.
+</Card>

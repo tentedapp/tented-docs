@@ -1,0 +1,387 @@
+---
+title: "Managing Triggered Flows"
+description: "Build, activate, and monitor automated multi-step email journeys through the public API."
+---
+
+## Endpoints
+
+```bash
+GET    /v1/email-flows
+POST   /v1/email-flows
+GET    /v1/email-flows/{flowId}
+PATCH  /v1/email-flows/{flowId}
+DELETE /v1/email-flows/{flowId}
+PUT    /v1/email-flows/{flowId}/triggers
+PUT    /v1/email-flows/{flowId}/steps
+POST   /v1/email-flows/{flowId}/steps
+PATCH  /v1/email-flows/{flowId}/steps/{stepId}
+DELETE /v1/email-flows/{flowId}/steps/{stepId}
+PUT    /v1/email-flows/{flowId}/steps/{stepId}/email
+POST   /v1/email-flows/{flowId}/activate
+POST   /v1/email-flows/{flowId}/pause
+POST   /v1/email-flows/{flowId}/archive
+POST   /v1/email-flows/{flowId}/contacts/{contactId}
+DELETE /v1/email-flows/{flowId}/contacts/{contactId}
+GET    /v1/email-flows/{flowId}/members
+GET    /v1/email-flows/{flowId}/members/{membershipId}
+```
+
+A triggered flow enrolls contacts when they match a **trigger** and moves them through a graph of **steps** — sending emails, waiting, branching, updating fields. See the [Triggered Flows guide](/email/triggered-flows) for the concepts; this page covers the API surface.
+
+Flow `status` is `draft`, `active`, `paused`, or `archived`. Structure (triggers, steps, reentry policy) is only editable while the flow is a `draft` or `paused` — pause an active flow before changing it, then reactivate.
+
+<Info>
+  Drafts may be incomplete. Step and trigger *format* is validated on every write, but *completeness* (a `send_email` step without an email, a trigger without its list) is only enforced when you activate. Activation failures return the missing pieces.
+</Info>
+
+## Create a Flow
+
+```bash
+POST /v1/email-flows
+```
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | `string` | Yes | Internal display name, `1`-`200` characters |
+| `description` | `string \| null` | No | Maximum `1000` characters |
+| `reentry_policy` | `string` | No | `allow` (default) lets contacts re-enter after exiting; `no_reentry` runs each contact at most once |
+| `triggers` | `array` | No | Entry triggers, maximum `25` |
+| `steps` | `array` | No | Step list, maximum `100` steps |
+| `disqualification_rules` | `object \| null` | No | Contacts matching this rule tree are dropped from the flow. Same rule format as [blast audiences](/api-reference/managing-email-blasts#audience-rules); `email_step` conditions are not allowed here |
+| `settings` | `object` | No | Free-form settings blob, maximum `16 KB` |
+
+Triggers and steps can be supplied here or configured incrementally before activation.
+
+### Request Example
+
+A welcome series — send an email, wait three days, then follow up only if the first email wasn't opened:
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/email-flows \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Welcome series",
+    "reentry_policy": "no_reentry",
+    "triggers": [
+      {"type": "added_to_static_list", "list_id": "11111111-1111-4111-8111-111111111111"}
+    ],
+    "steps": [
+      {
+        "step_id": "send-welcome",
+        "type": "send_email",
+        "email_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+        "next_step_id": "wait-3-days"
+      },
+      {
+        "step_id": "wait-3-days",
+        "type": "wait",
+        "duration_amount": 3,
+        "duration_unit": "days",
+        "next_step_id": "check-opened"
+      },
+      {
+        "step_id": "check-opened",
+        "type": "condition_check",
+        "condition": {
+          "kind": "group",
+          "operator": "and",
+          "conditions": [
+            {"kind": "condition", "source": "email_step", "nodeId": "send-welcome", "metric": "opened", "operator": "has_activity"}
+          ]
+        },
+        "false_step_id": "send-followup"
+      },
+      {
+        "step_id": "send-followup",
+        "type": "send_email",
+        "email_id": "a3d1b2c4-5e6f-4a7b-8c9d-0e1f2a3b4c5d"
+      }
+    ]
+  }'
+```
+
+Members who open the welcome email exit at `check-opened` (its true branch has no edge); everyone else gets the follow-up.
+
+### Response Example
+
+`201 Created` with the flow object. All flow and step endpoints on this page return this same shape, except the member endpoints:
+
+```json
+{
+  "flow_id": "7c1b9e2a-4f3d-4b6a-9e8c-2d5f7a1b3c4e",
+  "type": "triggered_flow",
+  "name": "Welcome series",
+  "description": null,
+  "status": "draft",
+  "triggers": [
+    {"type": "added_to_static_list", "list_id": "11111111-1111-4111-8111-111111111111"}
+  ],
+  "steps": [
+    {"step_id": "send-welcome", "type": "send_email", "email_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1", "next_step_id": "wait-3-days"},
+    {"step_id": "wait-3-days", "type": "wait", "duration_amount": 3, "duration_unit": "days", "next_step_id": "check-opened"},
+    {
+      "step_id": "check-opened",
+      "type": "condition_check",
+      "condition": {
+        "kind": "group",
+        "operator": "and",
+        "conditions": [
+          {"kind": "condition", "source": "email_step", "nodeId": "send-welcome", "metric": "opened", "operator": "has_activity"}
+        ]
+      },
+      "false_step_id": "send-followup"
+    },
+    {"step_id": "send-followup", "type": "send_email", "email_id": "a3d1b2c4-5e6f-4a7b-8c9d-0e1f2a3b4c5d"}
+  ],
+  "disqualification_rules": null,
+  "reentry_policy": "no_reentry",
+  "manual_membership_enabled": true,
+  "settings": {},
+  "details": {
+    "total_entered": 0,
+    "active_count": 0,
+    "waiting_count": 0,
+    "completed_count": 0,
+    "dropped_count": 0,
+    "most_recent_entry_at": null
+  },
+  "archived_at": null,
+  "created_at": "2026-07-02T09:00:00.000Z",
+  "updated_at": "2026-07-02T09:00:00.000Z"
+}
+```
+
+## Triggers
+
+A flow can have up to `25` triggers; a contact entering via any of them joins the flow, subject to the reentry policy. Each trigger is an object discriminated on `type`:
+
+| Type | Configuration |
+| --- | --- |
+| `added_to_static_list` | `list_id` — fires when a contact is added to that static list |
+| `removed_from_static_list` | `list_id` — fires when a contact is removed from that static list |
+| `contact_created` | None — fires for every newly created contact |
+| `contact_updated` | `field` (standard camelCase key or custom field `api_name`), optional `operator` + `value` to filter on the new value. `changed` fires on any change |
+| `date_based` | `field` (`createdAt` or an active custom date field), `mode` (`on_date`, `before_date` + `days_before`, or `after_date` + `days_after`), optional `include_anniversaries`, `trigger_time` (`"HH:00"` or `"HH:30"`, default `"09:00"`), `timezone` (IANA, default `"UTC"`) |
+| `form_submitted` | `tent_id` + `form_id` — fires when a contact submits that form |
+
+Replace the full trigger list with:
+
+```bash
+PUT /v1/email-flows/{flowId}/triggers
+```
+
+```json
+{
+  "triggers": [
+    {"type": "added_to_static_list", "list_id": "11111111-1111-4111-8111-111111111111"}
+  ]
+}
+```
+
+## Steps
+
+Steps form a graph. Every step needs a unique `step_id` (`1`-`120` characters) and links to the next step through edge fields — `next_step_id` for linear steps, or `true_step_id` / `false_step_id` / `default_step_id` on condition steps. Omitting the edge ends the flow after that step. An optional `label` names the step in the UI and member history.
+
+| Type | Configuration |
+| --- | --- |
+| `send_email` | `email_id` (must be approved before activation), optional `operational` flag |
+| `wait` | Exactly one mode: `duration_amount` + `duration_unit` (`minutes`, `hours`, `days`, `weeks`), `until_date_field` (a contact date field), or `condition` (a rule tree re-evaluated periodically) |
+| `update_contact` | `updates` — an array of `{field, value, write_mode?}` assignments (`overwrite` or `skip_if_filled`), or a single `field` + `value` shorthand |
+| `add_to_list` | `list_id` — must be a static list |
+| `remove_from_list` | `list_id` — must be a static list |
+| `condition_check` | `condition` — a rule tree; branches via `true_step_id` / `false_step_id` / `default_step_id` |
+| `create_tent` | `source` (`scratch` or `template` + `template_id`), `prompt`, `auto_publish`, `custom_page_alias`, `tent_name`. `prompt`, alias, and name support `{{contact.*}}` merge tokens |
+| `send_webhook` | `endpoint_url` (public http(s) only), `method` (`post` default, `put`, `get`), `auth_type` (`none` or `jwt` with `token` or `secret_arn`), `custom_fields` merged into the payload |
+| `drop_from_flow` | None — terminal step that removes the member immediately |
+
+### Condition Rules
+
+`condition_check` and condition-mode `wait` steps take the same rule tree as [blast audiences](/api-reference/managing-email-blasts#audience-rules), plus one extra source that is only legal inside flows: `email_step`, which tests engagement with an earlier `send_email` step.
+
+```json
+{
+  "kind": "group",
+  "operator": "and",
+  "conditions": [
+    {"kind": "condition", "source": "email_step", "nodeId": "send-welcome", "metric": "opened", "operator": "has_activity"}
+  ]
+}
+```
+
+`metric` is one of `sent`, `delivered`, `opened`, `clicked`, `bounced`, or `unsubscribed`, and `nodeId` references the `step_id` of a `send_email` step in the same flow.
+
+### Editing Steps
+
+```bash
+PUT    /v1/email-flows/{flowId}/steps            # replace the full list
+POST   /v1/email-flows/{flowId}/steps            # insert one step
+PATCH  /v1/email-flows/{flowId}/steps/{stepId}   # merge a partial update
+DELETE /v1/email-flows/{flowId}/steps/{stepId}   # delete one step
+```
+
+`PUT` takes `{"steps": [...]}` and replaces the whole list. `POST` inserts one step, wrapped in a `step` key, plus at most one placement selector — `position` (`start` or `end`, default `end`), `before_step_id`, or `after_step_id`:
+
+```json
+{
+  "step": {"step_id": "send-reminder", "type": "send_email", "email_id": "...", "next_step_id": "check-opened"},
+  "after_step_id": "wait-3-days"
+}
+```
+
+Inserting does not rewrite edges — set the `*_step_id` fields yourself to wire the step in. Duplicate step IDs return `409 Conflict` with `error_code: "campaign_flow_duplicate_step_id"`.
+
+`PATCH` also wraps the partial update in a `step` key; only the provided fields are merged onto the existing step, and `step_id` cannot be changed:
+
+```json
+{"step": {"duration_amount": 5, "duration_unit": "days"}}
+```
+
+Deleting a step that other steps still reference fails with `409 Conflict` (`campaign_flow_step_referenced`) unless you pass `repair_edges`:
+
+```json
+{"repair_edges": {"replace_with_step_id": "send-followup"}}
+```
+
+Use `null` as the replacement to detach the dangling edges instead.
+
+### Set a Step's Email
+
+```bash
+PUT /v1/email-flows/{flowId}/steps/{stepId}/email
+```
+
+Only valid for `send_email` steps. Takes the same body as a blast's [Set the Email](/api-reference/managing-email-blasts#set-the-email): `{"source": "existing", "email_id": "..."}` or an inline email seeded from a `template_id`, your own `html`, or a blank branded scaffold. Inline emails start as drafts and must be [approved](/api-reference/managing-emails#approve-and-unapprove) before the flow can activate — the created `email_id` appears on the step in the response.
+
+## Lifecycle
+
+```bash
+POST /v1/email-flows/{flowId}/activate
+POST /v1/email-flows/{flowId}/pause
+POST /v1/email-flows/{flowId}/archive
+```
+
+Activation validates the whole flow. If anything is incomplete, the API returns `400 Bad Request` with `error_code: "campaign_flow_not_ready"` and the missing fields:
+
+```json
+{
+  "error": "Triggered flow is missing required activation fields: flow_nodes.0.email_approval",
+  "error_code": "campaign_flow_not_ready",
+  "details": {
+    "activation_readiness": {
+      "ready": false,
+      "missing": ["flow_nodes.0.email_approval"],
+      "warnings": []
+    }
+  }
+}
+```
+
+Pausing stops new work without dropping members — they resume when you reactivate. Active flows must be paused before archiving or deleting. Triggers fire on new events only; contacts already on a list do not enter an `added_to_static_list` flow retroactively.
+
+## Members
+
+### Add a Contact
+
+```bash
+POST /v1/email-flows/{flowId}/contacts/{contactId}
+```
+
+Manually enrolls a contact into an **active** flow. Optionally pass per-member context that emails and webhooks in this run can reference as `{{campaign.dynamic.<key>}}` merge tokens:
+
+```json
+{"dynamic_context": {"couponCode": "SAVE20"}}
+```
+
+Enrollment respects the flow's rules: `409 Conflict` if the contact is already in the flow (`campaign_flow_already_in_flow`) or blocked by `no_reentry` (`campaign_flow_reentry_denied`), and `400 Bad Request` if disqualification rules match (`campaign_flow_contact_disqualified`).
+
+`201 Created`
+
+```json
+{
+  "membership": {
+    "membership_id": "9e2f4a6b-8c1d-4e3f-a5b7-c9d1e3f5a7b9",
+    "flow_id": "7c1b9e2a-4f3d-4b6a-9e8c-2d5f7a1b3c4e",
+    "contact_id": "22222222-2222-4222-8222-222222222222",
+    "status": "active",
+    "current_step_id": "send-welcome",
+    "waiting_until": null,
+    "entry_source": "public_api",
+    "entered_at": "2026-07-02T10:00:00.000Z",
+    "completed_at": null,
+    "dropped_at": null,
+    "drop_reason": null,
+    "updated_at": "2026-07-02T10:00:00.000Z"
+  }
+}
+```
+
+### Remove a Contact
+
+```bash
+DELETE /v1/email-flows/{flowId}/contacts/{contactId}
+```
+
+Drops the contact's current run. Returns `200 OK` with the updated membership, or `204 No Content` if the contact was not in the flow.
+
+### List Members
+
+```bash
+GET /v1/email-flows/{flowId}/members
+```
+
+| Parameter | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `status` | `string` | `any` | `active`, `waiting`, `completed`, `dropped`, or `any` |
+| `run_status` | `string` | `any` | `in_flow`, `completed`, `failed`, `exited_flow`, or `any` |
+| `entered_from` / `entered_to` | `datetime` | — | Filter by entry time |
+| `exited_from` / `exited_to` | `datetime` | — | Filter by exit time |
+| `page` / `limit` | `number` | `1` / `25` | Page-based pagination, limit `1`-`100` |
+
+Each member entry includes the contact identity, run status, current step, timestamps, and the steps executed so far.
+
+### Run Details
+
+```bash
+GET /v1/email-flows/{flowId}/members/{membershipId}
+```
+
+Returns one member's full run: status, current position, failure info, and a `timeline` of events (entered flow, step executed, email sent/delivered/opened/clicked, dropped) with timestamps.
+
+## List Flows
+
+```bash
+GET /v1/email-flows
+```
+
+Takes the same shape as [listing blasts](/api-reference/managing-email-blasts#list-blasts): `status` (`draft`, `active`, `paused`, `archived`, or `any`), `archived`, `sort_by` (`updated_at`, `created_at`, `name`), `sort_order`, `page`, `limit`, and `search`. Responses contain `flows` and a `pagination` object. Each flow includes aggregate `details` — `total_entered`, `active_count`, `waiting_count`, `completed_count`, `dropped_count`, and `most_recent_entry_at`.
+
+## Update, Archive, Delete
+
+- `PATCH /v1/email-flows/{flowId}` patches `name`, `description`, `reentry_policy`, `triggers`, `steps`, `disqualification_rules`, or `settings`. `triggers` and `steps` are full replacements — use the step endpoints for incremental edits. Setting `disqualification_rules` on an active flow immediately drops current members that match.
+- `POST /v1/email-flows/{flowId}/archive` archives a non-active flow.
+- `DELETE /v1/email-flows/{flowId}` deletes it and returns `{"flow_id": "...", "deleted": true}`. Active flows must be paused first.
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid JSON body, malformed trigger/step/rule config |
+| `400 Bad Request` | The ID belongs to a blast, not a flow (`campaign_not_triggered_flow`) |
+| `400 Bad Request` | Activation with incomplete config (`campaign_flow_not_ready`, with missing fields) |
+| `400 Bad Request` | Contact matches the disqualification rules (`campaign_flow_contact_disqualified`) |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | Flow, step, or membership does not exist (`campaign_not_found`, `campaign_flow_step_not_found`) |
+| `409 Conflict` | Structural edit while the flow is `active` or `archived` (`campaign_not_editable`) |
+| `409 Conflict` | Invalid lifecycle transition (`campaign_invalid_state_transition`) |
+| `409 Conflict` | Duplicate or still-referenced step (`campaign_flow_duplicate_step_id`, `campaign_flow_step_referenced`) |
+| `409 Conflict` | Enrolling into a non-active flow (`campaign_flow_not_active`), a contact already in the flow, or one blocked by `no_reentry` |
+
+<Card
+  title="Back to API Overview"
+  icon="arrow-left"
+  href="/api-reference/introduction"
+>
+  Review the full public API endpoint map.
+</Card>
