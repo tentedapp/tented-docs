@@ -110,6 +110,14 @@
               "api-reference/retrieving-org-analytics",
               "api-reference/managing-contacts"
             ]
+          },
+          {
+            "group": "Email API",
+            "pages": [
+              "api-reference/managing-emails",
+              "api-reference/managing-email-blasts",
+              "api-reference/managing-triggered-flows"
+            ]
           }
         ]
       }

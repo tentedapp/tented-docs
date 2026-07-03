@@ -1,0 +1,277 @@
+---
+title: "Managing Emails"
+description: "Create, generate, edit, and approve reusable emails through the public API."
+---
+
+## Endpoints
+
+```bash
+GET    /v1/emails
+POST   /v1/emails
+GET    /v1/emails/{emailId}
+PATCH  /v1/emails/{emailId}
+DELETE /v1/emails/{emailId}
+GET    /v1/emails/{emailId}/content
+GET    /v1/emails/{emailId}/plain-text
+PUT    /v1/emails/{emailId}/plain-text
+DELETE /v1/emails/{emailId}/plain-text
+POST   /v1/emails/{emailId}/messages
+POST   /v1/emails/{emailId}/save-code
+POST   /v1/emails/{emailId}/approve
+POST   /v1/emails/{emailId}/unapprove
+GET    /v1/emails/{emailId}/generations/{generationId}
+GET    /v1/emails/{emailId}/generations/{generationId}/content
+GET    /v1/emails/{emailId}/generations/{generationId}/plain-text
+```
+
+Emails are the reusable content assets that [blasts](/api-reference/managing-email-blasts) and [triggered flows](/api-reference/managing-triggered-flows) send. Each email starts as a `draft`, accumulates versions as you iterate, and must be **approved** before a blast or flow can use it.
+
+<Info>
+  AI generation is asynchronous. Creating with a `prompt` or posting a message returns `202 Accepted` with a `generation_id`, and you poll the generation endpoint to track progress. Only one generation can run per email at a time.
+</Info>
+
+## Idempotency
+
+`POST /v1/emails`, `POST /v1/emails/{emailId}/messages`, and `POST /v1/emails/{emailId}/save-code` accept an optional `Idempotency-Key` header. Retrying with the same key replays the stored result instead of creating a duplicate. If a request with the same key is still being processed, the API returns `409 Conflict` with `error_code: "idempotency_in_progress"`.
+
+## Create an Email
+
+```bash
+POST /v1/emails
+```
+
+### Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | `string` | Yes | Internal display name, `1`-`200` characters. Not shown to recipients |
+| `prompt` | `string` | No | AI brief, `1`-`10000` characters. When present, content is generated asynchronously |
+| `subject` | `string` | No | Maximum `998` characters. Must be set before approval |
+| `preview_text` | `string \| null` | No | Inbox preheader, maximum `200` characters |
+| `from_name` | `string \| null` | No | Maximum `120` characters. Must be set before approval |
+| `from_address` | `string \| null` | No | Must be set before approval; sending requires a verified domain |
+| `reply_to_email` | `string \| null` | No | Must be set before approval |
+
+Omit `prompt` to create a blank draft scaffolded from your workspace branding (`201 Created`). Include `prompt` to queue an AI generation (`202 Accepted`).
+
+### Request Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/emails \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Welcome email",
+    "prompt": "A warm welcome email for new Acme Analytics signups with a CTA to book a demo",
+    "subject": "Welcome to Acme"
+  }'
+```
+
+### Response Example
+
+`202 Accepted`
+
+```json
+{
+  "email_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "generation_id": "01JZ9GLYFA4L4Y9CBM4H31TT8V",
+  "message_id": "01JZ9GLYFA6H2T0N8W1QG64M3E",
+  "status": "generating"
+}
+```
+
+## Poll a Generation
+
+```bash
+GET /v1/emails/{emailId}/generations/{generationId}
+```
+
+Generation `status` moves through `generating` to `completed` or `failed`. Completed generations include the version they produced and paths to their content:
+
+`200 OK`
+
+```json
+{
+  "generation_id": "01JZ9GLYFA4L4Y9CBM4H31TT8V",
+  "status": "completed",
+  "type": "iteration",
+  "version": 2,
+  "content_path": "/v1/emails/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/generations/01JZ9GLYFA4L4Y9CBM4H31TT8V/content",
+  "plain_text_path": "/v1/emails/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/generations/01JZ9GLYFA4L4Y9CBM4H31TT8V/plain-text",
+  "plain_text_source": "auto",
+  "created_at": "2026-07-01T12:00:00.000Z",
+  "completed_at": "2026-07-01T12:00:41.000Z"
+}
+```
+
+Failed generations return `error_code: "generation_failed"` and an `error_message` instead.
+
+## Retrieve an Email
+
+```bash
+GET /v1/emails/{emailId}
+```
+
+`200 OK`
+
+```json
+{
+  "email_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "name": "Welcome email",
+  "status": "draft",
+  "subject": "Welcome to Acme",
+  "preview_text": null,
+  "from_name": "Acme",
+  "from_address": "hello@acme.com",
+  "reply_to_email": "support@acme.com",
+  "current_version": 2,
+  "approved_version": null,
+  "number_of_iterations": 2,
+  "plain_text_overridden": false,
+  "plain_text_overridden_at": null,
+  "plain_text_stale_after_html_iteration": false,
+  "created_at": "2026-07-01T12:00:00.000Z",
+  "updated_at": "2026-07-01T12:00:41.000Z",
+  "created_by_name": "tented-api",
+  "latest_generation_status": "completed",
+  "content_path": "/v1/emails/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/content",
+  "plain_text_path": "/v1/emails/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/plain-text"
+}
+```
+
+`status` is `draft` or `approved`. Creating a blank draft (`201 Created`) and metadata updates return this same shape.
+
+## Read Content
+
+```bash
+GET /v1/emails/{emailId}/content
+GET /v1/emails/{emailId}/generations/{generationId}/content
+```
+
+Returns the HTML of the latest completed version (or of one specific generation) with a `text/html` content type — not JSON.
+
+## Plain Text
+
+```bash
+GET    /v1/emails/{emailId}/plain-text
+PUT    /v1/emails/{emailId}/plain-text
+DELETE /v1/emails/{emailId}/plain-text
+```
+
+Every completed generation carries a plain-text alternative derived from its HTML. `GET` returns it; `PUT` overrides it with your own text; `DELETE` reverts to the auto-derived version. All three return the same shape:
+
+`200 OK`
+
+```json
+{
+  "email_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "generation_id": "01JZ9GLYFA4L4Y9CBM4H31TT8V",
+  "version": 2,
+  "content": "Welcome to Acme...",
+  "overridden": true,
+  "stale_after_html_iteration": false,
+  "plain_text_source": "override"
+}
+```
+
+### PUT Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `content` | `string` | Yes | Plain-text body, up to `1 MB`. An empty string clears it |
+
+`PUT` and `DELETE` require a completed generation to exist, otherwise they return `400 Bad Request`. `stale_after_html_iteration` flips to `true` when the HTML is iterated after an override — a signal to review or revert your custom plain text. The generation-scoped `GET /v1/emails/{emailId}/generations/{generationId}/plain-text` returns the same shape without the override flags.
+
+## Iterate With AI
+
+```bash
+POST /v1/emails/{emailId}/messages
+```
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `prompt` | `string` | Yes | Edit instruction against the current HTML, `1`-`10000` characters |
+| `asset_ids` | `string[]` | No | Email asset IDs to make available to the generation |
+
+Returns `202 Accepted` with a `generation_id` to poll. Starting a second generation while one is running returns `409 Conflict` with `error_code: "generation_in_progress"`.
+
+## Save Code Directly
+
+```bash
+POST /v1/emails/{emailId}/save-code
+```
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `code` | `string` | Yes | Full replacement HTML body, up to `2 MB` |
+
+Creates a new version synchronously and returns `200 OK` with the new `generation_id` and `version`. Unlike an AI iteration, saving code does not unapprove an approved email. Blocked while a generation is running.
+
+## Update Metadata
+
+```bash
+PATCH /v1/emails/{emailId}
+```
+
+Accepts the same optional fields as create except `prompt`: `name`, `subject`, `preview_text`, `from_name`, `from_address`, `reply_to_email`. Omit a field to leave it unchanged; pass `null` to clear nullable fields. Updating `preview_text` rewrites the preheader in the current HTML in place without creating a new version.
+
+## Approve and Unapprove
+
+```bash
+POST /v1/emails/{emailId}/approve
+POST /v1/emails/{emailId}/unapprove
+```
+
+Approving marks the email's current version usable by blasts and flows. It requires `subject`, `from_name`, `from_address`, and `reply_to_email` to be populated; otherwise the API returns `400 Bad Request` with `error_code: "email_missing_required_headers"`.
+
+Optionally send `{"version": <n>}` as an optimistic-concurrency precondition — a mismatch with the current version returns `409 Conflict` with `error_code: "approval_version_stale"`.
+
+Unapproving is rejected while the email is scheduled in a blast (`email_in_scheduled_blast`) or used by an active flow (`email_in_active_flow`).
+
+## List Emails
+
+```bash
+GET /v1/emails
+```
+
+### Query Parameters
+
+| Parameter | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `status` | `string` | `any` | `any`, `draft`, or `approved` |
+| `sort_by` | `string` | `updated_at` | `updated_at`, `created_at`, or `name`. Only applies when `status=any` |
+| `sort_order` | `string` | `desc` | `asc` or `desc` |
+| `limit` | `number` | `25` | Page size, `1`-`100` |
+| `cursor` | `string` | — | `next_cursor` from a previous response |
+
+Responses contain `emails` and `next_cursor`. An absent `next_cursor` means the list is exhausted. List items are the email object minus `latest_generation_status` and the `content_path` / `plain_text_path` fields — lists never inline HTML; fetch it per email via `GET /v1/emails/{emailId}/content`.
+
+## Delete an Email
+
+```bash
+DELETE /v1/emails/{emailId}
+```
+
+Returns `200 OK` with `{"email_id": "...", "deleted": true}`. Deletion is blocked with `409 Conflict` while the email is scheduled in a blast (`email_in_scheduled_blast`) or used by an active flow (`email_in_active_flow`).
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid JSON body or field validation failure |
+| `400 Bad Request` | Approval attempted with missing sender headers (`email_missing_required_headers`) |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | Email or generation does not exist in the workspace |
+| `409 Conflict` | A generation is already running (`generation_in_progress`) |
+| `409 Conflict` | Approval version precondition failed (`approval_version_stale`) |
+| `409 Conflict` | Email is in use by a scheduled blast or active flow |
+| `409 Conflict` | Same `Idempotency-Key` still processing (`idempotency_in_progress`) |
+
+<Card
+  title="Next: Manage Email Blasts"
+  icon="arrow-right"
+  href="/api-reference/managing-email-blasts"
+>
+  Send an approved email to an audience as a one-time blast.
+</Card>
