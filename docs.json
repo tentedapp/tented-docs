@@ -53,6 +53,7 @@
               "email/creating-emails",
               "email/personalization",
               "email/email-templates",
+              "email/sample-emails",
               "email/email-blasts",
               "email/triggered-flows"
             ]
