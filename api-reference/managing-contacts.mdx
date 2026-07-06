@@ -1,22 +1,123 @@
 ---
 title: "Managing Contacts"
-description: "Create, update, and delete contacts through the public API in batches of up to 25 records."
+description: "Look up, create, update, and delete contacts through the public API in batches of up to 25 records."
 ---
 
 ## Endpoints
 
 ```bash
+GET /v1/contacts
+GET /v1/contacts/{contact_id}
 POST /v1/contacts
 POST /v1/contacts/update
 POST /v1/contacts/delete
 DELETE /v1/contacts
 ```
 
-Use these endpoints to sync CRM contacts from external systems. Each request accepts an `items` array with up to `25` records.
+Use these endpoints to sync CRM contacts from external systems. Each write request accepts an `items` array with up to `25` records.
 
 <Info>
   Contact writes support partial success. Tented processes each item independently and returns accepted or rejected results in request order.
 </Info>
+
+## Look Up Contacts
+
+```bash
+GET /v1/contacts
+```
+
+Find a single contact by identifier. At least one of `email` or `phone` is required — this endpoint is a lookup, not a full listing.
+
+### Query Parameters
+
+| Parameter | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `email` | `string` | Conditionally | Either `email` or `phone` is required. Matched on the normalized value. |
+| `phone` | `string` | Conditionally | Either `email` or `phone` is required. Matched on the normalized value. |
+
+## Lookup Request Example
+
+```bash
+curl --request GET \
+  --url 'https://api.tented.ai/v1/contacts?email=jane%40example.com' \
+  --header 'Authorization: Bearer tented_your_api_key'
+```
+
+## Lookup Response Example
+
+Returns `items` with the matching contact, or an empty array when no contact matches. `custom_fields` is keyed by each custom field's API name.
+
+```json
+{
+  "items": [
+    {
+      "contact_id": "11111111-1111-4111-8111-111111111111",
+      "display_name": "Jane Doe",
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "email": "jane@example.com",
+      "phone": null,
+      "company": "Acme",
+      "job_title": "CEO",
+      "original_source": "Public API",
+      "lifecycle_stage": "subscriber",
+      "unsubscribed": false,
+      "custom_fields": {
+        "favorite_color": "Green"
+      },
+      "created_at": "2026-04-30T12:00:00.000Z",
+      "updated_at": "2026-04-30T12:00:00.000Z"
+    }
+  ]
+}
+```
+
+## Get a Contact
+
+```bash
+GET /v1/contacts/{contact_id}
+```
+
+Fetch a single contact by its ID — the `contact_id` returned by create, update, and lookup responses.
+
+### Path Parameters
+
+| Parameter | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `contact_id` | `uuid` | Yes | Returns `404` when no contact matches, `400` when malformed |
+
+## Get Request Example
+
+```bash
+curl --request GET \
+  --url 'https://api.tented.ai/v1/contacts/11111111-1111-4111-8111-111111111111' \
+  --header 'Authorization: Bearer tented_your_api_key'
+```
+
+## Get Response Example
+
+Returns the contact object directly, including `custom_fields` keyed by each custom field's API name — the same shape as a lookup item.
+
+```json
+{
+  "contact_id": "11111111-1111-4111-8111-111111111111",
+  "display_name": "Jane Doe",
+  "first_name": "Jane",
+  "last_name": "Doe",
+  "email": "jane@example.com",
+  "phone": null,
+  "company": "Acme",
+  "job_title": "CEO",
+  "original_source": "Public API",
+  "lifecycle_stage": "subscriber",
+  "unsubscribed": false,
+  "custom_fields": {
+    "favorite_color": "Green"
+  },
+  "created_at": "2026-04-30T12:00:00.000Z",
+  "updated_at": "2026-04-30T12:00:00.000Z"
+}
+```
 
 ## Create Contacts
 
