@@ -1,0 +1,151 @@
+---
+title: "Creating Emails"
+description: "Create an email from an AI prompt, an approved template, or a blank scaffold, then poll the generation and read the HTML through the public API."
+---
+
+## Endpoints
+
+```bash
+POST /v1/emails
+GET  /v1/emails/{emailId}/generations/{generationId}
+GET  /v1/emails/{emailId}/content
+GET  /v1/emails/{emailId}/generations/{generationId}/content
+```
+
+Emails are the reusable content assets that [blasts](/api-reference/managing-email-blasts) and [triggered flows](/api-reference/managing-triggered-flows) send. Each email starts as a `draft`, accumulates versions as you [iterate](/api-reference/editing-emails), and must be [**approved**](/api-reference/approving-emails) before a blast or flow can use it.
+
+<Info>
+  AI generation is asynchronous. Creating with a `prompt` returns `202 Accepted` with a `generation_id`, and you poll the generation endpoint to track progress. Only one generation can run per email at a time.
+</Info>
+
+## Idempotency
+
+`POST /v1/emails` accepts an optional `Idempotency-Key` header. Retrying with the same key replays the stored result instead of creating a duplicate email. If a request with the same key is still being processed, the API returns `409 Conflict` with `error_code: "idempotency_in_progress"`. The same header works on the [editing endpoints](/api-reference/editing-emails#idempotency).
+
+## Create an Email
+
+```bash
+POST /v1/emails
+```
+
+### Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | `string` | Yes | Internal display name, `1`-`200` characters. Not shown to recipients |
+| `prompt` | `string` | No | AI brief, `1`-`10000` characters. When present, content is generated asynchronously |
+| `template_id` | `string` | No | Seed content and sender defaults from an approved [email template](/api-reference/managing-email-templates) |
+| `token_data` | `object` | No | Structured data available to the generation as tokens. Requires `prompt` or `template_id` |
+| `subject` | `string` | No | Maximum `998` characters. Must be set before approval |
+| `preview_text` | `string \| null` | No | Inbox preheader, maximum `200` characters |
+| `from_name` | `string \| null` | No | Maximum `120` characters. Must be set before approval |
+| `from_address` | `string \| null` | No | Must be set before approval; sending requires a verified domain |
+| `reply_to_email` | `string \| null` | No | Must be set before approval |
+
+Include `prompt` to queue an AI generation (`202 Accepted`). Without a `prompt`, the email is created immediately (`201 Created`) — seeded from an approved template when `template_id` is present, or as a blank draft scaffolded from your workspace branding.
+
+### Request Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/emails \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Welcome email",
+    "prompt": "A warm welcome email for new Acme Analytics signups with a CTA to book a demo",
+    "subject": "Welcome to Acme"
+  }'
+```
+
+### Response Example
+
+`202 Accepted`
+
+```json
+{
+  "email_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "generation_id": "01JZ9GLYFA4L4Y9CBM4H31TT8V",
+  "message_id": "01JZ9GLYFA6H2T0N8W1QG64M3E",
+  "status": "generating"
+}
+```
+
+## Create From a Template
+
+Pass `template_id` to start from an approved [email template](/api-reference/managing-email-templates) instead of a prompt or a blank scaffold:
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/emails \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "July newsletter",
+    "template_id": "7c3f0a4e-91d2-4a8f-b344-2f6f6f0a1b9d"
+  }'
+```
+
+When `template_id` is present:
+
+- The template must exist in the same workspace and be **approved**
+- The template's HTML is copied into the new email
+- The template's `default_subject`, `default_preview_text`, `default_from_name`, `default_from_address`, and `default_reply_to_email` are inherited as the email's sender headers
+
+Template-seeded creates without a `prompt` return `201 Created` with the [email object](/api-reference/approving-emails#retrieve-an-email).
+
+## Start From Your Own HTML
+
+`POST /v1/emails` does not accept raw HTML directly. To start from your own code, create a blank draft (omit `prompt` and `template_id`), then replace its content with [`POST /v1/emails/{emailId}/save-code`](/api-reference/editing-emails#save-code-directly) — up to `2 MB` of HTML. Blasts can also create an inline email seeded from your own `html` when [setting the blast's email](/api-reference/managing-email-blasts#set-the-email).
+
+## Poll a Generation
+
+```bash
+GET /v1/emails/{emailId}/generations/{generationId}
+```
+
+Generation `status` moves through `generating` to `completed` or `failed`. Completed generations include the version they produced and paths to their content:
+
+`200 OK`
+
+```json
+{
+  "generation_id": "01JZ9GLYFA4L4Y9CBM4H31TT8V",
+  "status": "completed",
+  "type": "iteration",
+  "version": 2,
+  "content_path": "/v1/emails/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/generations/01JZ9GLYFA4L4Y9CBM4H31TT8V/content",
+  "plain_text_path": "/v1/emails/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/generations/01JZ9GLYFA4L4Y9CBM4H31TT8V/plain-text",
+  "plain_text_source": "auto",
+  "created_at": "2026-07-01T12:00:00.000Z",
+  "completed_at": "2026-07-01T12:00:41.000Z"
+}
+```
+
+Failed generations return `error_code: "generation_failed"` and an `error_message` instead.
+
+## Read Content
+
+```bash
+GET /v1/emails/{emailId}/content
+GET /v1/emails/{emailId}/generations/{generationId}/content
+```
+
+Returns the HTML of the latest completed version (or of one specific generation) with a `text/html` content type — not JSON.
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid JSON body or field validation failure |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | Email or generation does not exist in the workspace |
+| `409 Conflict` | Same `Idempotency-Key` still processing (`idempotency_in_progress`) |
+
+<Card
+  title="Next: Edit Emails"
+  icon="arrow-right"
+  href="/api-reference/editing-emails"
+>
+  Iterate with AI, save your own HTML, and manage the plain-text alternative.
+</Card>

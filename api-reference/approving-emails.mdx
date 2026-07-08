@@ -1,0 +1,109 @@
+---
+title: "Approving & Managing Emails"
+description: "Approve an email for sending, then list, retrieve, and delete emails through the public API."
+---
+
+## Endpoints
+
+```bash
+POST   /v1/emails/{emailId}/approve
+POST   /v1/emails/{emailId}/unapprove
+GET    /v1/emails
+GET    /v1/emails/{emailId}
+DELETE /v1/emails/{emailId}
+```
+
+An email must be **approved** before [blasts](/api-reference/managing-email-blasts) and [triggered flows](/api-reference/managing-triggered-flows) can use it. Approval also gates deletion and unapproval: an email attached to a scheduled blast or an active flow cannot be unapproved or deleted.
+
+## Approve and Unapprove
+
+```bash
+POST /v1/emails/{emailId}/approve
+POST /v1/emails/{emailId}/unapprove
+```
+
+Approving marks the email's current version usable by blasts and flows. It requires `subject`, `from_name`, `from_address`, and `reply_to_email` to be populated; otherwise the API returns `400 Bad Request` with `error_code: "email_missing_required_headers"`. Set the missing headers via [`PATCH /v1/emails/{emailId}`](/api-reference/editing-emails#update-metadata) before retrying.
+
+Optionally send `{"version": <n>}` as an optimistic-concurrency precondition — a mismatch with the current version returns `409 Conflict` with `error_code: "approval_version_stale"`.
+
+Unapproving is rejected while the email is scheduled in a blast (`email_in_scheduled_blast`) or used by an active flow (`email_in_active_flow`).
+
+## List Emails
+
+```bash
+GET /v1/emails
+```
+
+### Query Parameters
+
+| Parameter | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `status` | `string` | `any` | `any`, `draft`, or `approved` |
+| `sort_by` | `string` | `updated_at` | `updated_at`, `created_at`, or `name`. Only applies when `status=any` |
+| `sort_order` | `string` | `desc` | `asc` or `desc` |
+| `limit` | `number` | `25` | Page size, `1`-`100` |
+| `cursor` | `string` | — | `next_cursor` from a previous response |
+
+Responses contain `emails` and `next_cursor`. An absent `next_cursor` means the list is exhausted. List items are the [email object](#retrieve-an-email) minus `latest_generation_status` and the `content_path` / `plain_text_path` fields — lists never inline HTML; fetch it per email via [`GET /v1/emails/{emailId}/content`](/api-reference/creating-emails#read-content).
+
+## Retrieve an Email
+
+```bash
+GET /v1/emails/{emailId}
+```
+
+`200 OK`
+
+```json
+{
+  "email_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "name": "Welcome email",
+  "status": "draft",
+  "subject": "Welcome to Acme",
+  "preview_text": null,
+  "from_name": "Acme",
+  "from_address": "hello@acme.com",
+  "reply_to_email": "support@acme.com",
+  "current_version": 2,
+  "approved_version": null,
+  "number_of_iterations": 2,
+  "plain_text_overridden": false,
+  "plain_text_overridden_at": null,
+  "plain_text_stale_after_html_iteration": false,
+  "created_at": "2026-07-01T12:00:00.000Z",
+  "updated_at": "2026-07-01T12:00:41.000Z",
+  "created_by_name": "tented-api",
+  "latest_generation_status": "completed",
+  "content_path": "/v1/emails/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/content",
+  "plain_text_path": "/v1/emails/f11ef3cf-8664-4fe5-a261-c5b4d647b7d1/plain-text"
+}
+```
+
+`status` is `draft` or `approved`. [Creating a blank draft](/api-reference/creating-emails#create-an-email) (`201 Created`) and [metadata updates](/api-reference/editing-emails#update-metadata) return this same shape.
+
+## Delete an Email
+
+```bash
+DELETE /v1/emails/{emailId}
+```
+
+Returns `200 OK` with `{"email_id": "...", "deleted": true}`. Deletion is blocked with `409 Conflict` while the email is scheduled in a blast (`email_in_scheduled_blast`) or used by an active flow (`email_in_active_flow`).
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid JSON body or field validation failure |
+| `400 Bad Request` | Approval attempted with missing sender headers (`email_missing_required_headers`) |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | Email does not exist in the workspace |
+| `409 Conflict` | Approval version precondition failed (`approval_version_stale`) |
+| `409 Conflict` | Email is in use by a scheduled blast or active flow |
+
+<Card
+  title="Next: Manage Email Blasts"
+  icon="arrow-right"
+  href="/api-reference/managing-email-blasts"
+>
+  Send an approved email to an audience as a one-time blast.
+</Card>

@@ -128,7 +128,7 @@ Reference an existing email with `{"source": "existing", "email_id": "..."}`, or
 Omit both `template_id` and `html` for a blank branded scaffold. Returns `200 OK` with the updated [blast object](#blast-object).
 
 <Info>
-  The attached email must be **approved** before the blast can be scheduled or sent. Inline emails start as drafts — take the `email.email_id` from the response and approve it via [`POST /v1/emails/{emailId}/approve`](/api-reference/managing-emails#approve-and-unapprove).
+  The attached email must be **approved** before the blast can be scheduled or sent. Inline emails start as drafts — take the `email.email_id` from the response and approve it via [`POST /v1/emails/{emailId}/approve`](/api-reference/approving-emails#approve-and-unapprove).
 </Info>
 
 ## Approval Readiness
