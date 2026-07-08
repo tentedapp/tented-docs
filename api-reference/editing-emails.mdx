@@ -1,0 +1,110 @@
+---
+title: "Editing Emails"
+description: "Iterate on an email with AI, save HTML directly, update metadata, and manage the plain-text alternative through the public API."
+---
+
+## Endpoints
+
+```bash
+POST   /v1/emails/{emailId}/messages
+POST   /v1/emails/{emailId}/save-code
+PATCH  /v1/emails/{emailId}
+GET    /v1/emails/{emailId}/plain-text
+PUT    /v1/emails/{emailId}/plain-text
+DELETE /v1/emails/{emailId}/plain-text
+GET    /v1/emails/{emailId}/generations/{generationId}/plain-text
+```
+
+Every change to an email's HTML — an AI iteration or a direct code save — creates a new version on the email.
+
+<Info>
+  AI iteration is asynchronous. Posting a message returns `202 Accepted` with a `generation_id`, and you [poll the generation](/api-reference/creating-emails#poll-a-generation) to track progress. Only one generation can run per email at a time.
+</Info>
+
+## Idempotency
+
+`POST /v1/emails/{emailId}/messages` and `POST /v1/emails/{emailId}/save-code` accept an optional `Idempotency-Key` header. Retrying with the same key replays the stored result instead of creating a duplicate version. If a request with the same key is still being processed, the API returns `409 Conflict` with `error_code: "idempotency_in_progress"`.
+
+## Iterate With AI
+
+```bash
+POST /v1/emails/{emailId}/messages
+```
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `prompt` | `string` | Yes | Edit instruction against the current HTML, `1`-`10000` characters |
+| `asset_ids` | `string[]` | No | Email asset IDs to make available to the generation |
+
+Returns `202 Accepted` with a `generation_id` to [poll](/api-reference/creating-emails#poll-a-generation). Starting a second generation while one is running returns `409 Conflict` with `error_code: "generation_in_progress"`.
+
+## Save Code Directly
+
+```bash
+POST /v1/emails/{emailId}/save-code
+```
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `code` | `string` | Yes | Full replacement HTML body, up to `2 MB` |
+
+Creates a new version synchronously and returns `200 OK` with the new `generation_id` and `version`. Unlike an AI iteration, saving code does not unapprove an approved email. Blocked while a generation is running.
+
+## Update Metadata
+
+```bash
+PATCH /v1/emails/{emailId}
+```
+
+Accepts the same optional fields as [create](/api-reference/creating-emails#create-an-email) except `prompt`: `name`, `subject`, `preview_text`, `from_name`, `from_address`, `reply_to_email`. Omit a field to leave it unchanged; pass `null` to clear nullable fields. Updating `preview_text` rewrites the preheader in the current HTML in place without creating a new version.
+
+## Plain Text
+
+```bash
+GET    /v1/emails/{emailId}/plain-text
+PUT    /v1/emails/{emailId}/plain-text
+DELETE /v1/emails/{emailId}/plain-text
+```
+
+Every completed generation carries a plain-text alternative derived from its HTML. `GET` returns it; `PUT` overrides it with your own text; `DELETE` reverts to the auto-derived version. All three return the same shape:
+
+`200 OK`
+
+```json
+{
+  "email_id": "f11ef3cf-8664-4fe5-a261-c5b4d647b7d1",
+  "generation_id": "01JZ9GLYFA4L4Y9CBM4H31TT8V",
+  "version": 2,
+  "content": "Welcome to Acme...",
+  "overridden": true,
+  "stale_after_html_iteration": false,
+  "plain_text_source": "override"
+}
+```
+
+### PUT Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `content` | `string` | Yes | Plain-text body, up to `1 MB`. An empty string clears it |
+
+`PUT` and `DELETE` require a completed generation to exist, otherwise they return `400 Bad Request`. `stale_after_html_iteration` flips to `true` when the HTML is iterated after an override — a signal to review or revert your custom plain text. The generation-scoped `GET /v1/emails/{emailId}/generations/{generationId}/plain-text` returns the same shape without the override flags.
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid JSON body or field validation failure |
+| `400 Bad Request` | Plain-text override or revert without a completed generation |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | Email or generation does not exist in the workspace |
+| `409 Conflict` | A generation is already running (`generation_in_progress`) |
+| `409 Conflict` | Same `Idempotency-Key` still processing (`idempotency_in_progress`) |
+
+<Card
+  title="Next: Approve & Manage Emails"
+  icon="arrow-right"
+  href="/api-reference/approving-emails"
+>
+  Approve the email for sending, then list, retrieve, and delete emails.
+</Card>

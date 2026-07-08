@@ -1,0 +1,119 @@
+---
+title: "Importing Contacts"
+description: "Bulk-import contacts from a CSV file or inline JSON rows, with column mapping, dedupe control, and per-row results."
+---
+
+## Endpoints
+
+```bash
+POST /v1/contacts/imports
+POST /v1/contacts/imports/{session_id}/preview
+POST /v1/contacts/imports/{session_id}/execute
+GET  /v1/contacts/imports/{import_run_id}
+GET  /v1/contacts/imports/{import_run_id}/results
+GET  /v1/contacts/imports/{import_run_id}/export
+```
+
+Imports run asynchronously: start a session (upload a CSV or send rows inline), optionally preview the detected column mappings, execute, then poll the run until it completes. Every row gets an individually reported outcome.
+
+<Info>
+  For small synchronous batches (up to 100 records), use [`POST /v1/contacts/upsert`](/api-reference/managing-contacts) instead. Imports shine for large files, dedupe control, and auditable per-row results.
+</Info>
+
+## Start an Import
+
+```bash
+POST /v1/contacts/imports
+```
+
+Two mutually exclusive modes, selected by `source`:
+
+### Upload mode
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `source` | `"upload"` | Yes | Requests a presigned upload URL |
+| `file_name` | `string` | Yes | Original CSV file name |
+| `content_type` | `string` | No | Defaults to `text/csv` |
+
+Returns an `import_session_id` plus a presigned S3 `upload_url` (valid for 1 hour) — `PUT` your CSV bytes directly to it, then continue to preview/execute.
+
+### Inline rows mode
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `source` | `"rows"` | Yes | Send data inline, no file handling |
+| `file_name` | `string` | No | Label used in run history |
+| `rows` | `array` | Yes | Up to `1000` objects; keys become column headers |
+
+Request bodies are capped at **5 MB**. Larger datasets should use upload mode.
+
+```bash
+curl --request POST \
+  --url 'https://api.tented.ai/v1/contacts/imports' \
+  --header 'Authorization: Bearer tented_your_api_key' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "source": "rows",
+    "file_name": "crm-sync.json",
+    "rows": [
+      {"Email": "jane@example.com", "First Name": "Jane", "Company": "Acme"},
+      {"Email": "sam@example.com", "First Name": "Sam", "Company": "Globex"}
+    ]
+  }'
+```
+
+## Preview an Import
+
+```bash
+POST /v1/contacts/imports/{session_id}/preview
+```
+
+Parses the header plus sample rows and returns auto-detected `mappings` (source header → target field), per-column sample validation `issues`, the org's `available_fields`, and `field_creation_candidates` for unmapped columns. Optional for headless runs — you can pass mappings straight to execute.
+
+## Execute an Import
+
+```bash
+POST /v1/contacts/imports/{session_id}/execute
+```
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `mappings` | `array` | Yes | `{header, target_field, target_kind, overwrite_behavior?}` per column |
+| `duplicate_strategy` | `string` | No | `update` (default) merges into matching contacts; `skip` leaves them untouched |
+| `overwrite_blank_only` | `boolean` | No | When `true`, mapped fields default to filling blanks only |
+| `list_ids` | `array` | No | Static list IDs (≤ 500) every imported contact is added to |
+| `created_field_definition_ids` | `array` | No | Custom fields bulk-created for this session's unmapped columns |
+
+Rows matching an existing contact (normalized email or phone) follow `duplicate_strategy`; per-column `overwrite_behavior` (`overwrite` \| `skip_if_filled`) controls whether filled values are replaced. Returns `202` with an `import_run_id`.
+
+## Poll a Run
+
+```bash
+GET /v1/contacts/imports/{import_run_id}
+```
+
+`status` moves `queued → running → completed | failed`, with `created_count`, `updated_count`, `skipped_count`, `error_count`, and chunk-level progress.
+
+## Per-Row Results
+
+```bash
+GET /v1/contacts/imports/{import_run_id}/results?status=failed&page=1&limit=100
+```
+
+Paginated outcomes (`limit` ≤ 250), filterable by `status` (`created` \| `updated` \| `skipped` \| `failed`); failed rows include `field_issues` with error codes. Row numbers count the header as line 1.
+
+```bash
+GET /v1/contacts/imports/{import_run_id}/export
+```
+
+Streams a CSV of `skipped` and `failed` rows with reasons (`Content-Disposition: attachment`). Use the paginated results endpoint for full result sets.
+
+## Common Errors
+
+| Status | Meaning |
+| --- | --- |
+| `400` | Invalid mappings, unknown target field, or malformed rows |
+| `404` | Unknown `session_id` / `import_run_id` (sessions expire after 24 hours) |
+| `409` | Session already executed |
+| `413` | Inline rows body over 5 MB |

@@ -99,26 +99,53 @@
             "pages": [
               "api-reference/introduction",
               "api-reference/authentication",
-              "api-reference/uploading-assets",
+              "api-reference/usage-logs"
+            ]
+          },
+          {
+            "group": "Tents",
+            "pages": [
               "api-reference/creating-tents",
               "api-reference/editing-tents",
+              "api-reference/uploading-assets",
               "api-reference/publishing-tents",
               "api-reference/unpublishing-tents",
               "api-reference/deleting-tents",
               "api-reference/creating-bulk-tents",
               "api-reference/retrieving-bulk-job-status",
-              "api-reference/retrieving-tent-status",
-              "api-reference/retrieving-tent-analytics",
-              "api-reference/retrieving-org-analytics",
-              "api-reference/managing-contacts"
+              "api-reference/retrieving-tent-status"
             ]
           },
           {
-            "group": "Email API",
+            "group": "Email",
             "pages": [
-              "api-reference/managing-emails",
+              "api-reference/creating-emails",
+              "api-reference/editing-emails",
+              "api-reference/approving-emails",
+              "api-reference/managing-email-templates"
+            ]
+          },
+          {
+            "group": "Contacts & Lists",
+            "pages": [
+              "api-reference/managing-contacts",
+              "api-reference/managing-contact-lists",
+              "api-reference/managing-contact-fields",
+              "api-reference/importing-contacts"
+            ]
+          },
+          {
+            "group": "Campaigns",
+            "pages": [
               "api-reference/managing-email-blasts",
               "api-reference/managing-triggered-flows"
+            ]
+          },
+          {
+            "group": "Analytics",
+            "pages": [
+              "api-reference/retrieving-tent-analytics",
+              "api-reference/retrieving-org-analytics"
             ]
           }
         ]

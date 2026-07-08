@@ -1,0 +1,363 @@
+---
+title: "Dynamic & Static Lists"
+description: "Create static and dynamic contact lists, manage membership, and export members to CSV through the public API."
+---
+
+## Endpoints
+
+```bash
+GET    /v1/contact-lists
+POST   /v1/contact-lists
+GET    /v1/contact-lists/{listId}
+PATCH  /v1/contact-lists/{listId}
+DELETE /v1/contact-lists/{listId}
+GET    /v1/contact-lists/{listId}/contacts
+POST   /v1/contact-lists/{listId}/contacts
+DELETE /v1/contact-lists/{listId}/contacts
+GET    /v1/contact-lists/{listId}/member-count
+POST   /v1/contact-lists/{listId}/export
+GET    /v1/contact-lists/{listId}/export/{exportId}
+```
+
+Contact lists group [contacts](/api-reference/managing-contacts) into audiences for blasts and flows. A list is one of two kinds, chosen at creation:
+
+| Kind | Membership | Editable via member endpoints |
+| --- | --- | --- |
+| `static` | Fixed — you add and remove contacts explicitly | Yes |
+| `dynamic` | Computed continuously from a segment rule tree | No — change the `rules` instead |
+
+<Warning>
+  `kind` is **immutable**. Creating a list requires an explicit choice between `static` and `dynamic`, and there is no way to convert one to the other later.
+</Warning>
+
+You may also see `kind: "system"` on lists auto-managed by the platform. System lists are read-only — editing or deleting one returns `403` with `error_code: "system_list_protected"`.
+
+## List Contact Lists
+
+```bash
+GET /v1/contact-lists
+```
+
+### Query Parameters
+
+| Parameter | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `page` | `integer` | No | 1-based page number, defaults to `1` |
+| `limit` | `integer` | No | Page size `1`-`100`, defaults to `25` |
+| `search` | `string` | No | Case-insensitive name search |
+| `kind` | `string` | No | Filter by `static`, `dynamic`, or `system` |
+
+Lists created inline for a blast never appear here — they are private to that blast and reachable only by `list_id`.
+
+## List Request Example
+
+```bash
+curl --request GET \
+  --url 'https://api.tented.ai/v1/contact-lists?kind=dynamic&limit=10' \
+  --header 'Authorization: Bearer tented_your_api_key'
+```
+
+## List Response Example
+
+```json
+{
+  "lists": [
+    {
+      "list_id": "11111111-1111-4111-8111-111111111111",
+      "name": "California Leads",
+      "slug": "california-leads",
+      "description": "Leads located in CA",
+      "kind": "dynamic",
+      "rules": {
+        "kind": "group",
+        "operator": "and",
+        "conditions": [
+          {"kind": "condition", "source": "contact", "field": "state", "operator": "equals", "value": "CA"}
+        ]
+      },
+      "member_count": null,
+      "owner_campaign_id": null,
+      "created_at": "2026-04-30T12:00:00.000Z",
+      "updated_at": "2026-04-30T12:00:00.000Z"
+    }
+  ],
+  "pagination": {"page": 1, "limit": 10, "total": 1, "totalPages": 1}
+}
+```
+
+`member_count` is a stored counter for static lists and `null` for dynamic lists — use the [member-count endpoint](#member-counts) for a live count of either kind.
+
+## Create a Contact List
+
+```bash
+POST /v1/contact-lists
+```
+
+### Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | `string` | Yes | `1`-`255` characters. Must be unique within the workspace |
+| `description` | `string \| null` | No | Maximum `1000` characters |
+| `kind` | `string` | Yes | `static` or `dynamic`. Immutable after creation |
+| `rules` | `object \| null` | No | Segment rule tree for a dynamic list. A dynamic list without rules has no members. Rejected on static lists |
+| `contact_ids` | `uuid[]` | No | Initial members for a static list, maximum `500` per request. Rejected on dynamic lists |
+
+Returns `201 Created` with the list object, or `409 Conflict` with `error_code: "contact_list_name_exists"` when the name is taken.
+
+## Create Request Examples
+
+A static list seeded with two members:
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/contact-lists \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Webinar Attendees",
+    "kind": "static",
+    "contact_ids": [
+      "11111111-1111-4111-8111-111111111111",
+      "22222222-2222-4222-8222-222222222222"
+    ]
+  }'
+```
+
+A dynamic list of qualified California leads:
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/contact-lists \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "California Leads",
+    "kind": "dynamic",
+    "rules": {
+      "kind": "group",
+      "operator": "and",
+      "conditions": [
+        {"kind": "condition", "source": "contact", "field": "state", "operator": "equals", "value": "CA"},
+        {"kind": "condition", "source": "contact", "field": "leadStatus", "operator": "equals", "value": "qualified"}
+      ]
+    }
+  }'
+```
+
+### Dynamic List Rules
+
+Rules use the same segment rule tree as blast audiences: groups (`and`/`or`, nested up to `5` levels, at most `100` nodes) of conditions over contact fields, custom fields, activities, and static-list membership. Rule objects use **camelCase** keys, unlike the rest of the public API. See [Audience Rules](/api-reference/managing-email-blasts#audience-rules) for the full condition reference, and call `GET /v1/contact-fields/rule-metadata` to discover the available fields and the operators each supports.
+
+<Warning>
+  `email_step` conditions are **not** allowed in list rules, even though the contact search endpoint accepts them — they only work inside [flow condition steps](/api-reference/managing-triggered-flows#condition-rules). Including one returns `400 Bad Request`.
+</Warning>
+
+## Get, Update, and Delete a List
+
+```bash
+GET    /v1/contact-lists/{listId}
+PATCH  /v1/contact-lists/{listId}
+DELETE /v1/contact-lists/{listId}
+```
+
+`GET` returns the list object shown above. `DELETE` returns `204 No Content`; the contacts themselves are not deleted.
+
+### Update Request Body
+
+At least one field is required. `kind` cannot be changed.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | `string` | No | `1`-`255` characters. Must be unique within the workspace |
+| `description` | `string \| null` | No | Maximum `1000` characters. Pass `null` to clear |
+| `rules` | `object \| null` | No | Replacement rule tree — dynamic lists only. Membership is recomputed |
+
+Sending `rules` for a static list returns `400 Bad Request`. Returns `200 OK` with the updated list object.
+
+## Update Request Example
+
+```bash
+curl --request PATCH \
+  --url https://api.tented.ai/v1/contact-lists/11111111-1111-4111-8111-111111111111 \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "California Leads (Qualified)",
+    "rules": {
+      "kind": "group",
+      "operator": "and",
+      "conditions": [
+        {"kind": "condition", "source": "contact", "field": "state", "operator": "equals", "value": "CA"},
+        {"kind": "condition", "source": "contact", "field": "leadStatus", "operator": "equals", "value": "qualified"}
+      ]
+    }
+  }'
+```
+
+## List Members
+
+```bash
+GET /v1/contact-lists/{listId}/contacts
+```
+
+Pages through the members of a static or dynamic list.
+
+### Query Parameters
+
+| Parameter | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `page` | `integer` | No | 1-based page number, defaults to `1` |
+| `limit` | `integer` | No | Page size `1`-`100`, defaults to `25` |
+| `search` | `string` | No | Case-insensitive name/email search |
+| `sort` | `string` | No | `member_added_at`, `created_at`, `updated_at` (default), `last_activity_at`, `display_name`, `first_name`, `last_name`, `normalized_email`, or `original_source`. `member_added_at` sorts by when the contact joined this list |
+| `order` | `string` | No | `asc` or `desc` (default) |
+| `exclude_unsubscribed` | `string` | No | `1` or `true` — omit contacts unsubscribed from marketing email |
+| `only_unsubscribed` | `string` | No | `1` or `true` — return only unsubscribed contacts. `exclude_unsubscribed` wins if both are set |
+
+## Members Request Example
+
+```bash
+curl --request GET \
+  --url 'https://api.tented.ai/v1/contact-lists/11111111-1111-4111-8111-111111111111/contacts?sort=member_added_at&exclude_unsubscribed=1' \
+  --header 'Authorization: Bearer tented_your_api_key'
+```
+
+## Members Response Example
+
+```json
+{
+  "contacts": [
+    {
+      "contact_id": "22222222-2222-4222-8222-222222222222",
+      "display_name": "Jane Doe",
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "email": "jane@example.com",
+      "phone": null,
+      "original_source": "Public API",
+      "original_source_detail": null,
+      "company": "Acme",
+      "job_title": "CEO",
+      "lead_status": "qualified",
+      "lifecycle_stage": "subscriber",
+      "tented_score": 42,
+      "last_activity_at": "2026-04-30T12:00:00.000Z",
+      "member_added_at": "2026-04-29T09:30:00.000Z",
+      "created_at": "2026-04-01T12:00:00.000Z",
+      "updated_at": "2026-04-30T12:00:00.000Z"
+    }
+  ],
+  "pagination": {"page": 1, "limit": 25, "total": 1, "totalPages": 1}
+}
+```
+
+`member_added_at` is `null` for dynamic-list members — dynamic membership is computed, not recorded.
+
+## Add and Remove Members
+
+```bash
+POST   /v1/contact-lists/{listId}/contacts
+DELETE /v1/contact-lists/{listId}/contacts
+```
+
+Static lists only — calling either endpoint on a dynamic list returns `400 Bad Request`. Both take the same body:
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `contact_ids` | `uuid[]` | Yes | Between `1` and `500` contact IDs per request |
+
+Adding returns `404` if the list or any referenced contact does not exist. Contacts already in the list are counted, not duplicated.
+
+## Add Members Request Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/contact-lists/11111111-1111-4111-8111-111111111111/contacts \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "contact_ids": [
+      "22222222-2222-4222-8222-222222222222",
+      "33333333-3333-4333-8333-333333333333"
+    ]
+  }'
+```
+
+## Add Members Response Example
+
+```json
+{
+  "added_count": 1,
+  "already_member_count": 1
+}
+```
+
+Removal responds with `{"removed_count": 1}`.
+
+## Member Counts
+
+```bash
+GET /v1/contact-lists/{listId}/member-count
+```
+
+Computes live counts for any list kind — use this for dynamic lists, whose list object always has `member_count: null`.
+
+```json
+{
+  "list_id": "11111111-1111-4111-8111-111111111111",
+  "kind": "dynamic",
+  "member_count": 1204,
+  "blocked_count": 37
+}
+```
+
+`blocked_count` is the number of members currently blocked from marketing sends (unsubscribed contacts).
+
+## Export Members to CSV
+
+```bash
+POST /v1/contact-lists/{listId}/export
+GET  /v1/contact-lists/{listId}/export/{exportId}
+```
+
+Starting an export returns `202 Accepted` with an `export` job. Poll the job until `status` is `completed`, then fetch the file from its presigned `download_url`:
+
+```json
+{
+  "export": {
+    "export_id": "44444444-4444-4444-8444-444444444444",
+    "status": "completed",
+    "file_name": "contact-list-california-leads-11111111-1111-4111-8111-111111111111.csv",
+    "row_count": 1204,
+    "error_message": null,
+    "download_url": "https://exports.tented.ai/...",
+    "created_at": "2026-04-30T12:00:00.000Z",
+    "updated_at": "2026-04-30T12:00:30.000Z",
+    "completed_at": "2026-04-30T12:00:30.000Z"
+  }
+}
+```
+
+`status` moves `pending` → `processing` → `completed`, with `failed` as the error exit (see `error_message`). `download_url` is populated once the job completes and is signed with a limited lifetime — download promptly rather than storing the URL.
+
+## Common Request Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid JSON body, missing body, or invalid parameters |
+| `400 Bad Request` | `rules` supplied for a static list, or `contact_ids` supplied for a dynamic list |
+| `400 Bad Request` | Member add/remove on a dynamic list |
+| `400 Bad Request` | `rules` contains an `email_step` condition |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `403 Forbidden` | Editing or deleting a system list (`system_list_protected`) |
+| `404 Not Found` | List, contact, or export job does not exist in the workspace |
+| `409 Conflict` | A list with this name already exists (`contact_list_name_exists`) |
+
+<Card
+  title="Back to API Overview"
+  icon="arrow-left"
+  href="/api-reference/introduction"
+>
+  Review the full Tented API endpoint map.
+</Card>

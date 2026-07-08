@@ -1,0 +1,85 @@
+---
+title: "Managing Contact Fields"
+description: "List, create, and archive custom contact field definitions, and discover the fields and operators available for segment rules."
+---
+
+## Endpoints
+
+```bash
+GET   /v1/contact-fields
+POST  /v1/contact-fields
+PATCH /v1/contact-fields/{field_definition_id}
+GET   /v1/contact-fields/rule-metadata
+```
+
+Custom fields extend contacts beyond the standard schema. Values are written via the `custom_fields` object on [contact create, update, and upsert](/api-reference/managing-contacts), keyed by each field's `api_name`.
+
+## List Fields
+
+```bash
+GET /v1/contact-fields
+```
+
+| Parameter | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `include_archived` | `boolean` | No | Include archived definitions |
+
+Returns both `system` fields (the built-in contact schema, read-only) and `org_managed` custom fields. Each definition includes `api_name`, `display_name`, `value_type` (`string` \| `number` \| `boolean` \| `date`), `status`, `is_editable`, and provenance metadata.
+
+## Create Fields
+
+```bash
+POST /v1/contact-fields
+```
+
+Accepts a single definition or `items[]` (up to `50` per request).
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `display_name` | `string` | Yes | Human label |
+| `api_name` | `string` | No | snake_case identifier; derived from `display_name` when omitted. Unique per org (case-insensitive) |
+| `value_type` | `string` | Yes | `string` \| `number` \| `boolean` \| `date` |
+| `description` | `string` | No | Shown in the app's field manager |
+| `show_in_people_list_default` | `boolean` | No | Show as a default column in the contacts table |
+
+```bash
+curl --request POST \
+  --url 'https://api.tented.ai/v1/contact-fields' \
+  --header 'Authorization: Bearer tented_your_api_key' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "display_name": "Account Tier",
+    "api_name": "account_tier",
+    "value_type": "string"
+  }'
+```
+
+<Warning>
+  Organizations can have at most `200` active custom fields. Exceeding the cap or colliding with an existing `api_name` (including archived ones) returns `409` with the conflicting names in `details`.
+</Warning>
+
+## Update or Archive a Field
+
+```bash
+PATCH /v1/contact-fields/{field_definition_id}
+```
+
+Updatable: `display_name`, `description`, `show_in_people_list_default`, and `status` (`archived` to soft-delete, `active` to restore). `api_name` and `value_type` are immutable; system fields are read-only and return `400`.
+
+Archived fields stop accepting writes — contact upserts referencing them get a per-item rejection — but their stored values are preserved and return when the field is restored.
+
+## Rule Metadata
+
+```bash
+GET /v1/contact-fields/rule-metadata
+```
+
+Returns every filterable field (standard + custom) with its supported operators — the vocabulary for building rule trees used by [contact search](/api-reference/managing-contacts) and [dynamic lists](/api-reference/managing-contact-lists). Use it to build rule editors without hardcoding operator lists.
+
+## Common Errors
+
+| Status | Meaning |
+| --- | --- |
+| `400` | Invalid value_type, reserved/system api_name, or modifying an immutable attribute |
+| `404` | Unknown `field_definition_id` |
+| `409` | `api_name` collision or the 200-active-field cap would be exceeded |

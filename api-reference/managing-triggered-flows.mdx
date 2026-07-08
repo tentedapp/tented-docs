@@ -252,7 +252,7 @@ Use `null` as the replacement to detach the dangling edges instead.
 PUT /v1/email-flows/{flowId}/steps/{stepId}/email
 ```
 
-Only valid for `send_email` steps. Takes the same body as a blast's [Set the Email](/api-reference/managing-email-blasts#set-the-email): `{"source": "existing", "email_id": "..."}` or an inline email seeded from a `template_id`, your own `html`, or a blank branded scaffold. Inline emails start as drafts and must be [approved](/api-reference/managing-emails#approve-and-unapprove) before the flow can activate — the created `email_id` appears on the step in the response.
+Only valid for `send_email` steps. Takes the same body as a blast's [Set the Email](/api-reference/managing-email-blasts#set-the-email): `{"source": "existing", "email_id": "..."}` or an inline email seeded from a `template_id`, your own `html`, or a blank branded scaffold. Inline emails start as drafts and must be [approved](/api-reference/approving-emails#approve-and-unapprove) before the flow can activate — the created `email_id` appears on the step in the response.
 
 ## Lifecycle
 

@@ -1,20 +1,25 @@
 ---
 title: "Managing Contacts"
-description: "Look up, create, update, and delete contacts through the public API in batches of up to 25 records."
+description: "Look up, create, update, and delete contacts through the public API in batches of up to 100 records."
 ---
 
 ## Endpoints
 
 ```bash
-GET /v1/contacts
-GET /v1/contacts/{contact_id}
-POST /v1/contacts
-POST /v1/contacts/update
-POST /v1/contacts/delete
+GET    /v1/contacts
+GET    /v1/contacts/{contact_id}
+PATCH  /v1/contacts/{contact_id}
+DELETE /v1/contacts/{contact_id}
+GET    /v1/contacts/{contact_id}/activities
+POST   /v1/contacts
+POST   /v1/contacts/upsert
+POST   /v1/contacts/update
+POST   /v1/contacts/delete
 DELETE /v1/contacts
+POST   /v1/contacts/search
 ```
 
-Use these endpoints to sync CRM contacts from external systems. Each write request accepts an `items` array with up to `25` records.
+Use these endpoints to sync CRM contacts from external systems. Batch write requests accept an `items` array with up to `100` records. For bulk file-based ingestion, see [Importing Contacts](/api-reference/importing-contacts); for field definitions, see [Managing Contact Fields](/api-reference/managing-contact-fields).
 
 <Info>
   Contact writes support partial success. Tented processes each item independently and returns accepted or rejected results in request order.
@@ -26,7 +31,7 @@ Use these endpoints to sync CRM contacts from external systems. Each write reque
 GET /v1/contacts
 ```
 
-Find a single contact by identifier. At least one of `email` or `phone` is required — this endpoint is a lookup, not a full listing.
+`GET /v1/contacts` has two modes. With an `email` or `phone` query parameter it is an identifier lookup returning zero or one contact (shown here). Without an identifier it becomes a paginated listing — see [List Contacts](#list-contacts).
 
 ### Query Parameters
 
@@ -119,6 +124,49 @@ Returns the contact object directly, including `custom_fields` keyed by each cus
 }
 ```
 
+## List Contacts
+
+```bash
+GET /v1/contacts?page=1&limit=100&updated_after=2026-07-01T00:00:00Z
+```
+
+Without an `email`/`phone` identifier, `GET /v1/contacts` pages through the workspace's contacts.
+
+| Parameter | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `page` | `integer` | No | 1-based page number (default `1`) |
+| `limit` | `integer` | No | Page size, max `100` (default `25`) |
+| `sort` | `string` | No | `created_at` (default) \| `updated_at` \| `last_activity_at` \| `display_name` \| `first_name` \| `last_name` \| `normalized_email` \| `original_source` |
+| `order` | `string` | No | `asc` \| `desc` (default) |
+| `search` | `string` | No | Matches name, email, phone, and company |
+| `updated_after` | `string` | No | ISO 8601 timestamp — only contacts updated after it. The building block for incremental syncs |
+
+Returns `{items, pagination}`. List items do not include `custom_fields` — fetch a single contact for those.
+
+## Update a Single Contact
+
+```bash
+PATCH /v1/contacts/{contact_id}
+```
+
+Single-record alternative to the batch update: the request body takes the same fields as an update item (minus `contact_id`), returns the updated contact directly, `404` when missing, and `409` with `existing_contact` when an email/phone change collides with another contact.
+
+## Delete a Single Contact
+
+```bash
+DELETE /v1/contacts/{contact_id}
+```
+
+Returns `204` on success, `404` when the contact does not exist.
+
+## Contact Activities
+
+```bash
+GET /v1/contacts/{contact_id}/activities?page=1&limit=25&order=desc
+```
+
+Read-only, paginated activity timeline: `contact_created`, `contact_updated`, email engagement events (sent, delivered, opened, clicked, bounced, unsubscribed), and flow entry/exit — each with a `type`, `timestamp`, and event-specific `metadata`.
+
 ## Create Contacts
 
 ```bash
@@ -129,7 +177,7 @@ POST /v1/contacts
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `items` | `array` | Yes | Between `1` and `25` contacts |
+| `items` | `array` | Yes | Between `1` and `100` contacts |
 
 ### Create Item Fields
 
@@ -232,7 +280,7 @@ curl --request POST \
 
 ## Duplicate Contacts
 
-Tented checks normalized email and phone values before creating a contact. If an item matches an existing contact, that item is rejected with `error_code: "conflict"`.
+Tented checks normalized email and phone values before creating a contact. If an item matches an existing contact, that item is rejected with `error_code: "conflict"`. If you want matches to be updated instead of rejected, use [Upsert Contacts](#upsert-contacts).
 
 ```json
 {
@@ -250,6 +298,54 @@ Tented checks normalized email and phone values before creating a contact. If an
 }
 ```
 
+## Upsert Contacts
+
+```bash
+POST /v1/contacts/upsert
+```
+
+Create-or-update in one call — no conflict handling required. Each item (up to `100`) is matched by its **normalized email** (or phone, for phone-only items): a match updates that contact, no match creates one. Items accept the full update field set including `custom_fields`, and each result reports `status: "created"` or `"updated"`.
+
+<Info>
+  Matching is identifier-scoped: an item is only ever matched on its own identifier. If a *new* email's item carries a phone that belongs to a different contact, the item is rejected with `error_code: "conflict"` and the `existing_contact` — it never silently modifies the phone-matched contact.
+</Info>
+
+```bash
+curl --request POST \
+  --url 'https://api.tented.ai/v1/contacts/upsert' \
+  --header 'Authorization: Bearer tented_your_api_key' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "items": [
+      {
+        "email": "jane@example.com",
+        "first_name": "Jane",
+        "company": "Acme",
+        "custom_fields": {"account_tier": "enterprise"}
+      }
+    ]
+  }'
+```
+
+Response mirrors the batch format with `created_count`, `updated_count`, and `rejected_count`.
+
+## Search Contacts
+
+```bash
+POST /v1/contacts/search
+```
+
+Filter contacts with a rule tree — the same engine that powers dynamic lists and blast audiences.
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `rules` | `object` | Yes | AND/OR rule group over standard fields, custom fields, activity, and list membership (max depth `5`, max `100` conditions) |
+| `page` / `limit` | `integer` | No | Pagination, `limit` ≤ `100` |
+| `search` | `string` | No | Free-text filter applied alongside the rules |
+| `sort` / `order` | `string` | No | Same sort keys as [List Contacts](#list-contacts) |
+
+Discover the available fields and operators with [`GET /v1/contact-fields/rule-metadata`](/api-reference/managing-contact-fields).
+
 ## Update Contacts
 
 ```bash
@@ -260,7 +356,7 @@ POST /v1/contacts/update
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `items` | `array` | Yes | Between `1` and `25` update records |
+| `items` | `array` | Yes | Between `1` and `100` update records |
 
 ### Update Item Fields
 
@@ -360,7 +456,7 @@ Use `POST /v1/contacts/delete` if your HTTP client does not support request bodi
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `items` | `array` | Yes | Between `1` and `25` delete records |
+| `items` | `array` | Yes | Between `1` and `100` delete records |
 
 ### Delete Item Fields
 
@@ -447,7 +543,7 @@ Rejected items include:
 | --- | --- |
 | `400 Bad Request` | Invalid JSON body |
 | `400 Bad Request` | Request body is missing |
-| `400 Bad Request` | `items` is missing, empty, or contains more than `25` records |
+| `400 Bad Request` | `items` is missing, empty, or contains more than `100` records |
 | `400 Bad Request` | A create item has neither `email` nor `phone` |
 | `400 Bad Request` | Invalid email, phone, UUID, or field format |
 | `401 Unauthorized` | Missing or invalid bearer token |

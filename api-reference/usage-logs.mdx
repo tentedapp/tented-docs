@@ -1,0 +1,45 @@
+---
+title: "Usage Logs"
+description: "Every API request is logged in the web app — inspect recent calls, response statuses, and credits consumed under Settings > API."
+---
+
+## Where to find your logs
+
+Every request made with an API key is recorded automatically. In the web app, open **Settings → API** and switch to the **Usage** tab to see your recent API activity.
+
+Each log entry shows:
+
+| Column | Meaning |
+| --- | --- |
+| **Timestamp** | When the request was received, shown in your local timezone |
+| **Key Name** | Which API key made the call — useful when multiple integrations share a workspace |
+| **API Request URL** | The endpoint path that was called |
+| **Credits** | Generation credits consumed by the request, where applicable (see below) |
+| **Method** | HTTP method (`GET`, `POST`, `PATCH`, `DELETE`) |
+| **Status** | Response status code, color-coded — hover for details on non-2xx responses |
+
+Filter by key and date range to debug a specific integration or trace a spike in traffic.
+
+## When credits apply
+
+Most API calls consume no generation credits — reads, contact writes, list management, imports, and email sends are all credit-free. Credits are consumed by **AI generation** requests:
+
+- `POST /v1/tents` — creating a tent from a prompt or template
+- `POST /v1/tents/{tentId}/edit` — AI edits to an existing tent
+- `POST /v1/tents/bulk` — bulk tent jobs (credits reconcile once the job finishes, so a just-accepted job may briefly show no credit count)
+
+All other rows show `-` in the Credits column. Your plan's remaining credit balance is visible on the same **Settings → API** page.
+
+## Debugging tips
+
+- A `401` with a key you believe is valid usually means the key was revoked or regenerated — check the key list on the same page.
+- `429` responses mean you've hit the API rate limit; back off and retry with jitter.
+- For asynchronous work (tent generation, bulk jobs, imports), the logged request is the *submission* — poll the corresponding status endpoint to follow the job itself.
+
+<Card
+  title="API Keys & Usage guide"
+  icon="key"
+  href="/configuring-tented/api-keys"
+>
+  How to create, rotate, and revoke API keys, and monitor usage as a workspace admin.
+</Card>

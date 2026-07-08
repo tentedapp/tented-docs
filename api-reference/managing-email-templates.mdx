@@ -1,0 +1,223 @@
+---
+title: "Email Templates"
+description: "Create, generate, and approve reusable email templates through the public API."
+---
+
+## Endpoints
+
+```bash
+GET    /v1/email-templates
+POST   /v1/email-templates
+GET    /v1/email-templates/{templateId}
+PATCH  /v1/email-templates/{templateId}
+DELETE /v1/email-templates/{templateId}
+GET    /v1/email-templates/{templateId}/content
+GET    /v1/email-templates/{templateId}/plain-text
+PUT    /v1/email-templates/{templateId}/plain-text
+DELETE /v1/email-templates/{templateId}/plain-text
+POST   /v1/email-templates/{templateId}/messages
+POST   /v1/email-templates/{templateId}/save-code
+POST   /v1/email-templates/{templateId}/approve
+POST   /v1/email-templates/{templateId}/unapprove
+GET    /v1/email-templates/{templateId}/generations/{generationId}
+GET    /v1/email-templates/{templateId}/generations/{generationId}/content
+GET    /v1/email-templates/{templateId}/generations/{generationId}/plain-text
+```
+
+Email templates are reusable layouts that seed new [emails](/api-reference/creating-emails). A template carries HTML plus optional **default sender headers** (`default_subject`, `default_from_name`, and so on). Once a template is **approved**, [`POST /v1/emails` with `template_id`](/api-reference/creating-emails#create-from-a-template) copies its HTML into a new email and inherits those defaults. Like emails, templates start as a `draft` and accumulate versions as you iterate.
+
+<Info>
+  AI generation is asynchronous. Creating with a `prompt` or posting a message returns `202 Accepted` with a `generation_id`, and you poll the generation endpoint to track progress. Only one generation can run per template at a time.
+</Info>
+
+## Idempotency
+
+`POST /v1/email-templates`, `POST /v1/email-templates/{templateId}/messages`, and `POST /v1/email-templates/{templateId}/save-code` accept an optional `Idempotency-Key` header. Retrying with the same key replays the stored result instead of creating a duplicate. If a request with the same key is still being processed, the API returns `409 Conflict` with `error_code: "idempotency_in_progress"`.
+
+## Create a Template
+
+```bash
+POST /v1/email-templates
+```
+
+### Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | `string` | Yes | Internal display name, `1`-`200` characters. Not shown to recipients |
+| `code` | `string` | No | Hand-authored template HTML, up to `2 MB` |
+| `prompt` | `string` | No | AI brief, `1`-`10000` characters. When present, content is generated asynchronously |
+| `default_subject` | `string \| null` | No | Default subject for seeded emails, maximum `998` characters |
+| `default_preview_text` | `string \| null` | No | Default preheader for seeded emails, maximum `200` characters |
+| `default_from_name` | `string \| null` | No | Default sender name for seeded emails, maximum `120` characters |
+| `default_from_address` | `string \| null` | No | Default sender address; sending still requires a verified domain |
+| `default_reply_to_email` | `string \| null` | No | Default Reply-To for seeded emails |
+
+Provide `code` to upload your own HTML, or `prompt` to generate it with AI (`202 Accepted`). With neither, you get a blank scaffold branded from your workspace. Both `code`-based and blank creates return `201 Created` with the template object.
+
+### Request Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/email-templates \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Monthly newsletter shell",
+    "prompt": "A newsletter layout for Acme Analytics: header logo, intro block, three article cards, footer",
+    "default_subject": "Acme Analytics monthly digest",
+    "default_from_name": "Acme"
+  }'
+```
+
+### Response Example
+
+`202 Accepted`
+
+```json
+{
+  "template_id": "7c3f0a4e-91d2-4a8f-b344-2f6f6f0a1b9d",
+  "generation_id": "01JZ9GLYFA4L4Y9CBM4H31TT8V",
+  "message_id": "01JZ9GLYFA6H2T0N8W1QG64M3E",
+  "status": "generating"
+}
+```
+
+## Poll a Generation
+
+```bash
+GET /v1/email-templates/{templateId}/generations/{generationId}
+```
+
+Generation `status` moves through `generating` to `completed` or `failed`, with the same shape as [email generations](/api-reference/creating-emails#poll-a-generation): completed generations include the `version` they produced plus `content_path` and `plain_text_path` under `/v1/email-templates/...`; failed ones return `error_code: "generation_failed"` and an `error_message`.
+
+## Retrieve a Template
+
+```bash
+GET /v1/email-templates/{templateId}
+```
+
+`200 OK`
+
+```json
+{
+  "template_id": "7c3f0a4e-91d2-4a8f-b344-2f6f6f0a1b9d",
+  "name": "Monthly newsletter shell",
+  "status": "draft",
+  "source_type": "upload",
+  "source_email_id": null,
+  "default_subject": "Acme Analytics monthly digest",
+  "default_preview_text": null,
+  "default_from_name": "Acme",
+  "default_from_address": null,
+  "default_reply_to_email": null,
+  "current_version": 1,
+  "approved_version": null,
+  "number_of_iterations": 1,
+  "plain_text_overridden": false,
+  "plain_text_overridden_at": null,
+  "plain_text_stale_after_html_iteration": false,
+  "created_at": "2026-07-01T12:00:00.000Z",
+  "updated_at": "2026-07-01T12:00:41.000Z",
+  "created_by_name": "tented-api",
+  "latest_generation_status": "completed",
+  "content_path": "/v1/email-templates/7c3f0a4e-91d2-4a8f-b344-2f6f6f0a1b9d/content",
+  "plain_text_path": "/v1/email-templates/7c3f0a4e-91d2-4a8f-b344-2f6f6f0a1b9d/plain-text"
+}
+```
+
+`status` is `draft` or `approved`. `source_type` is `upload` for API-created templates, or `email` for templates saved from an existing email (then `source_email_id` points to it).
+
+## Read Content
+
+```bash
+GET /v1/email-templates/{templateId}/content
+GET /v1/email-templates/{templateId}/generations/{generationId}/content
+```
+
+Returns the HTML of the latest completed version (or of one specific generation) with a `text/html` content type — not JSON.
+
+## Plain Text
+
+```bash
+GET    /v1/email-templates/{templateId}/plain-text
+PUT    /v1/email-templates/{templateId}/plain-text
+DELETE /v1/email-templates/{templateId}/plain-text
+```
+
+Works exactly like [email plain text](/api-reference/editing-emails#plain-text), keyed by `template_id` instead of `email_id`: `GET` returns the auto-derived text, `PUT` overrides it (body: `{"content": "..."}`, up to `1 MB`), and `DELETE` reverts to the auto-derived version. `PUT` and `DELETE` require a completed generation, otherwise they return `400 Bad Request`. Iterating the HTML after an override flips `stale_after_html_iteration` to `true`.
+
+## Iterate With AI
+
+```bash
+POST /v1/email-templates/{templateId}/messages
+```
+
+Takes the same request body as [iterating an email](/api-reference/editing-emails#iterate-with-ai): a required `prompt` (`1`-`10000` characters) with the edit instruction, plus optional `asset_ids` naming template assets to make available to the generation. Returns `202 Accepted` with a `generation_id` to poll. Starting a second generation while one is running returns `409 Conflict` with `error_code: "generation_in_progress"`; an unknown asset returns `409` with `error_code: "asset_not_found"`.
+
+## Save Code Directly
+
+```bash
+POST /v1/email-templates/{templateId}/save-code
+```
+
+Works like [saving email code](/api-reference/editing-emails#save-code-directly): send `{"code": "..."}` with the full replacement HTML (up to `2 MB`) to create a new version synchronously — `200 OK` with the new `generation_id` and `version`. Saving code does not unapprove an approved template. Blocked while a generation is running.
+
+## Update Metadata
+
+```bash
+PATCH /v1/email-templates/{templateId}
+```
+
+Accepts the same optional fields as create except `code` and `prompt`: `name`, `default_subject`, `default_preview_text`, `default_from_name`, `default_from_address`, `default_reply_to_email`. Omit a field to leave it unchanged; pass `null` to clear nullable fields. Returns the updated template object.
+
+## Approve and Unapprove
+
+```bash
+POST /v1/email-templates/{templateId}/approve
+POST /v1/email-templates/{templateId}/unapprove
+```
+
+Approving marks the template's current version usable for seeding new emails. Unlike [emails](/api-reference/approving-emails#approve-and-unapprove), there is no required-header gate — the `default_*` fields are optional — but the template must have at least one completed generation, otherwise the API returns `409 Conflict` with `error_code: "template_not_ready"`.
+
+Optionally send `{"version": <n>}` as an optimistic-concurrency precondition — a mismatch with the current version returns `409 Conflict` with `error_code: "approval_version_stale"`.
+
+Unapproving is never blocked: emails already seeded from the template are unaffected, but new emails can no longer be created from it until it is approved again. Both endpoints return the updated template object.
+
+## List Templates
+
+```bash
+GET /v1/email-templates
+```
+
+Takes the same query parameters as [listing emails](/api-reference/approving-emails#list-emails): `status` (`any`, `draft`, `approved`), `sort_by`, `sort_order`, `limit`, and `cursor`. Responses contain `templates` and `next_cursor`. List items are the template object minus `latest_generation_status` and the `content_path` / `plain_text_path` fields — fetch HTML per template via `GET /v1/email-templates/{templateId}/content`.
+
+## Delete a Template
+
+```bash
+DELETE /v1/email-templates/{templateId}
+```
+
+Returns `200 OK` with `{"template_id": "...", "deleted": true}`. Unlike [emails](/api-reference/approving-emails#delete-an-email), deletion is never blocked — emails already seeded from the template keep their own copy of the content.
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid JSON body or field validation failure |
+| `400 Bad Request` | Plain-text override or revert without a completed generation |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | Template or generation does not exist in the workspace |
+| `409 Conflict` | A generation is already running (`generation_in_progress`) |
+| `409 Conflict` | Approval attempted with no completed generation (`template_not_ready`) |
+| `409 Conflict` | Approval version precondition failed (`approval_version_stale`) |
+| `409 Conflict` | Referenced asset does not exist (`asset_not_found`) |
+| `409 Conflict` | Same `Idempotency-Key` still processing (`idempotency_in_progress`) |
+
+<Card
+  title="Next: Create Emails"
+  icon="arrow-right"
+  href="/api-reference/creating-emails"
+>
+  Seed a new email from your approved template and send it with blasts and flows.
+</Card>
