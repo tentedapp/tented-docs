@@ -122,6 +122,10 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "API Reference",
+        "openapi": "/api-reference/openapi.json"
       }
     ],
     "global": {}
