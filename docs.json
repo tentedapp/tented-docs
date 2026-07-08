@@ -95,7 +95,7 @@
         "tab": "API Docs",
         "groups": [
           {
-            "group": "Vibe Coding API",
+            "group": "Tented API",
             "pages": [
               "api-reference/introduction",
               "api-reference/authentication",

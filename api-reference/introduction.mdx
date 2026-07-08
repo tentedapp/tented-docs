@@ -1,5 +1,5 @@
 ---
-title: "Vibe Coding API Overview"
+title: "Tented API Overview"
 description: "Create, edit, publish, measure, and delete tents, plus manage contacts, through Tented's public API."
 ---
 
@@ -32,23 +32,15 @@ Use the production base URL:
 https://api.tented.ai
 ```
 
-All current endpoints live under the `/v1` prefix:
+All endpoints live under the `/v1` prefix. For the complete, exhaustive list — every endpoint with its parameters, request bodies, and response schemas — see the full API Reference.
 
-- `POST /v1/tents`
-- `POST /v1/tents/{tentId}/assets`
-- `POST /v1/tents/{tentId}/edit`
-- `POST /v1/tents/{tentId}/publish`
-- `POST /v1/tents/{tentId}/unpublish`
-- `DELETE /v1/tents/{identifier}`
-- `POST /v1/tents/bulk`
-- `GET /v1/bulk-jobs/{bulkJobId}`
-- `GET /v1/tents/{tentId}`
-- `GET /v1/analytics/tent`
-- `GET /v1/analytics/org`
-- `POST /v1/contacts`
-- `POST /v1/contacts/update`
-- `POST /v1/contacts/delete`
-- `DELETE /v1/contacts`
+<Card
+  title="Browse the full API Reference"
+  icon="terminal"
+  href="/api-reference/tents/create-a-tent"
+>
+  Every endpoint across tents, analytics, contacts, emails, blasts, and triggered flows, with live request and response schemas.
+</Card>
 
 ## Authentication
 
