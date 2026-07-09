@@ -17,6 +17,7 @@ PUT    /v1/email-templates/{templateId}/plain-text
 DELETE /v1/email-templates/{templateId}/plain-text
 POST   /v1/email-templates/{templateId}/messages
 POST   /v1/email-templates/{templateId}/save-code
+POST   /v1/email-templates/{templateId}/clone
 POST   /v1/email-templates/{templateId}/approve
 POST   /v1/email-templates/{templateId}/unapprove
 GET    /v1/email-templates/{templateId}/generations/{generationId}
@@ -170,6 +171,14 @@ PATCH /v1/email-templates/{templateId}
 ```
 
 Accepts the same optional fields as create except `code` and `prompt`: `name`, `default_subject`, `default_preview_text`, `default_from_name`, `default_from_address`, `default_reply_to_email`. Omit a field to leave it unchanged; pass `null` to clear nullable fields. Returns the updated template object.
+
+## Clone a Template
+
+```bash
+POST /v1/email-templates/{templateId}/clone
+```
+
+Duplicate a template — its content, versions, and assets — as a fresh `draft` attributed to the API principal. The clone is never approved. Optionally send `{"name": "..."}`; the name defaults to `"{original name} (copy)"`. Returns `201 Created` with the new template object. Accepts an optional `Idempotency-Key` header.
 
 ## Approve and Unapprove
 

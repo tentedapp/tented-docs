@@ -1,0 +1,193 @@
+---
+title: "Tent Templates"
+description: "Create, iterate, and approve reusable tent layouts through the public API."
+---
+
+## Endpoints
+
+```bash
+GET    /v1/tent-templates
+POST   /v1/tent-templates
+POST   /v1/tent-templates/from-tent/{tentId}
+GET    /v1/tent-templates/{templateId}
+DELETE /v1/tent-templates/{templateId}
+GET    /v1/tent-templates/{templateId}/content
+POST   /v1/tent-templates/{templateId}/messages
+POST   /v1/tent-templates/{templateId}/save-code
+POST   /v1/tent-templates/{templateId}/approve
+POST   /v1/tent-templates/{templateId}/unapprove
+POST   /v1/tent-templates/{templateId}/clone
+GET    /v1/tent-templates/{templateId}/generations/{generationId}
+GET    /v1/tent-templates/{templateId}/generations/{generationId}/content
+```
+
+Tent templates are reusable, AI-editable page layouts that seed new [tents](/api-reference/creating-tents). Once a template is **approved**, [`POST /v1/tents` with `template_id`](/api-reference/creating-tents#create-from-a-template) starts a new generation from its HTML instead of from a blank page. Templates start as a `draft` and accumulate versions as you iterate — either by editing the HTML directly or by prompting the AI.
+
+<Info>
+  AI iteration is asynchronous. Posting a message returns `202 Accepted` with a `generation_id`, and you poll the generation endpoint to track progress. Only one generation can run per template at a time.
+</Info>
+
+Assets (images and files an iteration can reference) are managed with the shared asset endpoints — see [Managing Assets](/api-reference/uploading-assets#assets-on-emails-templates-and-tent-templates).
+
+## Idempotency
+
+`POST /v1/tent-templates`, `POST /v1/tent-templates/from-tent/{tentId}`, `POST /v1/tent-templates/{templateId}/messages`, `POST /v1/tent-templates/{templateId}/save-code`, and `POST /v1/tent-templates/{templateId}/clone` accept an optional `Idempotency-Key` header. Retrying with the same key replays the stored result instead of creating a duplicate. If a request with the same key is still being processed, the API returns `409 Conflict` with `error_code: "idempotency_in_progress"`.
+
+## Create a Template
+
+```bash
+POST /v1/tent-templates
+```
+
+### Request Body
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `name` | `string` | Yes | Internal display name, `1`-`200` characters |
+| `code` | `string` | Yes | Full template HTML, `1 byte`-`2 MB`. Must contain a `<!DOCTYPE html>` declaration |
+
+Creating with `code` seeds a completed v1 that the editor loads directly and returns `201 Created` with the template object. To create from an existing tent instead, use [`POST /v1/tent-templates/from-tent/{tentId}`](#create-from-a-tent); to change the HTML with AI afterward, [iterate with a message](#iterate-with-ai).
+
+### Request Example
+
+```bash
+curl --request POST \
+  --url https://api.tented.ai/v1/tent-templates \
+  --header "Authorization: Bearer $TENTED_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "Product launch landing page",
+    "code": "<!DOCTYPE html><html><head>...</head><body>...</body></html>"
+  }'
+```
+
+### Response Example
+
+`201 Created`
+
+```json
+{
+  "template_id": "01JPC2YJ5S6M3T5H8XQ4N7R9AB",
+  "name": "Product launch landing page",
+  "status": "draft",
+  "source_type": "upload",
+  "source_tent_id": null,
+  "current_version": 1,
+  "approved_version": null,
+  "number_of_iterations": 1,
+  "created_at": "2026-07-08T12:00:00.000Z",
+  "updated_at": "2026-07-08T12:00:00.000Z",
+  "created_by_name": "tented-api",
+  "content_path": "/v1/tent-templates/01JPC2YJ5S6M3T5H8XQ4N7R9AB/content"
+}
+```
+
+`status` is `draft` or `approved`. `source_type` is `upload` for API- or hand-authored templates, or `tent` for templates created from an existing tent (then `source_tent_id` points to it). On a subsequent `GET`, the object also includes `latest_generation_status` (`generating`, `completed`, or `failed`).
+
+## Create From a Tent
+
+```bash
+POST /v1/tent-templates/from-tent/{tentId}
+```
+
+Turn an existing tent's latest completed render into a reusable template — its HTML and assets are copied over. Send `{"name": "..."}` with the new template's display name. Returns `201 Created` with the template object (`source_type: "tent"`).
+
+## Iterate With AI
+
+```bash
+POST /v1/tent-templates/{templateId}/messages
+```
+
+Queue an AI edit against the template's current HTML. Send a required `prompt` (`1`-`10000` characters) with the instruction, plus optional `asset_ids` naming [template assets](/api-reference/uploading-assets#assets-on-emails-templates-and-tent-templates) to make available to the generation.
+
+`202 Accepted`
+
+```json
+{
+  "template_id": "01JPC2YJ5S6M3T5H8XQ4N7R9AB",
+  "generation_id": "01JZ9GLYFA4L4Y9CBM4H31TT8V",
+  "message_id": "01JZ9GLYFA6H2T0N8W1QG64M3E",
+  "status": "generating"
+}
+```
+
+Starting a second generation while one is running returns `409 Conflict` with `error_code: "generation_in_progress"`.
+
+## Poll a Generation
+
+```bash
+GET /v1/tent-templates/{templateId}/generations/{generationId}
+```
+
+Generation `status` moves through `generating` to `completed` or `failed`. Completed generations include the `version` they produced plus a `content_path` under `/v1/tent-templates/...`; failed ones return `error_code: "generation_failed"` and an `error_message`.
+
+## Read Content
+
+```bash
+GET /v1/tent-templates/{templateId}/content
+GET /v1/tent-templates/{templateId}/generations/{generationId}/content
+```
+
+Returns the HTML of the latest completed version (or of one specific generation) with a `text/html` content type — not JSON.
+
+## Save Code Directly
+
+```bash
+POST /v1/tent-templates/{templateId}/save-code
+```
+
+Send `{"code": "..."}` with the full replacement HTML (`1 byte`-`2 MB`) to create a new version synchronously — `200 OK` with the new `generation_id` and `version`. Blocked while an AI generation is running.
+
+## Approve and Unapprove
+
+```bash
+POST /v1/tent-templates/{templateId}/approve
+POST /v1/tent-templates/{templateId}/unapprove
+```
+
+Approving marks the template's current version usable for seeding new tents via [`POST /v1/tents` with `template_id`](/api-reference/creating-tents#create-from-a-template). The template must have at least one completed generation. Optionally send `{"version": <n>}` as an optimistic-concurrency precondition — a mismatch with the current version returns `409 Conflict` with `error_code: "approval_version_stale"`. Approval is blocked while a generation is running.
+
+Unapproving returns the template to draft and is never blocked: tents already seeded from the template are unaffected, but the template can no longer seed new tents until it is approved again. Both endpoints return the updated template object.
+
+## Clone a Template
+
+```bash
+POST /v1/tent-templates/{templateId}/clone
+```
+
+Duplicate the template — its chat, generation history, and assets — as a fresh `draft`. Optionally send `{"name": "..."}`; the name defaults to `"Copy of {name}"`. Returns `201 Created` with the new template object.
+
+## List Templates
+
+```bash
+GET /v1/tent-templates
+```
+
+Cursor-paginated, with the same query parameters as [listing email templates](/api-reference/managing-email-templates#list-templates): `status` (`any`, `draft`, `approved`), `sort_by` (`updated_at`, `created_at`, `name`), `sort_order`, `limit` (`1`-`100`), and `cursor`. Responses contain `templates` and `next_cursor`. List items carry metadata only (no `latest_generation_status` or `content_path`) — fetch HTML per template via `GET /v1/tent-templates/{templateId}/content`.
+
+## Delete a Template
+
+```bash
+DELETE /v1/tent-templates/{templateId}
+```
+
+Returns `200 OK` with `{"template_id": "...", "deleted": true}`. Deletion is never blocked — tents already seeded from the template keep their own copy of the content.
+
+## Common Errors
+
+| Status | Cause |
+| --- | --- |
+| `400 Bad Request` | Invalid JSON body or field validation failure (e.g. `code` missing a `<!DOCTYPE html>`) |
+| `401 Unauthorized` | Missing or invalid bearer token |
+| `404 Not Found` | Template, tent, or generation does not exist in the workspace |
+| `409 Conflict` | A generation is already running (`generation_in_progress`) |
+| `409 Conflict` | Approval version precondition failed (`approval_version_stale`) |
+| `409 Conflict` | Same `Idempotency-Key` still processing (`idempotency_in_progress`) |
+
+<Card
+  title="Next: Create Tents"
+  icon="arrow-right"
+  href="/api-reference/creating-tents"
+>
+  Seed a new tent from your approved template with `POST /v1/tents`.
+</Card>
