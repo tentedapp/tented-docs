@@ -11727,10 +11727,6 @@
             "description": "Original source detail.",
             "maxLength": 255
           },
-          "marketing_email_invalid": {
-            "type": "boolean",
-            "description": "Mark the email address invalid."
-          },
           "marketing_sms_invalid": {
             "type": "boolean",
             "description": "Mark the phone number invalid."
@@ -14023,10 +14019,6 @@
             ],
             "description": "SMS marketing subscription state."
           },
-          "marketing_email_invalid": {
-            "type": "boolean",
-            "description": "Mark the email address invalid."
-          },
           "marketing_sms_invalid": {
             "type": "boolean",
             "description": "Mark the phone number invalid."
@@ -14219,10 +14211,6 @@
               "null"
             ],
             "description": "SMS marketing subscription state."
-          },
-          "marketing_email_invalid": {
-            "type": "boolean",
-            "description": "Mark the email address invalid."
           },
           "marketing_sms_invalid": {
             "type": "boolean",
