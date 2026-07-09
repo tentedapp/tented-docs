@@ -386,13 +386,16 @@ POST /v1/contacts/update
 | `unsubscribed` | `boolean` | No | Unsubscribe flag |
 | `marketing_email_subscribed` | `boolean \| null` | No | Email subscription state |
 | `marketing_sms_subscribed` | `boolean \| null` | No | SMS subscription state |
-| `marketing_email_invalid` | `boolean` | No | Email validity flag |
 | `marketing_sms_invalid` | `boolean` | No | SMS validity flag |
 | `custom_fields` | `object` | No | Editable custom fields by API name |
 
 <Warning>
   A contact must always have at least one valid email or phone. An update that clears both identity fields is rejected for that item.
 </Warning>
+
+<Note>
+  `marketing_email_invalid` is system-managed and read-only: Tented sets it to `true` when a marketing email to the contact hard-bounces, and resets it to `false` when the contact's email address changes. It appears in contact responses and audience rules, but requests that include it are rejected.
+</Note>
 
 ## Update Request Example
 
