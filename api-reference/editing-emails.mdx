@@ -8,6 +8,7 @@ description: "Iterate on an email with AI, save HTML directly, update metadata, 
 ```bash
 POST   /v1/emails/{emailId}/messages
 POST   /v1/emails/{emailId}/save-code
+POST   /v1/emails/{emailId}/clone
 PATCH  /v1/emails/{emailId}
 GET    /v1/emails/{emailId}/plain-text
 PUT    /v1/emails/{emailId}/plain-text
@@ -49,6 +50,14 @@ POST /v1/emails/{emailId}/save-code
 | `code` | `string` | Yes | Full replacement HTML body, up to `2 MB` |
 
 Creates a new version synchronously and returns `200 OK` with the new `generation_id` and `version`. Unlike an AI iteration, saving code does not unapprove an approved email. Blocked while a generation is running.
+
+## Clone an Email
+
+```bash
+POST /v1/emails/{emailId}/clone
+```
+
+Duplicate an email — its content, versions, and assets — as a fresh `draft` attributed to the API principal. The clone is never approved, regardless of the source's state, so approve it separately before sending. Optionally send `{"name": "..."}`; the name defaults to `"{original name} (copy)"`. Returns `201 Created` with the new email object. Accepts an optional `Idempotency-Key` header.
 
 ## Update Metadata
 

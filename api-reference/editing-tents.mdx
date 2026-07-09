@@ -93,6 +93,27 @@ Alias rules are the same as `POST /v1/tents`:
 
 Editing checks workspace credits before the generation is queued. If the workspace cannot cover the edit, the API returns `429 Too Many Requests`.
 
+## Clone a Tent
+
+```bash
+POST /v1/tents/{tentId}/clone
+```
+
+Duplicate a tent — its latest content and assets — into a brand-new tent. The clone starts unpublished; [publish it separately](/api-reference/publishing-tents) once you're ready. Optionally send `{"name": "..."}` to name the copy; otherwise it defaults to `"Copy of {name}"`.
+
+### Response Example
+
+`201 Created`
+
+```json
+{
+  "tent_id": "9b2e0e2a-2c1d-4f77-8a3e-0e6a1d2f4c8b",
+  "name": "Copy of Product launch",
+  "status": "draft",
+  "created_at": "2026-07-08T14:00:00.000Z"
+}
+```
+
 ## Common Errors
 
 | Status | Cause |

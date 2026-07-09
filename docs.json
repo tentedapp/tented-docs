@@ -108,6 +108,7 @@
               "api-reference/creating-tents",
               "api-reference/editing-tents",
               "api-reference/uploading-assets",
+              "api-reference/managing-tent-templates",
               "api-reference/publishing-tents",
               "api-reference/unpublishing-tents",
               "api-reference/deleting-tents",

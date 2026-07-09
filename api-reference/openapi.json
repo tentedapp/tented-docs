@@ -56,6 +56,10 @@
     },
     {
       "name": "Email Templates"
+    },
+    {
+      "name": "Tent Templates",
+      "description": "Reusable, AI-editable tent layouts. Create from HTML or an existing tent, iterate with AI, approve, and clone. Approved tent templates seed new tents."
     }
   ],
   "paths": {
@@ -489,6 +493,70 @@
       }
     },
     "/v1/tents/{tentId}/assets": {
+      "get": {
+        "tags": [
+          "Tents"
+        ],
+        "operationId": "list-tent-assets",
+        "summary": "List tent assets",
+        "description": "List every asset attached to a tent. Each item includes a time-limited `download_url`.",
+        "parameters": [
+          {
+            "name": "tentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tent's assets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "assets": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Asset"
+                      },
+                      "description": "Assets attached to the tent."
+                    }
+                  },
+                  "required": [
+                    "assets"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "Tents"
@@ -10730,6 +10798,2345 @@
           }
         }
       }
+    },
+    "/v1/tents/{tentId}/assets/{assetId}": {
+      "get": {
+        "tags": [
+          "Tents"
+        ],
+        "operationId": "get-tent-asset",
+        "summary": "Get a tent asset",
+        "description": "Retrieve one asset's metadata and a `download_url`.",
+        "parameters": [
+          {
+            "name": "tentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent ID."
+          },
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Asset ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The asset.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Tents"
+        ],
+        "operationId": "delete-tent-asset",
+        "summary": "Delete a tent asset",
+        "description": "Remove an asset from the tent and delete the underlying file. Idempotent from the caller's perspective; the stored object is cleaned up best-effort.",
+        "parameters": [
+          {
+            "name": "tentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent ID."
+          },
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Asset ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDeleted"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tents/{tentId}/clone": {
+      "post": {
+        "tags": [
+          "Tents"
+        ],
+        "operationId": "clone-tent",
+        "summary": "Clone a tent",
+        "description": "Duplicate a tent — its latest content and assets — into a new idle tent. The clone starts unpublished; publish it separately.",
+        "parameters": [
+          {
+            "name": "tentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent ID to clone."
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name for the clone. Defaults to \"Copy of {name}\"."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Clone created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tent_id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "New tent ID."
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the clone."
+                    },
+                    "status": {
+                      "type": "string",
+                      "description": "Lifecycle status of the clone."
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Creation time."
+                    }
+                  },
+                  "required": [
+                    "tent_id",
+                    "name",
+                    "status",
+                    "created_at"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/emails/{emailId}/assets": {
+      "get": {
+        "tags": [
+          "Emails"
+        ],
+        "operationId": "list-email-assets",
+        "summary": "List email assets",
+        "description": "List every asset attached to an email. Each item includes a `download_url`.",
+        "parameters": [
+          {
+            "name": "emailId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Email ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The email's assets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "assets": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Asset"
+                      },
+                      "description": "Assets attached to the email."
+                    }
+                  },
+                  "required": [
+                    "assets"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Emails"
+        ],
+        "operationId": "upload-email-asset",
+        "summary": "Upload an email asset",
+        "description": "Upload one file (max 4 MB) to an email as `multipart/form-data` with a single `file` field. Reference the returned `asset_id` in `asset_ids` when iterating the email with AI.",
+        "parameters": [
+          {
+            "name": "emailId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Email ID."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The file to upload (max 4 MB)."
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Asset stored.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/emails/{emailId}/assets/{assetId}": {
+      "get": {
+        "tags": [
+          "Emails"
+        ],
+        "operationId": "get-email-asset",
+        "summary": "Get an email asset",
+        "description": "Retrieve one asset's metadata and a `download_url`.",
+        "parameters": [
+          {
+            "name": "emailId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Email ID."
+          },
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Asset ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The asset.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Emails"
+        ],
+        "operationId": "delete-email-asset",
+        "summary": "Delete an email asset",
+        "description": "Remove an asset from the email and delete the underlying file.",
+        "parameters": [
+          {
+            "name": "emailId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Email ID."
+          },
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Asset ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDeleted"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/emails/{emailId}/clone": {
+      "post": {
+        "tags": [
+          "Emails"
+        ],
+        "operationId": "clone-email",
+        "summary": "Clone an email",
+        "description": "Duplicate an email — its content, versions, and assets — as a fresh draft attributed to the API principal. The clone is never approved, regardless of the source's state.",
+        "parameters": [
+          {
+            "name": "emailId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Email ID to clone."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional idempotency key. Replaying a request with the same key returns the stored result of the first attempt. If the first attempt is still in flight, the replay fails with `409 idempotency_in_progress`."
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "description": "Name for the clone. Defaults to \"{original name} (copy)\"."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Clone created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Email"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict — see `error_code` for the specific reason.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/email-templates/{templateId}/assets": {
+      "get": {
+        "tags": [
+          "Email Templates"
+        ],
+        "operationId": "list-email-template-assets",
+        "summary": "List template assets",
+        "description": "List every asset attached to an email template. Each item includes a `download_url`.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Email template ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The template's assets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "assets": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Asset"
+                      },
+                      "description": "Assets attached to the template."
+                    }
+                  },
+                  "required": [
+                    "assets"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Email Templates"
+        ],
+        "operationId": "upload-email-template-asset",
+        "summary": "Upload a template asset",
+        "description": "Upload one file (max 4 MB) to an email template as `multipart/form-data` with a single `file` field. Reference the returned `asset_id` in `asset_ids` when iterating the template with AI.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Email template ID."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The file to upload (max 4 MB)."
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Asset stored.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/email-templates/{templateId}/assets/{assetId}": {
+      "get": {
+        "tags": [
+          "Email Templates"
+        ],
+        "operationId": "get-email-template-asset",
+        "summary": "Get a template asset",
+        "description": "Retrieve one asset's metadata and a `download_url`.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Email template ID."
+          },
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Asset ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The asset.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Email Templates"
+        ],
+        "operationId": "delete-email-template-asset",
+        "summary": "Delete a template asset",
+        "description": "Remove an asset from the email template and delete the underlying file.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Email template ID."
+          },
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Asset ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDeleted"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/email-templates/{templateId}/clone": {
+      "post": {
+        "tags": [
+          "Email Templates"
+        ],
+        "operationId": "clone-email-template",
+        "summary": "Clone an email template",
+        "description": "Duplicate an email template — its content, versions, and assets — as a fresh draft attributed to the API principal. The clone is never approved.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Email template ID to clone."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional idempotency key. Replaying a request with the same key returns the stored result of the first attempt. If the first attempt is still in flight, the replay fails with `409 idempotency_in_progress`."
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "description": "Name for the clone. Defaults to \"{original name} (copy)\"."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Clone created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailTemplate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict — see `error_code` for the specific reason.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates": {
+      "get": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "list-tent-templates",
+        "summary": "List tent templates",
+        "description": "List tent templates with cursor pagination. Responses contain metadata only — fetch HTML via each template's `content_path`. Follow `next_cursor` until it is absent.",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "any",
+                "draft",
+                "approved"
+              ],
+              "default": "any"
+            },
+            "description": "Filter by approval status."
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "updated_at",
+                "created_at",
+                "name"
+              ],
+              "default": "updated_at"
+            },
+            "description": "Sort key. Applies only when `status` is `any`."
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "desc"
+            },
+            "description": "Sort direction."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            },
+            "description": "Results per page (1–100)."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Opaque cursor from a previous response’s `next_cursor`."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of tent templates.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "templates": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/TentTemplateListItem"
+                      },
+                      "description": "Tent templates in this page."
+                    },
+                    "next_cursor": {
+                      "type": "string",
+                      "description": "Cursor for the next page. Absent when the list is exhausted."
+                    }
+                  },
+                  "required": [
+                    "templates"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "create-tent-template",
+        "summary": "Create a tent template",
+        "description": "Create a tent template from caller-supplied HTML. Seeds a completed v1 that the editor loads directly. Use `POST /v1/tent-templates/from-tent/{tentId}` to create from an existing tent, and `POST /v1/tent-templates/{templateId}/messages` to iterate with AI.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional idempotency key. Replaying a request with the same key returns the stored result of the first attempt. If the first attempt is still in flight, the replay fails with `409 idempotency_in_progress`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "description": "Internal display name for the template (1–200 characters)."
+                  },
+                  "code": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Full template HTML (1 byte – 2 MB). Must contain a `<!DOCTYPE html>` declaration."
+                  }
+                },
+                "required": [
+                  "name",
+                  "code"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Template created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TentTemplate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict — see `error_code` for the specific reason.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates/from-tent/{tentId}": {
+      "post": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "create-tent-template-from-tent",
+        "summary": "Create a tent template from a tent",
+        "description": "Create a tent template from an existing tent's latest completed render — its HTML and assets are copied into the new template.",
+        "parameters": [
+          {
+            "name": "tentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Source tent ID."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional idempotency key. Replaying a request with the same key returns the stored result of the first attempt. If the first attempt is still in flight, the replay fails with `409 idempotency_in_progress`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "description": "Internal display name for the new template (1–200 characters)."
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Template created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TentTemplate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict — see `error_code` for the specific reason.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates/{templateId}": {
+      "get": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "get-tent-template",
+        "summary": "Get a tent template",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tent template.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TentTemplate"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "delete-tent-template",
+        "summary": "Delete a tent template",
+        "description": "Delete a tent template and all of its versions. Tents already seeded from the template are unaffected.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "template_id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "Deleted template ID."
+                    },
+                    "deleted": {
+                      "type": "boolean",
+                      "description": "Always `true`."
+                    }
+                  },
+                  "required": [
+                    "template_id",
+                    "deleted"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates/{templateId}/content": {
+      "get": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "get-tent-template-content",
+        "summary": "Get template HTML",
+        "description": "Returns the HTML of the latest completed version as `text/html` (not JSON).",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The HTML document.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates/{templateId}/messages": {
+      "post": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "iterate-tent-template",
+        "summary": "Iterate with AI",
+        "description": "Queue an AI iteration on the template against its current HTML. Only one generation can run per template at a time — a second request fails with `409 generation_in_progress`. Returns `202` with `status: \"generating\"`; poll the returned generation for completion.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional idempotency key. Replaying a request with the same key returns the stored result of the first attempt. If the first attempt is still in flight, the replay fails with `409 idempotency_in_progress`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 10000,
+                    "description": "Instruction for the AI edit against the current HTML (1–10,000 characters)."
+                  },
+                  "asset_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "IDs of tent-template assets to make available to the generation."
+                  }
+                },
+                "required": [
+                  "prompt"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Iteration queued.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TentTemplateAsyncAccepted"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict — see `error_code` for the specific reason.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates/{templateId}/save-code": {
+      "post": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "save-tent-template-code",
+        "summary": "Save HTML directly",
+        "description": "Replace the template's HTML with your own code (1 byte – 2 MB), creating a new version synchronously. Blocked while an AI generation is running.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional idempotency key. Replaying a request with the same key returns the stored result of the first attempt. If the first attempt is still in flight, the replay fails with `409 idempotency_in_progress`."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Full replacement HTML document (1 byte – 2 MB)."
+                  }
+                },
+                "required": [
+                  "code"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "New version saved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "generation_id": {
+                      "type": "string",
+                      "description": "Generation recorded for this save."
+                    },
+                    "version": {
+                      "type": "integer",
+                      "description": "New version number."
+                    }
+                  },
+                  "required": [
+                    "generation_id",
+                    "version"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict — see `error_code` for the specific reason.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates/{templateId}/approve": {
+      "post": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "approve-tent-template",
+        "summary": "Approve a tent template",
+        "description": "Mark the current version as approved and usable to seed new tents. Requires at least one completed generation. Pass `version` as an optimistic-concurrency precondition; a mismatch fails with `409 approval_version_stale`. Blocked while a generation is running.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Expected current version."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Approved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TentTemplate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict — see `error_code` for the specific reason.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates/{templateId}/unapprove": {
+      "post": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "unapprove-tent-template",
+        "summary": "Unapprove a tent template",
+        "description": "Return the template to draft. Never blocked — tents already seeded from the template are unaffected, but new tents can no longer be seeded from it until it is approved again.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Back to draft.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TentTemplate"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates/{templateId}/clone": {
+      "post": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "clone-tent-template",
+        "summary": "Clone a tent template",
+        "description": "Duplicate the template — its chat, generation history, and assets — as a fresh draft.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID to clone."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Optional idempotency key. Replaying a request with the same key returns the stored result of the first attempt. If the first attempt is still in flight, the replay fails with `409 idempotency_in_progress`."
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "description": "Name for the clone. Defaults to \"Copy of {name}\"."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Clone created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TentTemplate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict — see `error_code` for the specific reason.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates/{templateId}/generations/{generationId}": {
+      "get": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "get-tent-template-generation",
+        "summary": "Get generation status",
+        "description": "Poll an AI generation. `completed` generations include the version produced and a content path; `failed` ones include `error_code` and `error_message`.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          },
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Generation ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generation state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TentTemplateGeneration"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates/{templateId}/generations/{generationId}/content": {
+      "get": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "get-tent-template-generation-content",
+        "summary": "Get generation HTML",
+        "description": "Returns the HTML produced by one specific generation as `text/html`.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          },
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Generation ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The HTML document.",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates/{templateId}/assets": {
+      "get": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "list-tent-template-assets",
+        "summary": "List template assets",
+        "description": "List every asset attached to a tent template. Each item includes a `download_url`.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The template's assets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "assets": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Asset"
+                      },
+                      "description": "Assets attached to the template."
+                    }
+                  },
+                  "required": [
+                    "assets"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "upload-tent-template-asset",
+        "summary": "Upload a template asset",
+        "description": "Upload one file (max 4 MB) to a tent template as `multipart/form-data` with a single `file` field. Reference the returned `asset_id` in `asset_ids` when iterating the template with AI.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The file to upload (max 4 MB)."
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Asset stored.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request — invalid parameters or request body. Validation failures include `details.issues` with per-field messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tent-templates/{templateId}/assets/{assetId}": {
+      "get": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "get-tent-template-asset",
+        "summary": "Get a template asset",
+        "description": "Retrieve one asset's metadata and a `download_url`.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          },
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Asset ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The asset.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Asset"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Tent Templates"
+        ],
+        "operationId": "delete-tent-template-asset",
+        "summary": "Delete a template asset",
+        "description": "Remove an asset from the tent template and delete the underlying file.",
+        "parameters": [
+          {
+            "name": "templateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Tent template ID."
+          },
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Asset ID."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDeleted"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized — missing, malformed, revoked, or expired API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -15932,6 +18339,251 @@
           "generation_id": {
             "type": "string",
             "description": "Generation to poll via `GET /v1/email-templates/{templateId}/generations/{generationId}`."
+          },
+          "message_id": {
+            "type": "string",
+            "description": "Chat message recorded for the prompt."
+          },
+          "status": {
+            "type": "string",
+            "description": "Always `generating` on acceptance."
+          }
+        },
+        "required": [
+          "template_id",
+          "generation_id",
+          "status"
+        ]
+      },
+      "Asset": {
+        "type": "object",
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "description": "Asset ID. Reference it in `asset_ids` when iterating the parent resource with AI."
+          },
+          "filename": {
+            "type": "string",
+            "description": "Original file name."
+          },
+          "content_type": {
+            "type": "string",
+            "description": "MIME type of the file."
+          },
+          "file_size": {
+            "type": "integer",
+            "description": "File size in bytes."
+          },
+          "uploaded_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Upload timestamp."
+          },
+          "uploaded_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Who uploaded the asset (API key name or user); `tented-api` for API uploads."
+          },
+          "download_url": {
+            "type": "string",
+            "description": "URL to download the file."
+          }
+        },
+        "required": [
+          "asset_id",
+          "filename",
+          "content_type",
+          "file_size",
+          "uploaded_at",
+          "download_url"
+        ],
+        "description": "An asset attached to a tent, email, email template, or tent template."
+      },
+      "AssetDeleted": {
+        "type": "object",
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "description": "Deleted asset ID."
+          },
+          "deleted": {
+            "type": "boolean",
+            "description": "Always `true`."
+          }
+        },
+        "required": [
+          "asset_id",
+          "deleted"
+        ]
+      },
+      "TentTemplateListItem": {
+        "type": "object",
+        "properties": {
+          "template_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Tent template ID."
+          },
+          "name": {
+            "type": "string",
+            "description": "Internal display name."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "approved"
+            ],
+            "description": "Lifecycle state."
+          },
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "upload",
+              "tent"
+            ],
+            "description": "How the template was created: `upload` for API- or hand-authored HTML, `tent` for templates created from an existing tent."
+          },
+          "source_tent_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Tent the template was created from, when `source_type` is `tent`."
+          },
+          "current_version": {
+            "type": "integer",
+            "description": "Latest content version number."
+          },
+          "approved_version": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Version that is approved, or `null`."
+          },
+          "number_of_iterations": {
+            "type": "integer",
+            "description": "Number of content versions (equals `current_version`)."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation time."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update."
+          },
+          "created_by_name": {
+            "type": "string",
+            "description": "Who created the template (API key name or user)."
+          }
+        },
+        "required": [
+          "template_id",
+          "name",
+          "status",
+          "current_version"
+        ]
+      },
+      "TentTemplate": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TentTemplateListItem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "latest_generation_status": {
+                "type": "string",
+                "enum": [
+                  "generating",
+                  "completed",
+                  "failed"
+                ],
+                "description": "Status of the most recent AI generation, when one exists."
+              },
+              "content_path": {
+                "type": "string",
+                "description": "API path to fetch the latest HTML, e.g. `/v1/tent-templates/{templateId}/content`."
+              }
+            }
+          }
+        ],
+        "description": "Full tent template object."
+      },
+      "TentTemplateGeneration": {
+        "type": "object",
+        "properties": {
+          "generation_id": {
+            "type": "string",
+            "description": "Generation ID."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "generating",
+              "completed",
+              "failed"
+            ],
+            "description": "Generation state."
+          },
+          "type": {
+            "type": "string",
+            "description": "Generation type, e.g. `iteration`."
+          },
+          "version": {
+            "type": "integer",
+            "description": "Content version produced (present when `completed`)."
+          },
+          "content_path": {
+            "type": "string",
+            "description": "API path to this generation’s HTML (present when `completed`)."
+          },
+          "error_code": {
+            "type": "string",
+            "description": "Failure code (present when `failed`), e.g. `generation_failed`."
+          },
+          "error_message": {
+            "type": "string",
+            "description": "Failure detail (present when `failed`)."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the generation started."
+          },
+          "completed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "When the generation finished."
+          }
+        },
+        "required": [
+          "generation_id",
+          "status",
+          "created_at"
+        ]
+      },
+      "TentTemplateAsyncAccepted": {
+        "type": "object",
+        "properties": {
+          "template_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Tent template ID."
+          },
+          "generation_id": {
+            "type": "string",
+            "description": "Generation to poll via `GET /v1/tent-templates/{templateId}/generations/{generationId}`."
           },
           "message_id": {
             "type": "string",
