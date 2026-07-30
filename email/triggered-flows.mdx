@@ -13,14 +13,15 @@ Head to **Email > Campaigns** and click **Create Triggered Flow**. Name it, and 
 
 Click the **Trigger** node to choose how contacts enter:
 
-![A screenshot of the flow builder showing the Setup Flow Trigger panel with six trigger types and the trigger node on the canvas.](../images/flow-triggers.png)
+![A screenshot of the flow builder showing the Setup Flow Trigger panel with the trigger types and the trigger node on the canvas.](../images/flow-triggers.png)
 
 - **Added to Static List** — the classic welcome-series trigger
 - **Removed from Static List**
 - **Date Based** — on, before, or after a contact date field
 - **Contact Created** — the moment someone new hits your database
 - **Contact Updated** — when a contact field changes
-- **Form Submitted** — when a visitor submits a form on one of your tents 🏕️
+- **Form Submitted** — when a visitor submits a form on one of your tents 🏕️. Each answer is also handed to the run as a [`{{campaign.dynamic.*}}` token](/email/personalization#campaign-dynamic-tokens-flows-only), so later emails can echo what was submitted.
+- **Tented API** — an external system enrolls the contact by [calling the public API](/api-reference/managing-triggered-flows#trigger-a-flow-api-trigger), optionally passing values that become `{{campaign.dynamic.*}}` tokens (a coupon code, an order number, …)
 
 You can stack multiple triggers on one flow with **+ Add trigger**.
 
