@@ -47,7 +47,7 @@ A few rules worth knowing:
 
 - **One format per token**, added anywhere after the field name. It combines with a fallback in either order — `{{contact.firstName:titlecase:default=friend}}` and `{{contact.firstName:default=friend:titlecase}}` are equivalent, and the format applies to the fallback too (a missing first name renders as "Friend").
 - **Text values only.** Number, date, and true/false fields render unchanged — a format on those is simply ignored, never an error.
-- **Spelling is forgiving.** `:titlecase`, `:Title Case`, and `:title_case` all work.
+- **Use the keywords exactly as shown above** — `:lowercase`, `:uppercase`, `:sentencecase`, `:titlecase`. Anything else is flagged as an invalid token.
 - `{{tented.*}}` sender-profile tokens don't take formats (or any other option).
 
 ## Sender-profile tokens
