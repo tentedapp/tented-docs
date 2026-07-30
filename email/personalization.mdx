@@ -25,7 +25,30 @@ Reference any [standard or custom contact field](/people/contact-fields) by its 
 Hi {{contact.firstName:default=there}},
 ```
 
-The easiest way to get the syntax right is the **Personalize** button in the editor — pick the field, set an optional default, and it inserts the token for you.
+The easiest way to get the syntax right is the **Personalize** button in the editor — pick the field, choose optional formatting, set an optional default, and it inserts the token for you.
+
+## Formatting values
+
+CRM data doesn't always arrive in the casing you want to send. Add a **case format** option to any contact or campaign dynamic token to fix it at send time:
+
+| Option | What it does | `"ada LOVELACE"` becomes |
+|---|---|---|
+| `:lowercase` | everything lowercase | `ada lovelace` |
+| `:uppercase` | everything uppercase | `ADA LOVELACE` |
+| `:sentencecase` | first letter capitalized, rest lowercase | `Ada lovelace` |
+| `:titlecase` | each word capitalized | `Ada Lovelace` |
+
+```
+Hi {{contact.firstName:titlecase}},
+Your promo code: {{campaign.dynamic.couponCode:uppercase}}
+```
+
+A few rules worth knowing:
+
+- **One format per token**, added anywhere after the field name. It combines with a fallback in either order — `{{contact.firstName:titlecase:default=friend}}` and `{{contact.firstName:default=friend:titlecase}}` are equivalent, and the format applies to the fallback too (a missing first name renders as "Friend").
+- **Text values only.** Number, date, and true/false fields render unchanged — a format on those is simply ignored, never an error.
+- **Spelling is forgiving.** `:titlecase`, `:Title Case`, and `:title_case` all work.
+- `{{tented.*}}` sender-profile tokens don't take formats (or any other option).
 
 ## Sender-profile tokens
 
@@ -47,6 +70,8 @@ Inside a [triggered flow](/email/triggered-flows), earlier steps can hand values
 ```
 
 Link a later **Send Email** step's button to that token and every contact's email points to *their own* generated page. A second Create Tent step would expose `{{campaign.dynamic.tentURL2}}`, and so on. Full walkthrough in [The Create Tent step](/email/triggered-flows#the-create-tent-step).
+
+Campaign dynamic tokens accept the same [case formats](#formatting-values) as contact tokens — `{{campaign.dynamic.couponCode:uppercase}}` — but not `:default=`; a missing value renders blank.
 
 ## Before you send
 

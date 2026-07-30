@@ -294,6 +294,8 @@ Manually enrolls a contact into an **active** flow. Optionally pass per-member c
 {"dynamic_context": {"couponCode": "SAVE20"}}
 ```
 
+Merge tokens — `{{contact.*}}` and `{{campaign.dynamic.*}}` alike — accept an optional case format, e.g. `{{campaign.dynamic.couponCode:uppercase}}`. See [Formatting values](/email/personalization#formatting-values).
+
 Enrollment respects the flow's rules: `409 Conflict` if the contact is already in the flow (`campaign_flow_already_in_flow`) or blocked by `no_reentry` (`campaign_flow_reentry_denied`), and `400 Bad Request` if disqualification rules match (`campaign_flow_contact_disqualified`).
 
 `201 Created`
