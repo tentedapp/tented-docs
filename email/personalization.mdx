@@ -63,13 +63,19 @@ These pull from your [Sender Profile](/email/email-setup) and are mainly used in
 
 ## Campaign dynamic tokens (flows only)
 
-Inside a [triggered flow](/email/triggered-flows), earlier steps can hand values to later emails through `{{campaign.dynamic.*}}` tokens. The headline example is the **Create Tent** step: with **Auto-approve** on, it publishes a personalized page and exposes its URL as:
+Inside a [triggered flow](/email/triggered-flows), `{{campaign.dynamic.*}}` tokens carry values that belong to a contact's *run* of the flow rather than to the contact record. Values arrive from three places:
+
+**Form Submitted triggers.** When a flow starts from a form submission, every answer becomes a token named after the form field, with spaces and punctuation turned into underscores (capitalization kept): a "first name" field is available to every email and webhook in that run as
 
 ```
-{{campaign.dynamic.tentURL}}
+{{campaign.dynamic.first_name}}
 ```
 
-Link a later **Send Email** step's button to that token and every contact's email points to *their own* generated page. A second Create Tent step would expose `{{campaign.dynamic.tentURL2}}`, and so on. Full walkthrough in [The Create Tent step](/email/triggered-flows#the-create-tent-step).
+Multi-choice answers arrive comma-separated.
+
+**API triggers.** A flow with a **Tented API** trigger is started by an external system [calling the public API](/api-reference/managing-triggered-flows#trigger-a-flow-api-trigger), which can pass token values along — `{"tokens": {"coupon_code": "SAVE20"}}` makes `{{campaign.dynamic.coupon_code}}` available to the run. The same goes for the `dynamic_context` payload when [adding a contact to a flow by API](/api-reference/managing-triggered-flows#add-a-contact).
+
+**Flow steps.** Earlier steps can hand values to later emails. The headline example is the **Create Tent** step: with **Auto-approve** on, it publishes a personalized page and exposes its URL as `{{campaign.dynamic.tentURL}}`. Link a later **Send Email** step's button to that token and every contact's email points to *their own* generated page — a second Create Tent step would expose `{{campaign.dynamic.tentURL2}}`, and so on. Full walkthrough in [The Create Tent step](/email/triggered-flows#the-create-tent-step). **Send Webhook** steps can likewise capture fields from the webhook's response into tokens for later steps.
 
 Campaign dynamic tokens accept the same [case formats](#formatting-values) as contact tokens — `{{campaign.dynamic.couponCode:uppercase}}` — but not `:default=`; a missing value renders blank.
 

@@ -20,6 +20,7 @@ PUT    /v1/email-flows/{flowId}/steps/{stepId}/email
 POST   /v1/email-flows/{flowId}/activate
 POST   /v1/email-flows/{flowId}/pause
 POST   /v1/email-flows/{flowId}/archive
+POST   /v1/email-flows/{flowId}/trigger
 POST   /v1/email-flows/{flowId}/contacts/{contactId}
 DELETE /v1/email-flows/{flowId}/contacts/{contactId}
 GET    /v1/email-flows/{flowId}/members
@@ -164,7 +165,8 @@ A flow can have up to `25` triggers; a contact entering via any of them joins th
 | `contact_created` | None — fires for every newly created contact |
 | `contact_updated` | `field` (standard camelCase key or custom field `api_name`), optional `operator` + `value` to filter on the new value. `changed` fires on any change |
 | `date_based` | `field` (`createdAt` or an active custom date field), `mode` (`on_date`, `before_date` + `days_before`, or `after_date` + `days_after`), optional `include_anniversaries`, `trigger_time` (`"HH:00"` or `"HH:30"`, default `"09:00"`), `timezone` (IANA, default `"UTC"`) |
-| `form_submitted` | `tent_id` + `form_id` — fires when a contact submits that form |
+| `form_submitted` | `tent_id` + `form_id` — fires when a contact submits that form. Submitted answers become `{{campaign.dynamic.<field_name>}}` tokens (field names sanitized to letters/numbers/underscores) |
+| `tented_api` | Optional `fields` — an array of `{name, type}` (`string`, `number`, or `boolean`) declaring the token keys callers may pass to [Trigger a Flow](#trigger-a-flow-api-trigger). `"trigger"` is reserved. No configuration required before activation |
 
 Replace the full trigger list with:
 
@@ -318,6 +320,26 @@ Enrollment respects the flow's rules: `409 Conflict` if the contact is already i
   }
 }
 ```
+
+### Trigger a Flow (API trigger)
+
+```bash
+POST /v1/email-flows/{flowId}/trigger
+```
+
+Enrolls a contact through the flow's `tented_api` trigger — `409 Conflict` (`flow_api_trigger_not_configured`) if the flow doesn't have one. Identify the contact with **exactly one** of `contact_id`, `email`, or `phone` (the latter two are looked up against existing contacts), and optionally pass token values:
+
+```json
+{"email": "ada@example.com", "tokens": {"coupon_code": "SAVE20"}}
+```
+
+Each token becomes a `{{campaign.dynamic.<key>}}` merge token for the run's emails and webhooks — `{{campaign.dynamic.coupon_code}}` above. The rules:
+
+- Values must be JSON scalars (string, number, or boolean); keys start with a letter and use letters/numbers/underscores. `"trigger"` is reserved.
+- If the flow's `tented_api` trigger declares `fields`, keys are restricted to the declared names and values must match the declared types (`campaign_flow_trigger_unknown_token` / `campaign_flow_trigger_invalid_token_type`). A trigger with no declared fields accepts any keys.
+- The resolved payload must stay under 64 KB (`campaign_flow_trigger_payload_too_large`).
+
+Enrollment follows the same rules as [Add a Contact](#add-a-contact) (reentry policy, disqualification) and returns `201 Created` with the membership.
 
 ### Remove a Contact
 
