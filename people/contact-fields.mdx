@@ -40,7 +40,7 @@ To add one, click **Add field**:
 
 1. Give it a **display name** — Tented auto-generates the API name (e.g., "Plan Tier" → `plan_tier`).
 2. Pick a **type**: String, Number, Boolean, or Date.
-3. Decide if it's **editable in the Tented UI** — turn this off for fields that should only be written by imports or the API, and they'll show as read-only on contact profiles.
+3. Decide if it's **editable in the Tented UI** — turn this off for fields that should only be written by imports or the API, and they'll show as read-only on contact profiles. The Editable toggle only locks manual edits: the [API](/api-reference/managing-contacts), CSV imports, and automations can always write the field, so integration-managed values stay safe from hand-edits without ever blocking the integration itself.
 
 ![A screenshot of the Add custom field dialog with a display name of Plan Tier, an auto-generated API name, and the type dropdown showing String, Number, Boolean, and Date.](../images/contact-fields-add.png)
 
