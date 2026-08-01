@@ -68,6 +68,7 @@ Fill in the **Subject** and **Preheader** fields in the header bar. A few niceti
 - The `{}` **Personalize** button inserts **personalization tokens** — any standard or [custom contact field](/people/contact-fields), in the form `{{contact.firstName}}`. They work in the subject, preheader, and anywhere in the body. (Full token reference: [Personalization Tokens](/email/personalization).)
 - Tokens resolve to an empty string when a contact is missing the value, so add a fallback for anything visible: `{{contact.firstName:default=there}}` renders as "there" when there's no first name.
 - Tokens can also reformat the value's casing on the way out — `{{contact.firstName:titlecase}}` renders "ada" as "Ada". Four options are available (`:lowercase`, `:uppercase`, `:sentencecase`, `:titlecase`), and they combine with a fallback in either order. (Details: [Formatting values](/email/personalization#formatting-values).)
+- A **"View in browser" link** is one token away: point any link at `{{tented.viewAsWebpageLink}}` and each recipient gets a personal link to a hosted copy of their exact email, live for 12 months after the send. (Details: [The view-as-webpage link](/email/personalization#the-view-as-webpage-link).)
 - Per-email **From/Reply-to overrides**: any email can use its own sender details instead of the workspace defaults.
 
 Click **Personalize** and you'll get a small builder — pick the field, choose optional formatting, set an optional default, and it inserts the token for you:
