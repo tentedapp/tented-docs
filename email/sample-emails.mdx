@@ -60,12 +60,11 @@ If neither the template nor your workspace defaults provide a from address, the 
 
 ## How a sample differs from a real send
 
-A sample is built to match a real send as closely as possible — same footer, same link handling, same rendering. The differences:
+A sample is built to match a real send as closely as possible — same footer, same link handling, same rendering. If the email includes a [view-as-webpage link](/email/personalization#the-view-as-webpage-link), it works for real: the sample's link opens a hosted copy of that exact sample. The differences:
 
 - **The subject is prefixed with "TEST: "** so nobody mistakes it for the real thing.
 - **Opens and clicks are never recorded.** Links are still rewritten through your click-tracking domain — so you can verify they work end to end — but nothing ever shows up in a results dashboard.
 - **The unsubscribe link is inert.** It's present and clickable, but leads to a page explaining that unsubscribe is not supported for sample emails. Clicking it never unsubscribes anyone.
-- **The view-as-webpage link is inert too.** If the email uses [`{{tented.viewAsWebpageLink}}`](/email/personalization#the-view-as-webpage-link), the sample's link opens a page explaining that web copies aren't created for sample emails — in a real send it opens an exact hosted copy of the delivered email.
 - **Nothing is counted.** Samples don't count toward your send usage, and they never appear in campaign metrics.
 
 ## What's next?
