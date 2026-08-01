@@ -39,13 +39,17 @@ Anything your business cares about that isn't standard — plan tier, account ow
 To add one, click **Add field**:
 
 1. Give it a **display name** — Tented auto-generates the API name (e.g., "Plan Tier" → `plan_tier`).
-2. Pick a **type**: String, Number, Boolean, or Date.
-3. Decide if it's **editable in the Tented UI** — turn this off for fields that should only be written by imports or the API, and they'll show as read-only on contact profiles.
+2. Pick a **type**: String, Email, Phone, Number, Boolean, Date, Date & time, or Select Dropdown. Email and Phone validate the value's format, and Date & time stores a full timestamp where Date is just a calendar day.
+3. Decide if it's **editable in the Tented UI** — turn this off for fields that should only be written by imports or the API, and they'll show as read-only on contact profiles. The Editable toggle only locks manual edits: the [API](/api-reference/managing-contacts), CSV imports, and automations can always write the field, so integration-managed values stay safe from hand-edits without ever blocking the integration itself.
 
+Picking **Select Dropdown** adds an **Accepted values** editor. Each option pairs a **display name** (what Tented shows everywhere) with a lowercase **internal name** (what the field actually stores) — and API updates and CSV imports must use the internal name: `active_customer`, not "Active Customer". You can reorder options, give each a color, choose a default for newly created people, and edit the set later from the field's pencil icon.
+
+{/* TODO: re-capture — the dialog now offers all eight types (String, Email, Phone, Number, Boolean, Date, Date & time, Select Dropdown) plus the Accepted values editor for selects. */}
 ![A screenshot of the Add custom field dialog with a display name of Plan Tier, an auto-generated API name, and the type dropdown showing String, Number, Boolean, and Date.](../images/contact-fields-add.png)
 
 Your custom fields appear at the top of the fields page, where you can rename them, toggle editability, or archive ones you no longer use.
 
+{/* TODO: re-capture — the fields list now shows the expanded type badges (e.g. Select, Datetime). */}
 ![A screenshot of the custom fields list showing a Plan Tier field with its Editable toggle and edit and archive controls.](../images/contact-fields-custom.png)
 
 <Tip>
