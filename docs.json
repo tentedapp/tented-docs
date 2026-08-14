@@ -67,6 +67,7 @@
               "configuring-tented/user-permissions",
               "configuring-tented/user-settings",
               "configuring-tented/workspace-settings",
+              "configuring-tented/switching-workspaces",
               "configuring-tented/analytics",
               "configuring-tented/api-keys",
               "configuring-tented/custom-domains"
