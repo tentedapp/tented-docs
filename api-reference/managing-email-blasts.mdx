@@ -165,7 +165,7 @@ Returns `200 OK` with the blast in `scheduled` status. Use `POST .../unschedule`
 </Warning>
 
 <Note>
-  **Free plan:** scheduling always succeeds, but the limits are re-checked when the schedule fires. If at send time the blast's recipient count exceeds what remains of the day's **100-email** allotment — or the workspace is over its **1,000-contact** allowance — the blast is automatically **cancelled** instead of sent: `status` becomes `cancelled`, `cancelled_reason` is set to `daily_email_limit` or `contact_allowance`, no emails go out, and `scheduled_at` keeps the originally scheduled time. Pro and Max sends are never auto-cancelled.
+  **Free plan:** scheduling always succeeds, but the limits are re-checked when the schedule fires. If at send time the blast's recipient count exceeds what remains of the day's **100-email** allotment — or the workspace is over its **1,000-contact** allowance — the blast is automatically **cancelled** instead of sent: `status` becomes `cancelled`, `cancelled_reason` is set to `daily_email_limit` or `contact_allowance`, no emails go out, and `scheduled_at` keeps the originally scheduled time. A/B test deliveries are guarded the same way at their send moments. Pro and Max sends are never auto-cancelled.
 </Note>
 
 ## Send Now
