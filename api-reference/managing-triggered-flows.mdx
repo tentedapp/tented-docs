@@ -264,7 +264,16 @@ POST /v1/email-flows/{flowId}/pause
 POST /v1/email-flows/{flowId}/archive
 ```
 
-Activation validates the whole flow. If anything is incomplete, the API returns `400 Bad Request` with `error_code: "campaign_flow_not_ready"` and the missing fields:
+Activation requires a **Pro or Max** plan. Free workspaces can create and edit flows through the API, but `POST .../activate` returns `403 Forbidden` with `error_code: "paid_plan_required"`:
+
+```json
+{
+  "error": "Activating flows requires a Pro or Max plan. Upgrade to activate this flow.",
+  "error_code": "paid_plan_required"
+}
+```
+
+Activation also validates the whole flow. If anything is incomplete, the API returns `400 Bad Request` with `error_code: "campaign_flow_not_ready"` and the missing fields:
 
 ```json
 {
@@ -396,6 +405,7 @@ Takes the same shape as [listing blasts](/api-reference/managing-email-blasts#li
 | `400 Bad Request` | Activation with incomplete config (`campaign_flow_not_ready`, with missing fields) |
 | `400 Bad Request` | Contact matches the disqualification rules (`campaign_flow_contact_disqualified`) |
 | `401 Unauthorized` | Missing or invalid bearer token |
+| `403 Forbidden` | Activation on the Free plan (`paid_plan_required`) — flows activate on Pro/Max only |
 | `404 Not Found` | Flow, step, or membership does not exist (`campaign_not_found`, `campaign_flow_step_not_found`) |
 | `409 Conflict` | Structural edit while the flow is `active` or `archived` (`campaign_not_editable`) |
 | `409 Conflict` | Invalid lifecycle transition (`campaign_invalid_state_transition`) |
