@@ -748,6 +748,16 @@
               }
             }
           },
+          "409": {
+            "description": "Conflict — a generation, manual edit, or another publication currently owns the tent. Wait for it to finish and retry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
           "429": {
             "description": "Limit exceeded — credit or publish limit reached for your plan.",
             "content": {
@@ -839,6 +849,16 @@
           },
           "404": {
             "description": "Not found — the resource does not exist in the workspace tied to your API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict — a generation, manual edit, or another publication currently owns the tent. Wait for it to finish and retry.",
             "content": {
               "application/json": {
                 "schema": {
