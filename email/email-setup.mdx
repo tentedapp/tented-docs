@@ -67,9 +67,10 @@ The footer supports tokens that are filled from your sender profile at send time
 A few behaviors worth knowing so your sends stay healthy:
 
 - **Unsubscribes are honored automatically.** An unsubscribed contact is excluded from every future marketing blast and flow — you'll see them counted as **blocked** when you pick an audience. There's no re-subscribe flow, so if someone opts out, it sticks (they can be re-added only with fresh consent on your side).
+- **Hard bounces suppress themselves.** When an address hard-bounces, Tented marks the contact's email invalid and excludes it from **every** future send — operational included, since the address simply can't receive mail. The flag is system-managed: it can't be set by hand or by imports, and it clears automatically if the contact's email address is updated.
 - **Bounces and spam reports are tracked.** They show up in your [blast](/email/email-blasts) and flow results so you can spot problem addresses, and you can export the bounced bucket to clean your list.
 - **One-click unsubscribe** is built in via the `List-Unsubscribe` header, so Gmail and Apple Mail show their native unsubscribe button — which protects your sender reputation.
-- **Operational sends bypass suppression** by design (password resets, security notices). Keep that toggle off for anything promotional.
+- **Operational sends bypass the unsubscribe preference only** (password resets, security notices) — invalid, hard-bounced addresses stay excluded even there. Keep that toggle off for anything promotional.
 
 ## You're ready to send 🎉
 
