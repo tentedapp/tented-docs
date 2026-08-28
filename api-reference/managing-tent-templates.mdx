@@ -145,7 +145,7 @@ POST /v1/tent-templates/{templateId}/approve
 POST /v1/tent-templates/{templateId}/unapprove
 ```
 
-Approving marks the template's current version usable for seeding new tents via [`POST /v1/tents` with `template_id`](/api-reference/creating-tents#create-from-a-template). The template must have at least one completed generation. Optionally send `{"version": <n>}` as an optimistic-concurrency precondition — a mismatch with the current version returns `409 Conflict` with `error_code: "approval_version_stale"`. Approval is blocked while a generation is running.
+Approving marks the template's newest **completed** version usable for seeding new tents via [`POST /v1/tents` with `template_id`](/api-reference/creating-tents#create-from-a-template). The template must have at least one completed generation. Optionally send `{"version": <n>}` as an optimistic-concurrency precondition — a mismatch with the newest completed version (normally equal to `current_version`) returns `409 Conflict` with `error_code: "approval_version_stale"`. Approval works while a generation is running — it pins the latest already-completed version; the running generation, once finished, produces a newer draft version until you approve again.
 
 Unapproving returns the template to draft and is never blocked: tents already seeded from the template are unaffected, but the template can no longer seed new tents until it is approved again. Both endpoints return the updated template object.
 

@@ -749,7 +749,7 @@
             }
           },
           "409": {
-            "description": "Conflict — a generation, manual edit, or another publication currently owns the tent. Wait for it to finish and retry.",
+            "description": "Conflict — the tent's mutation lease is briefly held (another publication in progress, or a manual edit or a generation's final commit landing at that moment). Retry shortly; a running generation does not otherwise block publishing.",
             "content": {
               "application/json": {
                 "schema": {
@@ -858,7 +858,7 @@
             }
           },
           "409": {
-            "description": "Conflict — a generation, manual edit, or another publication currently owns the tent. Wait for it to finish and retry.",
+            "description": "Conflict — the tent's mutation lease is briefly held (another publication in progress, or a manual edit or a generation's final commit landing at that moment). Retry shortly; a running generation does not otherwise block publishing.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2914,7 +2914,7 @@
         ],
         "operationId": "approve-email",
         "summary": "Approve an email",
-        "description": "Mark the current version as approved and usable by blasts and flows. Requires `subject`, `from_name`, `from_address`, and `reply_to_email` to be set (`400 email_missing_required_headers` otherwise). Pass `version` as an optimistic-concurrency precondition; a mismatch fails with `409 approval_version_stale`.",
+        "description": "Mark the newest completed version as approved and usable by blasts and flows. Requires `subject`, `from_name`, `from_address`, and `reply_to_email` to be set (`400 email_missing_required_headers` otherwise). Pass `version` as an optimistic-concurrency precondition; a mismatch with the newest completed version fails with `409 approval_version_stale`. While a generation is running, an approve without `version` fails with `409 generation_in_progress`; a version-pinned approve still succeeds.",
         "parameters": [
           {
             "name": "emailId",
@@ -10151,7 +10151,7 @@
         ],
         "operationId": "approve-email-template",
         "summary": "Approve an email template",
-        "description": "Mark the current version as approved and usable for seeding new emails via `POST /v1/emails` with `template_id`. Requires at least one completed generation (`409 template_not_ready`); unlike emails there is no required-sender-header gate — the default header fields are optional. Pass `version` as an optimistic-concurrency precondition; a mismatch fails with `409 approval_version_stale`. Blocked while a generation is running.",
+        "description": "Mark the newest completed version as approved and usable for seeding new emails via `POST /v1/emails` with `template_id`. Requires at least one completed generation (`409 template_not_ready`); unlike emails there is no required-sender-header gate — the default header fields are optional. Pass `version` as an optimistic-concurrency precondition; a mismatch with the newest completed version fails with `409 approval_version_stale`. While a generation is running, an approve without `version` fails with `409 generation_in_progress`; a version-pinned approve still succeeds.",
         "parameters": [
           {
             "name": "templateId",
@@ -12521,7 +12521,7 @@
         ],
         "operationId": "approve-tent-template",
         "summary": "Approve a tent template",
-        "description": "Mark the current version as approved and usable to seed new tents. Requires at least one completed generation. Pass `version` as an optimistic-concurrency precondition; a mismatch fails with `409 approval_version_stale`. Blocked while a generation is running.",
+        "description": "Mark the newest completed version as approved and usable to seed new tents. Requires at least one completed generation. Pass `version` as an optimistic-concurrency precondition; a mismatch with the newest completed version fails with `409 approval_version_stale`. Approval works while a generation is running — it pins the latest already-completed version.",
         "parameters": [
           {
             "name": "templateId",
