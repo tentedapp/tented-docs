@@ -22,9 +22,9 @@ POST /v1/emails/{emailId}/approve
 POST /v1/emails/{emailId}/unapprove
 ```
 
-Approving marks the email's current version usable by blasts and flows. It requires `subject`, `from_name`, `from_address`, and `reply_to_email` to be populated; otherwise the API returns `400 Bad Request` with `error_code: "email_missing_required_headers"`. Set the missing headers via [`PATCH /v1/emails/{emailId}`](/api-reference/editing-emails#update-metadata) before retrying.
+Approving marks the email's newest **completed** version usable by blasts and flows. It requires `subject`, `from_name`, `from_address`, and `reply_to_email` to be populated; otherwise the API returns `400 Bad Request` with `error_code: "email_missing_required_headers"`. Set the missing headers via [`PATCH /v1/emails/{emailId}`](/api-reference/editing-emails#update-metadata) before retrying.
 
-Optionally send `{"version": <n>}` as an optimistic-concurrency precondition — a mismatch with the current version returns `409 Conflict` with `error_code: "approval_version_stale"`.
+Optionally send `{"version": <n>}` as an optimistic-concurrency precondition — a mismatch with the newest completed version (normally equal to `current_version`) returns `409 Conflict` with `error_code: "approval_version_stale"`. While a generation is running, an approve **without** `version` is refused with `409 Conflict` and `error_code: "generation_in_progress"` — it would silently pin the pre-generation content for your next send; passing `version` explicitly still approves that already-completed version mid-generation.
 
 Unapproving is rejected while the email is scheduled in a blast (`email_in_scheduled_blast`) or used by an active flow (`email_in_active_flow`).
 
@@ -97,6 +97,8 @@ Returns `200 OK` with `{"email_id": "...", "deleted": true}`. Deletion is blocke
 | `400 Bad Request` | Approval attempted with missing sender headers (`email_missing_required_headers`) |
 | `401 Unauthorized` | Missing or invalid bearer token |
 | `404 Not Found` | Email does not exist in the workspace |
+| `409 Conflict` | Approval without a `version` while a generation is running (`generation_in_progress`) |
+| `409 Conflict` | Approval attempted with no completed generation (`email_not_ready`) |
 | `409 Conflict` | Approval version precondition failed (`approval_version_stale`) |
 | `409 Conflict` | Email is in use by a scheduled blast or active flow |
 

@@ -103,6 +103,7 @@ The same failure is also persisted into `GET /v1/tents/{tentId}` under the `publ
 | `400 Bad Request` | Invalid request body or invalid `custom_page_alias` |
 | `401 Unauthorized` | Missing or invalid bearer token |
 | `404 Not Found` | The tent does not exist |
+| `409 Conflict` | The tent's mutation lease is briefly held — another publication is in progress, or a manual edit or a generation's final commit is landing at that moment. Retry shortly. A running generation does not otherwise block publishing (you publish the latest completed version) |
 | `429 Too Many Requests` | Publish limit exceeded |
 
 <Card

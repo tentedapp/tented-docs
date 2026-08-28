@@ -45,6 +45,7 @@ curl --request POST \
 | `400 Bad Request` | `tentId` is missing or not a valid UUID |
 | `401 Unauthorized` | Missing or invalid bearer token |
 | `404 Not Found` | The tent does not exist |
+| `409 Conflict` | The tent's mutation lease is briefly held — another publication is in progress, or a manual edit or a generation's final commit is landing at that moment. Retry shortly. A running generation does not otherwise block publishing (you publish the latest completed version) |
 
 <Card
   title="Back: Publish Tents"
