@@ -23,7 +23,7 @@ Choose an existing [static or dynamic list](/people/working-with-lists), or buil
 
 Once you pick a list, Tented shows you the **qualified** count (people who will actually receive the email) and the **blocked** count (people excluded because they've unsubscribed). Click **View all** to inspect exactly who qualifies.
 
-![A screenshot of a selected audience showing 1 qualified contact and 0 blocked.](../images/blast-audience-selected.png)
+![A screenshot of a selected audience showing 8,412 qualified contacts and 147 blocked.](../images/blast-audience-selected.png)
 
 ## Step 2: Pick the email
 
@@ -42,11 +42,15 @@ Two ways to launch:
 - **Schedule send** — pick a day and time; the blast is approved now and sends automatically.
 - **Send now** — confirm, and it goes to everyone qualified immediately. This can't be undone, so the confirmation shows you the exact recipient count first.
 
-![A screenshot of the schedule step with options to schedule for a specific day and time or send now, plus the Set as operational toggle.](../images/blast-schedule-step.png)
+![A screenshot of the schedule step with options to schedule for a specific day and time or send now, plus Additional Settings with the Set as operational toggle and the AB Test section.](../images/blast-schedule-step.png)
 
 <Note>
-  **Set as operational** is for service notices — password resets, security announcements, terms changes. Operational sends go to everyone *including* unsubscribed contacts and skip the unsubscribe footer. Never use it for marketing.
+  **Set as operational** is for service notices — password resets, security announcements, terms changes. Operational sends go to unsubscribed contacts too and skip the unsubscribe footer — though contacts whose email was marked invalid by a hard bounce are still excluded (that address can't receive mail). Never use it for marketing.
 </Note>
+
+### Or make it a test
+
+Not sure which subject line (or send time, or sender) will win? The **AB Test** section under Additional Settings turns the blast into an experiment: up to five variations go to a sample of the audience, and the winner is sent to everyone else. See [A/B Testing](/email/ab-testing).
 
 <Tip>
   Scheduled the wrong thing? A scheduled blast can be **unscheduled** any time before it sends — it returns to draft (with your original send time remembered) so you can edit the audience or email and reschedule.
@@ -77,6 +81,35 @@ Click **Export** to download the contacts in the current bucket as a CSV — han
 All your blasts (and flows) live together on the **Campaigns** tab, with status and headline results at a glance.
 
 ![A screenshot of the Campaigns list showing a completed email blast with 1 sent.](../images/campaigns-list.png)
+
+## Clone a blast
+
+Running the same newsletter every month? Clone last month's instead of rebuilding it: hover a blast in the Campaigns list and click the **Clone** icon, or use the **⋯ menu > Clone campaign** inside the blast.
+
+![A screenshot of the Clone Blast dialog with a New Blast Name field prefilled with Copy of Terra Collection Launch and a note that cloned blasts always start as drafts.](../images/blast-clone-dialog.png)
+
+Cloned blasts **always start as drafts** — the audience, email, and settings carry over, but a blast that was already scheduled or sent is cloned *without* a send time, so nothing fires until you schedule it. Cloning works from any state, including completed and archived blasts, and drops you straight into the new draft.
+
+## Archive a campaign
+
+Campaigns that have actually run aren't deleted — they're **archived**, so their send history stays intact. Hover a completed (or failed) blast in the Campaigns list and click the **Archive Campaign** icon, or use **⋯ menu > Archive campaign** on the campaign's page.
+
+![A screenshot of the Campaigns list with the Archive Campaign tooltip showing on a completed blast's hover action.](../images/campaign-archive-hover.png)
+
+Confirm, and the campaign moves out of your campaigns list — its results are preserved and it stays reachable forever:
+
+![A screenshot of the Archive confirmation dialog explaining that the blast will move out of the campaigns list and its send results are preserved.](../images/campaign-archive-confirm.png)
+
+To find archived campaigns, open **Filter**, pick a **Type** first, then choose **Archived** under Status:
+
+![A screenshot of the campaigns Filter dropdown with Type set to Email Blast and the Status list showing the Archived option.](../images/campaigns-filter-archived.png)
+
+A few rules worth knowing:
+
+- **Drafts delete, ran-campaigns archive.** A blast that never sent (and a flow nobody entered) offers **Delete** instead — there's no history to preserve.
+- **In-flight blasts offer neither.** A scheduled blast must be unscheduled first, and a blast that's mid-send can't be touched.
+- **Flows archive too** — a [triggered flow](/email/triggered-flows) that has run contacts is archived once it's paused. Active flows must be paused first.
+- **Archiving is permanent.** There's no unarchive — but everything about the campaign stays viewable under the Archived filter, and you can [clone](#clone-a-blast) an archived blast into a fresh draft any time.
 
 ## What's next?
 
