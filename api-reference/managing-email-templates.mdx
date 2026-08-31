@@ -187,9 +187,9 @@ POST /v1/email-templates/{templateId}/approve
 POST /v1/email-templates/{templateId}/unapprove
 ```
 
-Approving marks the template's current version usable for seeding new emails. Unlike [emails](/api-reference/approving-emails#approve-and-unapprove), there is no required-header gate — the `default_*` fields are optional — but the template must have at least one completed generation, otherwise the API returns `409 Conflict` with `error_code: "template_not_ready"`.
+Approving marks the template's newest **completed** version usable for seeding new emails. Unlike [emails](/api-reference/approving-emails#approve-and-unapprove), there is no required-header gate — the `default_*` fields are optional — but the template must have at least one completed generation, otherwise the API returns `409 Conflict` with `error_code: "template_not_ready"`.
 
-Optionally send `{"version": <n>}` as an optimistic-concurrency precondition — a mismatch with the current version returns `409 Conflict` with `error_code: "approval_version_stale"`.
+Optionally send `{"version": <n>}` as an optimistic-concurrency precondition — a mismatch with the newest completed version (normally equal to `current_version`) returns `409 Conflict` with `error_code: "approval_version_stale"`. While a generation is running, an approve **without** `version` is refused with `409 Conflict` and `error_code: "generation_in_progress"`; passing `version` explicitly still approves that already-completed version mid-generation.
 
 Unapproving is never blocked: emails already seeded from the template are unaffected, but new emails can no longer be created from it until it is approved again. Both endpoints return the updated template object.
 

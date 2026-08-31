@@ -57,7 +57,9 @@
               "email/email-templates",
               "email/sample-emails",
               "email/email-blasts",
-              "email/triggered-flows"
+              "email/ab-testing",
+              "email/triggered-flows",
+              "email/email-performance"
             ]
           },
           {
@@ -68,6 +70,7 @@
               "configuring-tented/user-permissions",
               "configuring-tented/user-settings",
               "configuring-tented/workspace-settings",
+              "configuring-tented/switching-workspaces",
               "configuring-tented/analytics",
               "configuring-tented/api-keys",
               "configuring-tented/custom-domains"
@@ -78,6 +81,7 @@
             "pages": [
               "billing-subscriptions/upgrading-plan",
               "billing-subscriptions/managing-subscription",
+              "billing-subscriptions/ai-credits",
               "billing-subscriptions/viewing-usage"
             ]
           },
