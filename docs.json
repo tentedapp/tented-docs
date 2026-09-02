@@ -90,6 +90,7 @@
             "pages": [
               "integrations/connecting-slack",
               "integrations/connecting-microsoft-teams",
+              "integrations/connecting-origami",
               "integrations/setting-up-email-notifications",
               "integrations/webhooks"
             ]
