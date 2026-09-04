@@ -16,15 +16,23 @@ Before you begin, make sure you have:
 - **An Instantly API key**. In Instantly, go to **Settings → Integrations → API keys** and create a key with these scopes: **Campaigns** (read and update), **Leads** (all), **AI Agents** (read and update), **Webhooks** (all), and **Workspaces** (read). A key with the `all:all` scope also works.
 - **AI credits**. Each generated page uses half a credit.
 
+![Instantly's Settings → Integrations → API Keys tab with a Tented key.](../images/instantly-api-keys.png)
+
 ## Step 1: Connect Instantly
 
 1. In Tented, open **Settings → Integrations**.
 2. On the **Instantly** tile, select **Connect**.
+
+![The Integrations page with the Instantly tile and its Connect button.](../images/instantly-integrations-page.png)
 3. Paste your Instantly API key and select **Continue**. Tented checks the key with Instantly before moving on.
+
+![The Connect Instantly dialog asking for an API key.](../images/instantly-connect-key.png)
 
 ## Step 2: Choose what to generate
 
 Pick the campaign or agent to work from and the template to build pages with.
+
+![The Choose what to generate step with a campaign and a template selected.](../images/instantly-connect-pages.png)
 
 - **Instantly campaign or AI Sales Agent**: the leads that should get pages.
   - Pick a **campaign** to cover every lead in that campaign, including leads added later.
@@ -34,6 +42,8 @@ Pick the campaign or agent to work from and the template to build pages with.
 - **Tell the agent to link the page** (agents only): on by default. Tented adds a guidance rule to the agent that instructs it to include `{{tented_url}}` in the first email. Your existing rules are left as they are.
 
 Select **Advanced** to adjust three more settings:
+
+![The Advanced section with the generation prompt, link sentence, and follow-up sentence.](../images/instantly-connect-advanced.png)
 
 - **Tent generation prompt**: the instructions Tented gives the model for each page. `{{instantly.rowData}}` is replaced with the lead's data; use **Insert lead data** to place it.
 - **Link sentence**: the sentence Tented writes to each lead as `{{tented_page_offer}}`, for example `I put together a page for you here: {{url}}`. You can use `{{url}}`, `{{summary}}`, `{{first_name}}`, `{{company_name}}`, and `{{job_title}}`.
@@ -50,6 +60,8 @@ Each page uses half an AI credit. If your workspace runs out of credits, the int
 Without live sync, Tented checks for new leads every 15 minutes. With live sync, Instantly tells Tented as soon as a campaign starts emailing new leads, so a sync runs right away.
 
 If your API key has the **Webhooks** scope, Tented registers the webhook itself and this step shows **Live sync is on**. Otherwise, the easiest fix is to disable the integration and connect again with a key that has the scope. You can also add the webhook by hand:
+
+![The live sync step confirming Live sync is on.](../images/instantly-live-sync-on.png)
 
 1. In Instantly, go to **Settings → Integrations → Webhooks** and add a webhook for the **Email Sent** event.
 2. Paste the **webhook URL** shown in Tented (use the **Copy** button).
@@ -73,6 +85,8 @@ Tented fills four custom variables on every lead it builds a page for:
 
 **In a campaign**, place `{{tented_page_offer}}` on its own line in the first step and `{{tented_page_reference}}` where a follow-up refers back to the page. Instantly has no way to hide text when a variable is empty, so using the whole-sentence variables means a lead without a page simply gets an empty line instead of a broken link. Use `{{tented_url}}` directly only where every lead is guaranteed a page.
 
+![Instantly's campaign editor with {{tented_page_offer}} on its own line in the first email.](../images/instantly-campaign-editor.png)
+
 Leads that already received a step are skipped by default, so they never get these variables and their follow-ups read exactly as written.
 
 **With an AI Sales Agent**, the guidance rule Tented adds tells the agent to write `{{tented_url}}` into its first email and to leave the link out when a lead has no value yet. You can edit or remove the rule under the agent's **Memory** at any time.
@@ -85,11 +99,17 @@ Pages are generated within 15 minutes of a lead being added (sooner with live sy
 
 The Instantly tile shows the connected campaign or agent, the last sync, and a **View activity** link.
 
+![The Instantly tile after connecting, showing the campaign and last sync.](../images/instantly-card-connected.png)
+
 **Page URLs are readable.** Each page publishes at a path built from the lead's name and company, for example `https://your-domain/for-bryan-from-acme-co`. When a lead has no company, the path uses the first and last name instead.
 
 **Activity** lists each sync run with the URLs written, leads skipped, and credits used. Select a skipped count to see which leads were skipped and why. **Sync now** starts a run immediately.
 
+![The Instantly activity dialog listing recent syncs.](../images/instantly-activity.png)
+
 **Generated tents** appear in your Tents list with "Instantly Integration" as the creator. Use **Filter → Hide integration-created** to keep them out of the way while you work on other tents.
+
+![The Tents list with Instantly Integration as the creator.](../images/instantly-tents-list.png)
 
 ## Changing settings
 
