@@ -91,6 +91,7 @@
               "integrations/connecting-slack",
               "integrations/connecting-microsoft-teams",
               "integrations/connecting-origami",
+              "integrations/connecting-instantly",
               "integrations/setting-up-email-notifications",
               "integrations/webhooks"
             ]
