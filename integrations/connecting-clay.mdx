@@ -23,7 +23,7 @@ Before you begin, make sure you have:
 
 - **Admin access** to your Tented workspace. Connecting, changing settings, and disconnecting are admin-only.
 - **An approved tent template** in Tented. Pages are generated from a template's approved version. See [Templates](/working-with-tents/tent-templates) if you don't have one yet.
-- **A Clay plan with the HTTP API enrichment.** Clay lists HTTP API as an upgrade on its free plan.
+- **A Clay plan with the HTTP API enrichment.** Clay offers HTTP API on its Growth plan and above (it shows as an upgrade on the free plan).
 - **AI credits**. Each generated page uses half a credit.
 
 No Clay API key is needed.
@@ -32,9 +32,20 @@ No Clay API key is needed.
 
 1. In Tented, open **Settings → Integrations**.
 2. On the **Clay** tile, select **Connect**.
+
+![The Integrations page with the Clay tile and its Connect button.](../images/clay-integrations-page.png)
+
 3. Pick the **Tented template** each page starts from and, if you like, edit the **Link sentence**, the sentence Tented returns to Clay with the URL filled in (for example `I put together a page for you here: {{url}}`). You can use `{{url}}`, `{{first_name}}`, `{{company_name}}`, `{{job_title}}`, and `{{summary}}`.
+
+![The Choose what to generate step with a template and a link sentence.](../images/clay-connect-pages.png)
+
 4. Under **Advanced** you can also change the **tent generation prompt** (`{{clay.rowData}}` is replaced with the row's fields) and the **Follow-up sentence** returned for later steps.
-5. Select **Connect**. Tented shows the column settings for Clay.
+
+![The Advanced section with the generation prompt and follow-up sentence.](../images/clay-connect-advanced.png)
+
+5. Select **Connect**. Tented shows the column settings for Clay: the endpoint URL, the header secret, the JSON body, and the response fields, each with a copy button.
+
+![The Clay column step with the endpoint URL, header secret, and JSON body.](../images/clay-column-step.png)
 
 <Note>
 Each page uses half an AI credit. If your workspace runs out of credits, the integration pauses and resumes on its own once credits are available again.
@@ -42,14 +53,19 @@ Each page uses half an AI credit. If your workspace runs out of credits, the int
 
 ## Step 2: Add the Tented column in Clay
 
-In the Clay table you want to enrich, select **Add column**, search for **HTTP API**, and configure it with the values Tented shows (each has a copy button):
+In the Clay table you want to enrich, select **Add column → Add enrichment**, search for **HTTP API**, and pick the **HTTP API** enrichment by Clay.
+
+![Clay's enrichment search showing the HTTP API enrichment.](../images/clay-http-api-search.png)
+
+The panel opens on a **Generate** tab that asks an AI to set the call up; switch to the **Configure** tab instead and fill in the setup inputs with the values Tented shows (each has a copy button):
 
 | Setting | Value |
 |---|---|
 | Method | `POST` |
-| Endpoint URL | The per-workspace URL from the Tented dialog |
-| Header | `x-tented-webhook-secret` with the secret from the Tented dialog |
+| Endpoint | The per-workspace URL from the Tented dialog |
 | Body | The JSON below, with each value pointed at a column |
+| Headers | One key and value pair: `x-tented-webhook-secret` with the secret from the Tented dialog |
+| Response values to return | The five fields listed below |
 
 ```json
 {
@@ -62,11 +78,19 @@ In the Clay table you want to enrich, select **Add column**, search for **HTTP A
 }
 ```
 
-Paste the body, then put the cursor between each pair of quotes, type `/` and pick the column from the menu Clay opens (for example your Work Email column for `email`). A value that stays plain text is sent as text, so a pasted `"/Work Email"` would not work.
+Paste the body, then put the cursor between each pair of quotes, type `/` and pick the column from the menu Clay opens (for example your Work Email column for `email`). Each pick becomes a column chip inside the quotes. A value that stays plain text is sent as text, so a pasted `"/Work Email"` would not work.
+
+<Tip>
+For a waterfall column such as Clay's **Work Email**, the menu first shows the column as a group with its providers inside. Open the group and pick the plain **Work Email** entry at the bottom of the list, not one of the providers.
+</Tip>
+
+![The configured body with a column chip in each value.](../images/clay-column-config-body.png)
 
 `email` is required; it is how Tented recognizes a row it has already seen. Add any other columns the page should know about (industry, LinkedIn URL, notes) as extra keys: everything in the body is given to the page generator.
 
-Under **Field paths**, map the response fields you want as columns:
+Under **Headers**, select **Add a new Key and Value pair** and enter `x-tented-webhook-secret` as the key and the secret from Tented as the value. Under **Response values to return**, add the response fields you want as columns, one per tag:
+
+![The Headers and Response values to return sections filled in.](../images/clay-headers-response.png)
 
 | Field | Contents |
 |---|---|
@@ -76,7 +100,21 @@ Under **Field paths**, map the response fields you want as columns:
 | `tented_page_summary` | A one-line description of the page, filled in once the page is live |
 | `status` | `generating` until the page is live, then `ready`; `failed` if the page could not be built |
 
-Under **Run settings**, leave **Auto-update** on so a row whose input columns change is sent again; Tented answers with the same URL (and, once the page exists, the summary and `ready`). Select **Run** on one row to test: the cell fills with the URL, and the Clay tile in Tented stops saying it is waiting for the first row.
+Under **Run settings**, leave **Auto-run** on so new rows and rows whose input columns change are sent to Tented; Tented answers with the same URL for a row it has seen (and, once the page exists, the summary and `ready`).
+
+To finish, open the arrow next to **Save** and choose **Save and don't run**, so you can try one row before the whole table runs.
+
+![The Save menu with Save and don't run.](../images/clay-save-menu.png)
+
+Hover the new column's cell on one row and select its run button. Within a few seconds the cell shows **Status Code: 200**; select it to see what Tented returned: the page URL, the link sentence with the URL filled in, and `generating` as the status.
+
+![The cell details right after the first run: the URL is promised and the status is generating.](../images/clay-cell-generating.png)
+
+The Clay tile in Tented stops saying it is waiting for the first row and shows the sync. A minute or two later the page is live; run the same cell again and the status is `ready`, with the page summary filled in.
+
+![The cell details after a re-run: status ready with the page summary.](../images/clay-cell-ready.png)
+
+When you are happy with the result, run the column on the rest of the table (the column header's **Run column** menu, or **Save and run** next time you edit it).
 
 <Tip>
 If you close the dialog before adding the column, the Clay tile keeps a **Show the column settings** link that reopens it, including the header secret.
@@ -92,9 +130,21 @@ Because Tented returns the URL before the page is generated, a campaign that syn
 
 The Clay tile shows the template, the last sync, and a **View activity** link.
 
+![The Clay tile after connecting, showing the template and last sync.](../images/clay-card-connected.png)
+
 **Page URLs are readable.** Each page publishes at a path built from the row's name and company, for example `https://your-domain/for-bryan-from-acme-co`. When a row has no company, the path uses the first and last name; without a first name, a short random path is used instead.
 
-**Activity** lists each run with the pages published, rows skipped, and credits used. **Generated tents** appear in your Tents list with "Clay Integration" as the creator. Use **Filter → Hide integration-created** to keep them out of the way while you work on other tents.
+**Activity** lists each run with the pages published, rows skipped, and credits used.
+
+![The Clay activity dialog listing recent syncs.](../images/clay-activity.png)
+
+**Generated tents** appear in your Tents list with "Clay Integration" as the creator. Use **Filter → Hide integration-created** to keep them out of the way while you work on other tents.
+
+![The Tents list with Clay Integration as the creator.](../images/clay-tents-list.png)
+
+Each page is built from your template and the row's fields, so the prospect sees their own name and company:
+
+![A published page personalized for a Clay row.](../images/clay-published-page.png)
 
 **Re-runs never cost twice.** Clay calling again for a row that already has a page, whether from Auto-update or a manual re-run, returns the existing URL. Changing a row's data does not regenerate its page. The one exception is a row whose page could not be built: re-running that row starts a fresh attempt.
 
