@@ -56,6 +56,10 @@ Use the endpoint and secret from your own workspace. Tented generates the secret
 
 For guided setup, select **Copy** beside **Set up with Clay's assistant**, paste the prompt into Sculptor, and select your saved HTTP API Headers account when asked. The prompt contains the endpoint, column names, delays, and formulas, but no secret. Review the generated configuration against this guide before running it. It asks Sculptor to leave table Auto-run paused and existing campaign actions unchanged.
 
+Sculptor may create suggestions in **Sandbox Mode**. Accept each upstream suggestion with **Add column** before asking it to build the next dependent column. Use **Review changes** to inspect and apply the finished configuration. Avoid **Add and run 10 rows** during setup. Existing text-column names and test-row values may need to be entered manually.
+
+Open each suggested HTTP column's **Configure** tab before saving. Verify the selected account, request fields, response-field list, delay, and run condition in the editor; Sculptor's summary can differ from the saved configuration. Remove any generated placeholder `Authorization` header: Tented uses `x-tented-webhook-secret` through your saved account.
+
 <Note>
 Each page uses half an AI credit. If your workspace runs out of credits, the integration pauses and resumes on its own once credits are available again.
 </Note>
@@ -98,7 +102,11 @@ For a waterfall column such as Clay's **Work Email**, the menu first shows the c
 
 `email` is required; it is how Tented recognizes a row it has already seen. Add any other columns the page should know about (industry, LinkedIn URL, notes) as extra keys: everything in the body is given to the page generator.
 
-Under **Headers**, use a saved [HTTP API Headers account](https://university.clay.com/docs/http-api-integration-overview) for the secret. If that option is unavailable, add the header directly as a key/value pair and keep it private. Reuse this authentication for all four HTTP columns. Under **Response values to return**, include each field below:
+Select a saved [HTTP API Headers account](https://university.clay.com/docs/http-api-integration-overview) in the column's **Account** section for authentication. If that option is unavailable, add `x-tented-webhook-secret` directly under **Headers** as a key/value pair and keep it private. Reuse this authentication for all four HTTP columns.
+
+To create the saved account, open **Clay Settings → Connections → Create → HTTP API (Headers)**. Give it a recognizable name such as **Tented page generation**, add `x-tented-webhook-secret` as the key and the secret from Tented as its value, then save. Select this account in each HTTP column; keep the secret out of Sculptor chat and formulas.
+
+Under **Response values to return**, add each field below as a separate entry. Press **Enter** after each field name and verify that all ten entries appear before saving.
 
 | Field | Contents |
 |---|---|
