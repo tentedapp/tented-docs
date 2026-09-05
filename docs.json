@@ -92,6 +92,7 @@
               "integrations/connecting-microsoft-teams",
               "integrations/connecting-origami",
               "integrations/connecting-instantly",
+              "integrations/connecting-clay",
               "integrations/setting-up-email-notifications",
               "integrations/webhooks"
             ]
