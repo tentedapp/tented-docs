@@ -1,23 +1,25 @@
 ---
 title: "Connecting Clay"
-description: "Generate a personalized Tented page for every row in a Clay table, straight from an HTTP API column, and use the link in Clay campaigns"
+description: "Generate personalized pages from Clay rows and automatically check for ready campaign links with delayed HTTP calls"
 ---
 
-Tented connects to [Clay](https://clay.com) so every row a Clay table sends it gets a personalized landing page built from one of your approved templates. Clay does the sending: you add one **HTTP API** column to a table, and for each new row Clay calls Tented and stores the page URL it gets back in that row. Campaigns built on the table can then use the URL like any other column.
+Tented connects to [Clay](https://clay.com) so each prospect gets a personalized landing page built from an approved template. One HTTP API column starts generation; three delayed HTTP API columns check for the published page automatically. A final **Tented Result** column provides the fields for your campaign.
 
-This guide covers connecting Tented, adding the column in Clay, using the link in a Clay campaign, and what to expect afterwards.
+You can copy a setup prompt from Tented into Clay's Sculptor assistant, or configure the columns manually with the steps below.
 
 ## How it works
 
 Clay tables can't be read or updated from outside on most plans, so Tented never calls Clay. Instead Clay calls Tented:
 
-1. A new row appears in your table (or a row's data changes, if the column auto-updates).
-2. Clay's HTTP API column sends the row's fields to your Tented endpoint.
-3. Tented reserves a URL and answers immediately with `status: generating`, then builds and publishes the page in the background.
-4. Run the same cell again after publication. Tented checks the page and returns `status: ready`, its current URL, and a summary.
+1. **Tented Start** sends the prospect's fields in a `POST`. Tented reserves a URL and returns HTTP `200` with `status: generating`, a `job_id`, and a `status_url`, while generation continues in the background.
+2. **Tented Check 2m** waits 120 seconds, then makes a `GET` request to that status URL.
+3. If the page is still generating, **Tented Check 5m** waits another 180 seconds and checks again. **Tented Check 8m** does the same if needed.
+4. **Tented Result** selects the latest response for the current start. Campaign actions run only when it says `ready` and contains a URL.
+
+Clay's [Delay Runs](https://www.clay.com/changelog/delay) support delays up to 10 minutes. The [delay starts after run conditions are met](https://university.clay.com/docs/enrichments), so use **120 + 180 + 180 seconds** for approximately 2, 5, and 8 minutes elapsed. Request and queue time may make checks later. Each check depends on the preceding column and skips once generation has stopped.
 
 <Warning>
-A URL with `status: generating` is a reserved address, not a live page. Only send or sync a lead to a campaign after a fresh check returns `status: ready` and a nonempty `tented_url`. Clay Auto-run does not poll Tented while a page is being built.
+A URL with `status: generating` is a reserved address, not a live page. Delays automate checking; they do not guarantee publication. Rows still generating after the last check stay out of campaigns until a later check returns `ready` with a nonempty URL.
 </Warning>
 
 ## Prerequisites
@@ -26,7 +28,7 @@ Before you begin, make sure you have:
 
 - **Admin access** to your Tented workspace. Connecting, changing settings, and disconnecting are admin-only.
 - **An approved tent template** in Tented. Pages are generated from a template's approved version. See [Templates](/working-with-tents/tent-templates) if you don't have one yet.
-- **A Clay plan with access to the HTTP API enrichment.** Check that it is available in your workspace before connecting.
+- **A Clay plan with access to the HTTP API enrichment and Delay Runs.** Check that both are available in your workspace before connecting.
 - **AI credits**. Each generated page uses half a credit.
 
 No Clay API key is needed.
@@ -42,35 +44,38 @@ No Clay API key is needed.
 
 ![The Pages tab during setup, with a template selected and advanced instructions collapsed.](../images/clay-connect-pages.png)
 
-4. Optionally open **Messages** to customize the **Link sentence** and **Follow-up sentence**. Leave either blank to omit it. Supported placeholders appear below the fields; `{{summary}}` is available after publication and another run in Clay.
+4. Optionally open **Messages** to customize the **Link sentence** and **Follow-up sentence**. Leave either blank to omit it. Supported placeholders appear below the fields; `{{summary}}` becomes available in the automatic result checks after publication.
 
-![The Messages tab groups both outreach sentences and their supported placeholders.](../images/clay-settings-messages.png)
+![The Messages tab groups both outreach sentences.](../images/clay-settings-messages.png)
 
-5. Select **Connect & get settings**. The **Clay connection** tab opens. **Connection details** groups the endpoint and authentication header, with the secret masked by default. Expand **Request body & response fields** for the column recipe, and scroll down for the readiness checklist.
+5. Select **Connect & get settings**. The **Clay connection** tab opens. Expand **Connection details** for the endpoint and authentication header, with the secret masked by default. Three more expandable sections cover the start column, automatic checks, and campaign result.
 
-![The Clay connection tab groups the endpoint and masked secret in Connection details. This screenshot uses an example endpoint.](../images/clay-settings-connection.png)
+![The Clay connection tab groups setup into expandable sections with a copyable assistant prompt.](../images/clay-settings-connection.png)
 
 Use the endpoint and secret from your own workspace. Tented generates the secret; no Clay API key is needed.
+
+For guided setup, select **Copy** beside **Set up with Clay's assistant**, paste the prompt into Sculptor, and select your saved HTTP API Headers account when asked. The prompt contains the endpoint, column names, delays, and formulas, but no secret. Review the generated configuration against this guide before running it. It asks Sculptor to leave table Auto-run paused and existing campaign actions unchanged.
 
 <Note>
 Each page uses half an AI credit. If your workspace runs out of credits, the integration pauses and resumes on its own once credits are available again.
 </Note>
 
-## Step 2: Add the Tented column in Clay
+## Step 2: Add the start column in Clay
 
 In the Clay table you want to enrich, select **Add column → Add enrichment**, search for **HTTP API**, and pick the **HTTP API** enrichment by Clay.
 
 ![Clay's enrichment search showing the HTTP API enrichment.](../images/clay-http-api-search.png)
 
-The panel opens on a **Generate** tab that asks an AI to set the call up; switch to the **Configure** tab instead and fill in the setup inputs with the values Tented shows (each has a copy button):
+For manual setup, switch to the **Configure** tab and name the column **Tented Start**. Fill in the inputs with the values Tented shows:
 
 | Setting | Value |
 |---|---|
 | Method | `POST` |
 | Endpoint | The per-workspace URL from the Tented dialog |
 | Body | The JSON below, with each value pointed at a column |
-| Headers | One key and value pair: `x-tented-webhook-secret` with the secret from the Tented dialog |
-| Response values to return | The five fields listed below |
+| Headers | A saved HTTP API Headers account containing `x-tented-webhook-secret` and the secret from Tented |
+| Response values to return | The ten fields listed below |
+| Run settings | Run immediately; save without running while setting up |
 
 ```json
 {
@@ -93,48 +98,96 @@ For a waterfall column such as Clay's **Work Email**, the menu first shows the c
 
 `email` is required; it is how Tented recognizes a row it has already seen. Add any other columns the page should know about (industry, LinkedIn URL, notes) as extra keys: everything in the body is given to the page generator.
 
-Under **Headers**, select **Add a new Key and Value pair** and enter `x-tented-webhook-secret` as the key and the secret from Tented as the value. Under **Response values to return**, add the response fields you want as columns, one per tag:
-
-![The Headers and Response values to return sections filled in.](../images/clay-headers-response.png)
+Under **Headers**, use a saved [HTTP API Headers account](https://university.clay.com/docs/http-api-integration-overview) for the secret. If that option is unavailable, add the header directly as a key/value pair and keep it private. Reuse this authentication for all four HTTP columns. Under **Response values to return**, include each field below:
 
 | Field | Contents |
 |---|---|
+| `job_id` | An opaque polling reference. A new POST returns a fresh reference, even for an existing page. |
+| `status_url` | The complete URL for a GET check; use it unchanged and supply the same authentication header. |
+| `should_poll` | `true` only while `status` is `generating`; use this boolean for conditional checks. |
+| `poll_after_seconds` | Suggested delay: 120 after a generating POST, 180 after a generating GET, or 0 for a terminal result. |
+| `checked_at` | The time of this response, in UTC. |
 | `tented_url` | A reserved URL while generating; the current published URL when ready; empty when unavailable |
 | `tented_page_offer` | The link sentence with the URL filled in |
 | `tented_page_reference` | The follow-up sentence |
-| `tented_page_summary` | A one-line description, returned on a subsequent run after publication when available |
+| `tented_page_summary` | A one-line description, returned by checks after publication when available |
 | `status` | `generating`, `ready`, `failed`, or `unavailable`; see the readiness steps below |
 
-Under **Run settings**, **Auto-run** sends new rows and rows whose input columns change to Tented. It does not refresh an existing `generating` result just because Tented finished building the page. A separate run is needed to fetch the current status.
+Leave table Auto-run paused until the full workflow is configured. Column Auto-run alone does not poll a pending response; the delayed columns below provide those checks.
 
 To finish, open the arrow next to **Save** and choose **Save and don't run**, so you can try one row before the whole table runs.
 
 ![The Save menu with Save and don't run.](../images/clay-save-menu.png)
 
-Hover the new column's cell on one row and select its run button. Within a few seconds the cell shows **Status Code: 200**; select it to see what Tented returned: the page URL, the link sentence with the URL filled in, and `generating` as the status.
+## Step 3: Add automatic result checks
 
-![The cell details right after the first run: the URL is promised and the status is generating.](../images/clay-cell-generating.png)
+Add three more **HTTP API** columns with method **GET**, no body, the same saved header account, and the same ten response fields. Map each **Endpoint** to the preceding column's `status_url` using a Clay column chip. Do not paste the displayed chip notation as a literal URL.
 
-The Clay tile in Tented stops saying it is waiting for the first row and shows the sync. Watch **View activity** for progress. After the page publishes, run the same cell again to fetch `ready` and the page summary. Generation time varies with workload, credits, and publication limits.
+Under **Run settings**, enable column **Auto-run**, choose **Run after delay**, and set these values:
 
-![The cell details after a re-run: status ready with the page summary.](../images/clay-cell-ready.png)
+| Column name | Endpoint from | Delay in seconds | Only run if |
+|---|---|---|---|
+| **Tented Check 2m** | Tented Start → status_url | `120` | Tented Start → should_poll is `true` |
+| **Tented Check 5m** | Tented Check 2m → status_url | `180` | Tented Check 2m → should_poll is `true`, and its job_id matches Tented Start → job_id |
+| **Tented Check 8m** | Tented Check 5m → status_url | `180` | Tented Check 5m → should_poll is `true`, and its job_id matches Tented Start → job_id |
 
-When you are happy with the result, run the column on the intended rows in the rest of the table. After those pages publish, run their existing HTTP API cells again to refresh the results. In the column header's **Run column** menu, choose a run option that includes cells with existing results; running only empty cells will not update `generating` cells. Check the row scope and downstream actions before starting a bulk run.
+For example, the **Tented Check 5m** condition is:
+
+```javascript
+{{Tented Check 2m}}?.should_poll === true &&
+{{Tented Check 2m}}?.job_id === {{Tented Start}}?.job_id
+```
+
+The exact conditions for all three checks have copy buttons in **Edit settings → Clay connection → Automatic result checks**. Use Clay's formula editor to map the named references to your actual columns. Keep the endpoint reference required so a check cannot run without a URL.
+
+Matching `job_id` prevents a saved response from an earlier start from being used by a new check chain. `ready`, `failed`, and `unavailable` all return `should_poll: false`, stopping later checks. GET checks never retry generation or use Tented AI credits; Clay may charge for HTTP actions according to your plan.
+
+## Step 4: Collect one result for campaigns
+
+Add a **Formula** column named **Tented Result**, returning an object:
+
+```javascript
+[
+  {{Tented Check 8m}},
+  {{Tented Check 5m}},
+  {{Tented Check 2m}},
+  {{Tented Start}}
+].find(result => result?.job_id &&
+  result.job_id === {{Tented Start}}?.job_id) || null
+```
+
+Allow missing or skipped check columns: disable required-data toggles for the three optional check references if Clay shows them. This lets an immediately ready start, or a ready first check, reach the result without waiting for checks that will never run. The formula selects the latest response for this start, keeping its status, URL, and message fields together. It also prevents an older `ready` response from overriding a later `failed` or `unavailable` response.
+
+Extract `status`, `tented_url`, `tented_page_offer`, `tented_page_reference`, and `tented_page_summary` from **Tented Result** as needed. Map campaign values from this final result. On the downstream campaign sync or send action, set **Only run if** to:
+
+```javascript
+!!{{Tented Start}}?.job_id &&
+{{Tented Result}}?.job_id === {{Tented Start}}?.job_id &&
+{{Tented Result}}?.status === "ready" &&
+!!{{Tented Result}}?.tented_url
+```
+
+Keep campaign actions disabled while configuring and testing. An empty fallback in a message controls formatting; it does not establish readiness, because a generating result already contains a reserved URL.
+
+## Step 5: Test and enable the workflow
+
+1. Use one safe test row with downstream campaign actions disabled. Enable both [table and column Auto-run](https://university.clay.com/docs/table-management-settings) for the workflow, with no other rows scheduled to run.
+2. Run **Tented Start** for that row. HTTP `200` confirms acceptance; open the response to see `job_id`, `status_url`, and `status: generating` (or `ready` if this prospect already has a published page).
+3. Watch **View activity** in Tented. Clay's first check runs after about two minutes; subsequent checks run only if needed. Generation time varies with workload, credits, and publication limits.
+4. Verify that **Tented Result** becomes `ready` with the current URL and message fields even when later checks are skipped. Open the URL and preview your campaign mappings before enabling the campaign action.
+5. Run **Tented Start** on the intended remaining rows. With Auto-run enabled, new rows follow the same automatic check chain.
+
+If a row remains `generating` after the last check, inspect Tented activity. Once the underlying issue is resolved, run its latest GET cell again or add a deliberate later delayed check and include it first in **Tented Result**. A failed job requires an explicit POST retry. The workflow does not poll indefinitely or automatically spend credits retrying failures.
 
 <Tip>
 The column recipe and header secret remain available at **Edit settings → Clay connection**, including after your first row succeeds. Use the same instructions when adding another Clay table.
 </Tip>
 
-## Using the link in a Clay campaign
+## Existing tables and later campaign batches
 
-Before enabling a campaign sync or send action:
+If you already use a single Tented HTTP column, keep its POST body and authentication, rename it **Tented Start**, and add the five metadata response fields: `job_id`, `status_url`, `should_poll`, `poll_after_seconds`, and `checked_at`. Add the checks and final result described above, then update your campaign mappings and condition. Existing saved responses do not gain metadata automatically: run the start column for the intended rows with downstream actions disabled to initialize the new workflow.
 
-1. Run the Tented HTTP API column for the intended prospects and let the pages publish.
-2. Re-run those cells to fetch the latest results. Recheck before each campaign batch, even if an older result says `ready`.
-3. Filter the campaign input or add a condition to the downstream sync action requiring **both** `status` equal to `ready` **and** `tented_url` not empty. Keep `generating`, `failed`, and `unavailable` rows out of the campaign.
-4. Preview a ready row and open its URL before starting the batch.
-
-You can use `tented_page_offer` for a sentence containing the link, `tented_page_reference` for a follow-up, or `tented_url` for the URL alone. An empty fallback controls message formatting; it does not establish readiness, because generating rows already contain a URL and may contain a link sentence.
+Recheck before a later campaign batch, even if a saved result says `ready`. Running **Tented Start** again returns a fresh reference and the current publication state; an existing completed page is reused without generating or charging for another page. Failed rows may retry generation, so inspect the scope of a bulk POST run. A GET against an existing `status_url` only reads the result. If rechecking a GET cell, use the latest check represented in **Tented Result**, so an older saved check cannot override it.
 
 Keep pages published while their campaigns are running. A saved Clay result is a snapshot: unpublishing a page later does not update existing table cells or remove leads already synced to a campaign.
 
@@ -158,7 +211,7 @@ Each page is built from your template and the row's fields, so the prospect sees
 
 ![A published page personalized for a Clay row.](../images/clay-published-page.png)
 
-**Rechecking an existing page does not generate or charge for another page.** Changing row data does not rebuild its page. A failed attempt can be retried by running the row again: Tented resumes an existing draft when possible; if a new page must be generated, that generation uses credits.
+**GET checks never start or retry generation.** Changing row data does not rebuild an existing page. Retry a failed attempt explicitly by running **Tented Start** again: Tented resumes an existing draft when possible; if a new page must be generated, that generation uses credits.
 
 **Email identifies the prospect across your workspace.** Calls for the same normalized email, including from different Clay tables, reuse the same page. Use a different email only for a different prospect, not as a way to refresh a page.
 
@@ -172,17 +225,17 @@ Select **Edit settings** on the Clay tile. The modal has three tabs:
 |---|---|
 | **Pages** | Choose a template and expand the advanced generation prompt. These changes apply to new pages. |
 | **Messages** | Edit the link and follow-up sentences returned on future Clay requests. |
-| **Clay connection** | Copy the endpoint and header secret, revisit the body and response fields, and check the readiness steps. |
+| **Clay connection** | Copy the setup prompt, endpoint, and header secret, or expand the start, check, and campaign instructions. |
 
 ![The Edit settings Pages tab keeps advanced instructions collapsed and the modal focused.](../images/clay-settings-pages.png)
 
-Edits stay with you when switching tabs. Select **Save changes** in the footer to apply them. Saving settings does not regenerate existing pages or update previously saved Clay responses; re-run a cell to fetch updated sentences.
+Edits stay with you when switching tabs. Select **Save changes** in the footer to apply them. Saving settings does not regenerate existing pages or update previously saved Clay responses; fetch a fresh result to see updated sentences.
 
 ## Disconnecting
 
 Select **Disable** on the Clay tile. New requests to the old connection fail. Tented keeps published pages and releases unused reserved paths. A draft that has already claimed its path is retained so a new connection can finish publishing it; it is not reported as ready until publication is confirmed.
 
-When reconnecting, replace the endpoint and secret in Clay with those from the new connection. Tented remembers completed pages and reuses them. Rows whose unused reservations were released can receive a new URL, so refresh their cells and check readiness again before sending.
+When reconnecting, replace the POST endpoint and shared authentication in Clay with those from the new connection, then run **Tented Start** to get new polling references. Old status URLs cannot be reused. Tented remembers completed pages and reuses them. Rows whose unused reservations were released can receive a new URL, so check readiness again before sending.
 
 ## Troubleshooting
 
@@ -191,9 +244,13 @@ When reconnecting, replace the endpoint and secret in Clay with those from the n
 | Cell error **The row needs an email address** | The body has no `email` key, the mapped column is empty for that row, or the value is plain text instead of a column reference. | In the column's body, put the cursor inside the quotes after `"email":`, type `/` and pick the email column. |
 | Cell error **Body must be a JSON object** | The body is not a JSON object (for example a bare string or a list). | Paste the JSON body from the Tented dialog again. |
 | Cell error **401** | The header secret is missing or wrong. | Open **Edit settings → Clay connection** in Tented and paste the header name and secret again. |
+| GET error **400 / INVALID_JOB** | The polling reference is missing, malformed, or belongs to a different connection. | Map the complete `status_url` from the preceding response without editing it. |
+| GET error **404 / JOB_NOT_FOUND** | This attempt was replaced or removed. | Run **Tented Start** to get a current reference. |
 | Cell error **410** | The integration was disconnected in Tented. | Connect again and update the column with the new URL and secret. Rows that already have a page keep their URL. |
 | **Paused: out of AI credits** | The workspace has no credits left for new pages. | Add credits. The integration resumes on its own. |
 | **Paused: published-tent limit reached** | Your plan's limit on published tents is reached. | Unpublish tents or upgrade your plan. |
-| `status` stays `generating` | Clay may be showing an old response, or the page is still building, paused, or failed. | Check **Activity**, then re-run the existing cell. Auto-run does not poll for readiness. A retired attempt is retried on a subsequent request. Keep this row out of campaigns until it returns `ready`. |
-| `status` is `failed` | Tented gave up on this row's page and the row has not been re-run since. | Check **Activity** for the reason, fix it (for example add credits), then re-run the row. |
-| `status` is `unavailable` and the URL is empty | A previously completed page is unpublished or deleted. | Republish the existing page if appropriate, then re-run the cell. A deleted page is not automatically replaced. Remove or pause any campaign lead that still holds its old URL. |
+| Checks never start | Auto-run is off, or a condition or endpoint reference is misconfigured. | Check both table and column Auto-run, the preceding response's `should_poll`, and the mapped `status_url`. Delay begins only after conditions are met. |
+| Final result is empty after an early `ready` | A skipped later check is incorrectly required. | Make the check references optional in the final formula and confirm its column mappings. |
+| `status` stays `generating` after eight minutes | The page is still building, paused, or the response is stale. | Check **Activity**. Fetch a later GET result after resolving the issue; keep the row out of campaigns until `ready`. Adding credits resumes Tented's worker, but does not restart a finished Clay check chain. |
+| `status` is `failed` | Tented retired this attempt. GET does not retry it. | Check **Activity**, fix the cause, then run **Tented Start** to retry. |
+| `status` is `unavailable` and the URL is empty | A previously completed page is unpublished or deleted. | Republish the existing page if appropriate, then fetch a fresh result. A deleted page is not automatically replaced. Remove or pause any campaign lead that still holds its old URL. |
