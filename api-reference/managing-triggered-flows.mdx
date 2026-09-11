@@ -188,15 +188,49 @@ Steps form a graph. Every step needs a unique `step_id` (`1`-`120` characters) a
 
 | Type | Configuration |
 | --- | --- |
-| `send_email` | `email_id` (must be approved before activation), optional `operational` flag |
+| `send_email` | `email_id` (must be approved before activation), optional `operational` flag. Or `email_source: "flow_step"` + `create_email_step_id` to send the email a `create_email` step created for the member |
 | `wait` | Exactly one mode: `duration_amount` + `duration_unit` (`minutes`, `hours`, `days`, `weeks`), `until_date_field` (a contact date field), or `condition` (a rule tree re-evaluated periodically) |
 | `update_contact` | `updates` — an array of `{field, value, write_mode?}` assignments (`overwrite` or `skip_if_filled`), or a single `field` + `value` shorthand |
 | `add_to_list` | `list_id` — must be a static list |
 | `remove_from_list` | `list_id` — must be a static list |
 | `condition_check` | `condition` — a rule tree; branches via `true_step_id` / `false_step_id` / `default_step_id` |
 | `create_tent` | `source` (`scratch` or `template` + `template_id`), `prompt`, `auto_publish`, `custom_page_alias`, `tent_name`. `prompt`, alias, and name support `{{contact.*}}` merge tokens |
+| `create_email` | `source` (`scratch` or `template` + an approved email `template_id`), `template_mode` (`copy_only` or `generate`), `prompt`, `auto_approve` (default `true`), optional `email_name`, `subject`, `preview_text`, `from_name`, `from_address`, `reply_to_email`. Text fields support `{{contact.*}}` and `{{campaign.dynamic.*}}` merge tokens |
 | `send_webhook` | `endpoint_url` (public http(s) only), `method` (`post` default, `put`, `get`), `auth_type` (`none` or `jwt` with `token` or `secret_arn`), `custom_fields` merged into the payload |
 | `drop_from_flow` | None — terminal step that removes the member immediately |
+
+### Create Email Steps
+
+A `create_email` step creates one email per member as they pass through the flow, the email counterpart of `create_tent`. Seed it from an approved [email template](/api-reference/managing-email-templates) (`template_mode: "copy_only"` reuses the template verbatim and spends no generation credits; `generate` runs AI generation on top using `prompt`), or generate it from scratch with `prompt` alone. Header fields are optional overrides: anything you leave out falls back to the template's defaults, then to the org's sender defaults.
+
+Every text field accepts merge tokens, so the prompt or subject can reference the member's contact fields, `tented_api` trigger tokens, form-submission data, or a prior `create_tent` step's published URL:
+
+```json
+{
+  "step_id": "create-welcome",
+  "type": "create_email",
+  "source": "scratch",
+  "prompt": "Write a short welcome email for {{contact.firstName}} with a button linking to {{campaign.dynamic.tentURL}}",
+  "subject": "{{contact.firstName}}, your personalized page is ready",
+  "auto_approve": true,
+  "next_step_id": "send-welcome"
+}
+```
+
+With `auto_approve` (the default) the finished email is approved automatically. Activation then requires a resolvable subject (from the step, the template default, or the generated email) and a complete sender identity (from name, from address on the verified sending domain, and reply-to), otherwise the step cannot approve what it creates. Turn `auto_approve` off to leave the emails as drafts for manual review.
+
+To send the created email, point a later `send_email` step at the creating step instead of at an `email_id`:
+
+```json
+{
+  "step_id": "send-welcome",
+  "type": "send_email",
+  "email_source": "flow_step",
+  "create_email_step_id": "create-welcome"
+}
+```
+
+The send step resolves each member's own email at send time. A member who reaches the send step without a created email (the create step was skipped on their branch, or its email is not yet approved) records a membership failure and is retried with backoff; other members are unaffected. The created emails are linked to the flow, so deleting the flow removes them.
 
 ### Condition Rules
 

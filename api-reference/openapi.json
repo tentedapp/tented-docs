@@ -15325,6 +15325,19 @@
                 "type": "boolean",
                 "description": "Send as operational/transactional (skips unsubscribe suppression and footer)."
               },
+              "email_source": {
+                "type": "string",
+                "enum": [
+                  "existing",
+                  "inline",
+                  "flow_step"
+                ],
+                "description": "Where the email comes from: `existing` (default; `email_id` references an approved email), `inline` (an email created for this step), or `flow_step` (send the email a `create_email` step created for the member; set `create_email_step_id` instead of `email_id`)."
+              },
+              "create_email_step_id": {
+                "type": "string",
+                "description": "With `email_source: flow_step`: the `step_id` of the `create_email` step whose per-member email this step sends."
+              },
               "next_step_id": {
                 "type": "string",
                 "description": "Step to run next. Omit to end the flow after this step."
@@ -15613,6 +15626,89 @@
               "step_id"
             ],
             "description": "Generate a personalized tent for the contact."
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "create_email"
+                ]
+              },
+              "step_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "description": "Unique step identifier within the flow (1–120 characters)."
+              },
+              "label": {
+                "type": "string",
+                "description": "Optional display label."
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "scratch",
+                  "template"
+                ],
+                "description": "`scratch` (default) generates an email from the prompt; `template` seeds from an approved email template."
+              },
+              "template_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Approved email template ID (with `source: template`)."
+              },
+              "template_mode": {
+                "type": "string",
+                "enum": [
+                  "copy_only",
+                  "generate"
+                ],
+                "description": "With `source: template`: `copy_only` reuses the template verbatim (no generation credits); `generate` (default) runs AI generation on top using the prompt."
+              },
+              "prompt": {
+                "type": "string",
+                "description": "Generation prompt. Required whenever generation runs. Supports `{{contact.*}}` and `{{campaign.dynamic.*}}` merge tokens (for example a prior `create_tent` step's `{{campaign.dynamic.tentURL}}`)."
+              },
+              "auto_approve": {
+                "type": "boolean",
+                "description": "Approve the email automatically once created so a later `send_email` step (`email_source: flow_step`) can send it. Default `true`. Requires a subject and complete sender identity to resolve from the step, the template defaults, or the org sender defaults."
+              },
+              "email_name": {
+                "type": "string",
+                "description": "Name for the created email. Supports merge tokens."
+              },
+              "subject": {
+                "type": "string",
+                "description": "Subject line. Supports merge tokens. Falls back to the template default, or the generated subject for AI emails."
+              },
+              "preview_text": {
+                "type": "string",
+                "description": "Preheader text. Supports merge tokens."
+              },
+              "from_name": {
+                "type": "string",
+                "description": "Sender name override. Defaults to the template or org sender default."
+              },
+              "from_address": {
+                "type": "string",
+                "description": "Sender address override (must be on the verified sending domain). Defaults to the template or org sender default."
+              },
+              "reply_to_email": {
+                "type": "string",
+                "description": "Reply-To override. Defaults to the template or org sender default."
+              },
+              "next_step_id": {
+                "type": "string",
+                "description": "Step to run next. Omit to end the flow after this step."
+              }
+            },
+            "required": [
+              "type",
+              "step_id"
+            ],
+            "description": "Create (and by default approve) a personalized email for the contact, from an email template or generated from a prompt. A later `send_email` step with `email_source: flow_step` and `create_email_step_id` pointing here sends it."
           },
           {
             "type": "object",
