@@ -48,6 +48,7 @@ Click **+** anywhere on the canvas to add a step. You've got a full automation t
 | **Add to List / Remove from List** | Manage static list membership |
 | **Condition** | Branch the journey based on audience rules |
 | **Create Tent** | Generate a personalized landing page for the contact |
+| **Create Email** | Create a personalized email for the contact, ready for a later Send Email step |
 | **Send Webhook** | Call an external endpoint |
 | **Drop from Flow** | Exit the contact early |
 
@@ -79,6 +80,24 @@ Configure it with:
   **Use the new page's URL in a later email.** When **Auto-approve** is on, the step publishes the tent and stores its live URL in a token — shown in the panel as the **Published URL token**, `{{campaign.dynamic.tentURL}}`. Reference that token in any **Send Email** step *after* the Create Tent step, and each contact's email links to their own personalized page.
 
   A typical shape: **Create Tent** (auto-approve, prompt personalized with `{{contact.firstName}}`) → **Send Email** whose CTA links to `{{campaign.dynamic.tentURL}}`. If you have more than one Create Tent step, the second becomes `{{campaign.dynamic.tentURL2}}`, and so on.
+</Tip>
+
+### The Create Email step
+
+The **Create Email** step is the email twin of Create Tent: it creates a *personalized email for each contact* as they pass through the flow, so every person gets copy written for them rather than one shared email with merge tokens.
+
+Configure it with:
+
+- **Source** — **From scratch** (generate with AI from a prompt) or **From template** (start from an approved [email template](/email/email-templates); choose **Create without generation** to copy it as-is with no generation credits, or **Generate with prompt** to let AI rework it).
+- **Prompt** — what to write. Click **Personalize** to drop in contact tokens, or the campaign token picker for values from earlier in the run: a form submission, API trigger tokens, or a Create Tent step's `{{campaign.dynamic.tentURL}}`, so the generated email can link to that contact's own page.
+- **Email name**, **Subject**, and **Preview text** — all optional and all personalizable. A blank subject falls back to the template's default, or to the subject the AI writes for a generated email.
+- **Sender** — optional from name, from address, and reply-to overrides. Leave them blank to inherit the template's defaults, then your workspace sender defaults.
+- **Auto-approve** — approve the email the moment it's created, so a later Send Email step can send it without anyone opening the editor. Turn it off to leave each email as a draft for review.
+
+<Tip>
+  **Send what the step created.** In a later **Send Email** step, set **Email source** to **Email from a Create Email step** and pick the Create Email step. Each contact then receives their own generated email. Because the step approves emails automatically, activation checks that a subject and a complete sender identity resolve from the step, the template, or your sender defaults.
+
+  A typical shape: **Create Tent** (auto-approve) → **Create Email** (prompt: "...with a button linking to `{{campaign.dynamic.tentURL}}`") → **Send Email** sending from the Create Email step. The emails the flow creates show up in your Emails list, linked to the flow, and are removed if you delete the flow.
 </Tip>
 
 ## Activate it
