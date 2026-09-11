@@ -217,7 +217,9 @@ Every text field accepts merge tokens, so the prompt or subject can reference th
 }
 ```
 
-With `auto_approve` (the default) the finished email is approved automatically. Activation then requires a resolvable subject (from the step, the template default, or the generated email) and a complete sender identity (from name, from address on the verified sending domain, and reply-to), otherwise the step cannot approve what it creates. Turn `auto_approve` off to leave the emails as drafts for manual review.
+With `auto_approve` (the default) the finished email is approved automatically. Activation then requires a resolvable subject (from the step, the template default, or the generated email) and a complete sender identity (from name, from address on the verified sending domain, and reply-to), otherwise the step cannot approve what it creates. A template whose approved render contains `{{api.*}}` tokens is rejected at activation (`template_api_tokens`), since a flow has no token data to fill them. Turn `auto_approve` off to leave the emails as drafts for manual review.
+
+Emails the step creates are linked to the flow: they appear in your Emails list, cannot be deleted or unapproved while the flow is active, and are removed when the flow is deleted.
 
 To send the created email, point a later `send_email` step at the creating step instead of at an `email_id`:
 
@@ -230,7 +232,7 @@ To send the created email, point a later `send_email` step at the creating step 
 }
 ```
 
-The send step resolves each member's own email at send time. A member who reaches the send step without a created email (the create step was skipped on their branch, or its email is not yet approved) records a membership failure and is retried with backoff; other members are unaffected. The created emails are linked to the flow, so deleting the flow removes them.
+Activation checks that the referenced step is a `create_email` step and that the flow's edges lead from it to the send step (`create_email_step_order` otherwise). The send step resolves each member's own email at send time. A member who reaches the send step without a created email (the create step was skipped on their branch, or its email is not yet approved) records a membership failure and is retried with backoff; other members are unaffected. The created emails are linked to the flow, so deleting the flow removes them.
 
 ### Condition Rules
 
