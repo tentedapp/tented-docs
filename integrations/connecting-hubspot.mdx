@@ -49,7 +49,24 @@ Expand **Advanced** to change the copy Tented works from:
 
 Select **Connect**. Tented adds a **Tented** property group with six properties to contacts and companies in your HubSpot account (see [Using the fields in HubSpot](#using-the-fields-in-hubspot)), then starts watching any lists you chose.
 
-## Step 3: Create a page from a record
+## Step 3: Add the Tented card to records
+
+HubSpot only shows an app's card on records after someone adds it to the record view. Tented can't do this for you, so the last step of setup in Tented walks you through it:
+
+1. Open any contact in HubSpot.
+2. Select **Customize record** at the top of the record, then **Default view**.
+3. In the right sidebar, select **+** where the card should sit, choose **Tented personalized page**, and save.
+4. Repeat on a company.
+
+{/* screenshot: hubspot-customize-record.png */}
+
+If you installed Tented from the HubSpot App Marketplace, a Super Admin can add it to every view at once instead: open **Settings → Integrations → Connected apps**, select **Tented**, open the **App cards** tab, and select **Manage locations**.
+
+<Note>
+Pages for the lists you chose in Step 2 are created without the card. The card is for creating a page from one record by hand.
+</Note>
+
+## Step 4: Create a page from a record
 
 Open any contact or company in HubSpot. The **Tented personalized page** card sits in the right sidebar.
 
@@ -64,7 +81,7 @@ Open any contact or company in HubSpot. The **Tented personalized page** card si
 To replace a page, select **Regenerate** on the card. The record keeps its old link until the new page is ready.
 
 <Tip>
-Don't see the card? Open the record, select **Customize record**, and add **Tented personalized page** to the sidebar. Only users who can install apps see the card until it's added to the default view.
+Don't see the card? It hasn't been added to the record view yet. See [Step 3](#step-3-add-the-tented-card-to-records).
 </Tip>
 
 ## Using the fields in HubSpot
@@ -111,6 +128,7 @@ Uninstalling the Tented app from HubSpot (**Settings → Integrations → Connec
 | **Paused: published-tent limit reached** | Your plan's published page limit is full | Unpublish pages or upgrade |
 | **Paused: HubSpot access was revoked** | The app was uninstalled in HubSpot, or the user who connected it lost access | Select **Reconnect HubSpot** on the tile |
 | **Paused** with a settings message | The template or a watched list is no longer usable | Select **Review settings** |
+| No Tented card on contact or company records | The card hasn't been added to the record view | Follow [Step 3](#step-3-add-the-tented-card-to-records) |
 | The card says **Connect this HubSpot account to Tented** | This HubSpot account isn't connected to a Tented workspace | Connect from **Settings → Integrations** in Tented |
 | **This HubSpot account is already connected to another Tented workspace** | One HubSpot account can only feed one workspace | Disconnect it there first |
 | The card shows **Failed** | Generation didn't complete, or the record was deleted while it ran | Select **Try again**; check the Activity dialog for the reason |
