@@ -35,7 +35,7 @@ If you installed Tented from the HubSpot App Marketplace instead, HubSpot sends 
 {/* screenshot: hubspot-connect-pages.png */}
 
 - **Tented template**: the approved template each page starts from. Tented picks your most recently approved template; change it if you like. Every page is personalized to the record using all of its properties, and for a contact, its company's properties too.
-- **Automatically create pages for**: optional. Pick a **contact list** and/or a **company list**. Tented checks them every few minutes and creates a page for every new member. Leave both on **None** to create pages only when someone clicks the card on a record.
+- **Automatically create pages for**: optional. Pick a **contact list** and/or a **company list**. Tented checks them about every 15 minutes (or straight away when you select **Sync now** on the tile) and creates a page for every new member. Leave both on **None** to create pages only when someone clicks the card on a record.
 
 ### Advanced
 
@@ -97,7 +97,7 @@ Tented writes these properties to every contact or company it makes a page for:
 | `tented_page_status` | `Generating`, `Ready`, or `Failed` |
 | `tented_page_generated_at` | When the page was last published |
 
-Use them as personalization tokens wherever HubSpot supports them, for example `{{ contact.tented_page_offer }}` in a sequence step or marketing email. Filter a list or branch a workflow on **Tented page status is Ready** so only records with a live page get the step that links to it.
+Insert them as personalization tokens wherever HubSpot offers its **Personalize** menu, such as a sequence step, a sales email template, or a marketing email: pick the contact (or company) property named **Tented page offer**. Filter a list or branch a workflow on **Tented page URL is known** so only records with a live page get the step that links to it. Prefer the URL over **Tented page status is Ready**: while a page is being regenerated the status reads **Generating** for a few minutes even though the existing link still works.
 
 {/* screenshot: hubspot-sequence-token.png, hubspot-properties-on-record.png */}
 
@@ -118,7 +118,7 @@ Select **Edit settings** on the HubSpot tile to change the template, the watched
 
 Select **Disable** on the HubSpot tile. Tented stops creating pages for new list members and the card in HubSpot shows as not connected. Pages already generated, and the Tented properties already written to your records, are not deleted.
 
-Uninstalling the Tented app from HubSpot (**Settings → Integrations → Connected apps**) has the same effect on Tented's side: the tile shows **Paused** until you reconnect.
+Uninstalling the Tented app from HubSpot (**Settings → Integrations → Connected apps**) is noticed by Tented within about 15 minutes: the tile shows **Paused** with **HubSpot access was revoked**, and any requests that were waiting are kept until you select **Reconnect HubSpot**. To remove the connection entirely, select **Disable** in Tented as well.
 
 ## Troubleshooting
 
