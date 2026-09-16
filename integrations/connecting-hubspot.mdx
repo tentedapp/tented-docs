@@ -97,7 +97,7 @@ The **Contacts** line on the HubSpot tile shows the sync mode, how many contacts
 
 ![The HubSpot tile with its Contacts line: two-way sync, linked contacts, last sync, and contacts HubSpot did not accept.](../images/hubspot-card-contacts.png)
 
-Contacts created by the sync show **HubSpot** as their source. Each sync applies only the properties HubSpot changed, so an edit made in Tented survives an unrelated HubSpot change; if the same field changed on both sides between two syncs, the HubSpot value wins. With two-way sync, a Tented value that is not one of a HubSpot dropdown's options (for example a lifecycle stage HubSpot does not have) is left out, and the rest of the contact is still sent. Changing the mapping or the list later re-reads the account with the new settings; contacts already in Tented are updated, not duplicated.
+Contacts created by the sync show **HubSpot** as their source. Each sync applies only the properties HubSpot changed, so an edit made in Tented survives an unrelated HubSpot change; if the same field changed on both sides between two syncs, the HubSpot value wins. With two-way sync, a Tented value that is not one of a HubSpot dropdown's options (for example a lifecycle stage HubSpot does not have) is left out, and the rest of the contact is still sent. HubSpot's own default for a new contact (lifecycle stage Lead) then fills that field in Tented only if it is empty. Changing the mapping or the list later re-reads the account with the new settings; contacts already in Tented are updated, not duplicated.
 
 ## Step 3: Add the Tented card to records
 
