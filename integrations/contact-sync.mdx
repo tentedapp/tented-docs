@@ -37,7 +37,9 @@ Contacts are matched on email, then phone. If a matching contact already exists 
 
 Each sync applies only the fields the app actually changed since the last one, so an edit made in Tented is kept when the app changes a different field. If the same field changed on both sides between two syncs, the app's value wins. A field emptied in the app is emptied in Tented too, unless its rule is **Do Nothing**.
 
-Two-way sync sends only the fields that changed in Tented. Phone numbers keep the app's own formatting until the number itself is changed in Tented.
+Two-way sync sends only the fields that changed in Tented. Phone numbers keep the app's own formatting until the number itself is changed in Tented. For a field that is a dropdown in the app, such as a lifecycle stage, Tented sends the matching option; a value the app has no option for is left out, and the rest of the contact still goes. If the app then fills that field with its own default (HubSpot sets a new contact's lifecycle stage to Lead), the default only fills the field in Tented when it is empty; it never replaces the Tented value.
+
+If the app refuses a contact outright, the integration card shows how many contacts were not accepted and the reason for the latest one. A refused contact is tried again the next time it changes in Tented.
 
 ## The first sync
 
@@ -50,6 +52,8 @@ Contacts created by a sync show the app's name as their source.
 ## Disconnecting
 
 Disconnecting removes the app's field group and its values from every contact. The contacts, and everything in their standard fields, stay. Lists or flows whose rules, triggers or steps used those fields keep running, with those conditions matching nobody, and show **Needs attention** (in the lists table, the flows table and the flow editor) until they are changed. The confirmation names them before you disconnect. Removing a field from the mapping later works the same way for that one field.
+
+![A dynamic list whose rule used a removed HubSpot field, marked Needs attention in the lists table.](../images/contact-sync-needs-attention.png)
 
 If you reconnect the same account, the fields and links from before are kept.
 

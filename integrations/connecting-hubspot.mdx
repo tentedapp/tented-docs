@@ -63,6 +63,8 @@ Pick one of three options:
 - **Import HubSpot contacts into Tented.** HubSpot contacts appear in People and are kept up to date about every 15 minutes. Tented never writes back.
 - **Keep Tented and HubSpot in sync.** Changes flow both ways: HubSpot edits come in, and Tented edits and new Tented contacts go back to HubSpot.
 
+![The Contacts step: the three sync options and the standard field mapping.](../images/hubspot-contacts-step.png)
+
 ### Standard fields
 
 HubSpot's standard properties (email, first and last name, company, job title, lifecycle stage, lead status, and so on) are matched to Tented's fields for you. For each one, choose what happens when a Tented contact already has a value, exactly as in a list import: **Overwrite** or **Do Nothing**. Email and phone are the match keys that pair a contact with its HubSpot record the first time; once paired, the record is what identifies the contact, so an email changed on either side updates the same contact instead of creating another.
@@ -78,6 +80,10 @@ Any other HubSpot property can come along too. Select **Add HubSpot fields**, pi
 
 These arrive as a **HubSpot fields** group on every contact, next to your own custom fields, and are marked as managed by HubSpot in People settings. Each one uses a custom field slot from your workspace's allowance, and the step shows how many are left. Dropdowns with more than 25 options, multiple-choice properties, and calculated properties come in as read-only text.
 
+![The HubSpot fields section with Industry set to Editable, and the duplicates choice below it.](../images/hubspot-contacts-fields.png)
+
+![A contact in People with its HubSpot fields group; Industry is marked as syncing back.](../images/hubspot-contact-fields-group.png)
+
 ### Duplicates and scope
 
 - **If a contact already exists in Tented**, choose whether to update it using the rules above or skip it entirely.
@@ -87,7 +93,11 @@ These arrive as a **HubSpot fields** group on every contact, next to your own cu
 
 The first sync reads every contact in the account (or the chosen list) and imports them in one run. It shows in **People → Past imports** as a HubSpot initial sync with counts, and only rows that failed or were skipped are kept for review. A million contacts take under an hour to read; the import itself runs alongside your other work without slowing it down. After that, Tented picks up changes about every 15 minutes.
 
-Contacts created by the sync show **HubSpot** as their source. Each sync applies only the properties HubSpot changed, so an edit made in Tented survives an unrelated HubSpot change; if the same field changed on both sides between two syncs, the HubSpot value wins. Changing the mapping or the list later re-reads the account with the new settings; contacts already in Tented are updated, not duplicated.
+The **Contacts** line on the HubSpot tile shows the sync mode, how many contacts are linked, when the last sync ran, and how many contacts HubSpot did not accept.
+
+![The HubSpot tile with its Contacts line: two-way sync, linked contacts, last sync, and contacts HubSpot did not accept.](../images/hubspot-card-contacts.png)
+
+Contacts created by the sync show **HubSpot** as their source. Each sync applies only the properties HubSpot changed, so an edit made in Tented survives an unrelated HubSpot change; if the same field changed on both sides between two syncs, the HubSpot value wins. With two-way sync, a Tented value that is not one of a HubSpot dropdown's options (for example a lifecycle stage HubSpot does not have) is left out, and the rest of the contact is still sent. HubSpot's own default for a new contact (lifecycle stage Lead) then fills that field in Tented only if it is empty. Changing the mapping or the list later re-reads the account with the new settings; contacts already in Tented are updated, not duplicated.
 
 ## Step 3: Add the Tented card to records
 
@@ -187,4 +197,5 @@ Uninstalling the app in HubSpot also removes the Tented card from every record v
 | A list member didn't get a page | It already had one, or it joined before the list was chosen | Open the record and use the card |
 | **This mapping needs N custom field slots but the workspace has M left** | Your workspace is near its custom-field allowance | Remove HubSpot fields from the mapping, or archive unused custom fields in People settings |
 | **Paused** with **Contact sync: "property" no longer exists in HubSpot** | A mapped property was deleted in HubSpot | Select **Edit** next to Contacts and remove or replace the field |
-| A list or flow shows **Needs attention** | A rule uses a HubSpot field that was removed when the integration was disconnected | Open the rule and replace the condition |
+| A list or flow shows **Needs attention** | A rule uses a HubSpot field that was removed from the mapping or with the disconnect | Open the rule and replace the condition |
+| The tile shows **N not accepted by HubSpot** | HubSpot refused those contacts; the latest reason is shown next to the count | Fix the value HubSpot names on the contact in Tented; it is sent again on its next change |
