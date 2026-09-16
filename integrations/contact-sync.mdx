@@ -15,9 +15,13 @@ Every integration with contact sync asks the same question during setup:
 | **Import** | The app's contacts appear in People and are kept up to date about every 15 minutes. Tented never writes back. |
 | **Two-way** | Changes flow both ways: the app's edits come in, and Tented edits and new Tented contacts go back. When the sync is limited to one of the app's lists, only contacts from that list and contacts created in Tented go back; contacts that came from a list import or another integration stay in Tented. |
 
+## Limiting the sync to a list
+
+You can limit the sync to one of the app's lists. Contacts in that list come in and, with two-way sync, go back. A contact that leaves the list stops syncing in both directions from its next change onward, and picks up again when it rejoins. Contacts created in Tented are the one exception: once Tented has created them in the app they stay in step whether or not they are in the list, because that pairing exists because of Tented, not the list.
+
 ## Which fields sync
 
-**Standard fields** (name, email, company, and so on) are matched to Tented's fields for you. For each, choose what happens when a Tented contact already has a value: **Overwrite** or **Do Nothing**, the same choice a list import offers. Email and phone are match keys and are never overwritten. With two-way sync the rule works the same way in the other direction: a **Do Nothing** field is only ever filled in on the app's side, never replaced, so each side keeps its own value.
+**Standard fields** (name, email, company, and so on) are matched to Tented's fields for you. For each, choose what happens when a Tented contact already has a value: **Overwrite** or **Do Nothing**, the same choice a list import offers. Email and phone are the match keys that pair a contact with an app record the first time; after that they follow the same rules as every other field (see **Duplicates and conflicts**), except that an email or phone emptied in the app never empties Tented's copy. With two-way sync the rule works the same way in the other direction: a **Do Nothing** field is only ever filled in on the app's side, never replaced, so each side keeps its own value.
 
 **App fields** are any other properties you add. They appear as their own group on each contact (for example **HubSpot fields**) and are marked as managed by that integration in People settings. Each is either **Read-only** (the app owns the value) or, with two-way sync, **Editable** (edits in Tented go back to the app). Types Tented does not have, such as multiple-choice or calculated properties, come in as read-only text; file and rich-text properties cannot be synced.
 
@@ -29,7 +33,7 @@ The app's opt-out flag is mapped to Tented's **Unsubscribed** by default and onl
 
 ## Duplicates and conflicts
 
-Contacts are matched on email, then phone. If a matching contact already exists in Tented, you choose whether to update it using the field rules above or skip it. Once a contact is linked to an app record, that link is what identifies it: an email or phone changed in the app updates the same Tented contact rather than creating another.
+Contacts are matched on email, then phone. If a matching contact already exists in Tented, you choose whether to update it using the field rules above or skip it. Once a contact is linked to an app record, that link is what identifies it: an email or phone changed in the app updates the same Tented contact rather than creating another, and an email or phone changed in Tented is kept (and, with two-way sync, sent to the app) unless the app changed it too.
 
 Each sync applies only the fields the app actually changed since the last one, so an edit made in Tented is kept when the app changes a different field. If the same field changed on both sides between two syncs, the app's value wins. A field emptied in the app is emptied in Tented too, unless its rule is **Do Nothing**.
 

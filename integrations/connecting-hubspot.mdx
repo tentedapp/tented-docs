@@ -65,7 +65,7 @@ Pick one of three options:
 
 ### Standard fields
 
-HubSpot's standard properties (email, first and last name, company, job title, lifecycle stage, lead status, and so on) are matched to Tented's fields for you. For each one, choose what happens when a Tented contact already has a value, exactly as in a list import: **Overwrite** or **Do Nothing**. Email and phone are the match keys, so contacts are de-duplicated on them and never overwritten.
+HubSpot's standard properties (email, first and last name, company, job title, lifecycle stage, lead status, and so on) are matched to Tented's fields for you. For each one, choose what happens when a Tented contact already has a value, exactly as in a list import: **Overwrite** or **Do Nothing**. Email and phone are the match keys that pair a contact with its HubSpot record the first time; once paired, the record is what identifies the contact, so an email changed on either side updates the same contact instead of creating another.
 
 HubSpot's **Opted out of all email** flag is mapped to Tented's **Unsubscribed** by default. It only ever unsubscribes a contact in Tented; a contact who unsubscribed in Tented is never re-subscribed by HubSpot. With two-way sync on, Tented unsubscribes are written to a **Unsubscribed in Tented** property in HubSpot so you can build a list or workflow on it.
 
@@ -81,7 +81,7 @@ These arrive as a **HubSpot fields** group on every contact, next to your own cu
 ### Duplicates and scope
 
 - **If a contact already exists in Tented**, choose whether to update it using the rules above or skip it entirely.
-- **Only contacts in this HubSpot list** limits the sync to one list. Leave it on **All contacts** to sync the whole account.
+- **Only contacts in this HubSpot list** limits the sync to one list. Leave it on **All contacts** to sync the whole account. A contact that leaves the list stops syncing from its next change onward and picks up again when it rejoins; contacts created in Tented stay in step whether or not they are in the list.
 
 ### What happens after you save
 
