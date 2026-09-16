@@ -13,11 +13,11 @@ Every integration with contact sync asks the same question during setup:
 | --- | --- |
 | **Don't sync contacts** | Nothing changes in People. |
 | **Import** | The app's contacts appear in People and are kept up to date about every 15 minutes. Tented never writes back. |
-| **Two-way** | Changes flow both ways: the app's edits come in, and Tented edits and new Tented contacts go back. |
+| **Two-way** | Changes flow both ways: the app's edits come in, and Tented edits and new Tented contacts go back. When the sync is limited to one of the app's lists, only contacts from that list and contacts created in Tented go back; contacts that came from a list import or another integration stay in Tented. |
 
 ## Which fields sync
 
-**Standard fields** (name, email, company, and so on) are matched to Tented's fields for you. For each, choose what happens when a Tented contact already has a value: **Overwrite** or **Do Nothing**, the same choice a list import offers. Email and phone are match keys and are never overwritten.
+**Standard fields** (name, email, company, and so on) are matched to Tented's fields for you. For each, choose what happens when a Tented contact already has a value: **Overwrite** or **Do Nothing**, the same choice a list import offers. Email and phone are match keys and are never overwritten. With two-way sync the rule works the same way in the other direction: a **Do Nothing** field is only ever filled in on the app's side, never replaced, so each side keeps its own value.
 
 **App fields** are any other properties you add. They appear as their own group on each contact (for example **HubSpot fields**) and are marked as managed by that integration in People settings. Each is either **Read-only** (the app owns the value) or, with two-way sync, **Editable** (edits in Tented go back to the app). Types Tented does not have, such as multiple-choice or calculated properties, come in as read-only text; file and rich-text properties cannot be synced.
 
@@ -30,6 +30,8 @@ The app's opt-out flag is mapped to Tented's **Unsubscribed** by default and onl
 ## Duplicates and conflicts
 
 Contacts are matched on email, then phone. If a matching contact already exists in Tented, you choose whether to update it using the field rules above or skip it. If the same field changed on both sides between two syncs, the app's value wins.
+
+Two-way sync sends only the fields that changed in Tented. Phone numbers keep the app's own formatting until the number itself is changed in Tented.
 
 ## The first sync
 
