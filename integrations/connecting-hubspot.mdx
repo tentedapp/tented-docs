@@ -87,7 +87,7 @@ These arrive as a **HubSpot fields** group on every contact, next to your own cu
 
 The first sync reads every contact in the account (or the chosen list) and imports them in one run. It shows in **People → Past imports** as a HubSpot initial sync with counts, and only rows that failed or were skipped are kept for review. A million contacts take under an hour to read; the import itself runs alongside your other work without slowing it down. After that, Tented picks up changes about every 15 minutes.
 
-Contacts created by the sync show **HubSpot** as their source. If the same field changed on both sides between two syncs, the HubSpot value wins. Changing the mapping or the list later re-reads the account with the new settings; contacts already in Tented are updated, not duplicated.
+Contacts created by the sync show **HubSpot** as their source. Each sync applies only the properties HubSpot changed, so an edit made in Tented survives an unrelated HubSpot change; if the same field changed on both sides between two syncs, the HubSpot value wins. Changing the mapping or the list later re-reads the account with the new settings; contacts already in Tented are updated, not duplicated.
 
 ## Step 3: Add the Tented card to records
 

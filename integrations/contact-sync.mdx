@@ -29,18 +29,24 @@ The app's opt-out flag is mapped to Tented's **Unsubscribed** by default and onl
 
 ## Duplicates and conflicts
 
-Contacts are matched on email, then phone. If a matching contact already exists in Tented, you choose whether to update it using the field rules above or skip it. If the same field changed on both sides between two syncs, the app's value wins.
+Contacts are matched on email, then phone. If a matching contact already exists in Tented, you choose whether to update it using the field rules above or skip it. Once a contact is linked to an app record, that link is what identifies it: an email or phone changed in the app updates the same Tented contact rather than creating another.
+
+Each sync applies only the fields the app actually changed since the last one, so an edit made in Tented is kept when the app changes a different field. If the same field changed on both sides between two syncs, the app's value wins. A field emptied in the app is emptied in Tented too, unless its rule is **Do Nothing**.
 
 Two-way sync sends only the fields that changed in Tented. Phone numbers keep the app's own formatting until the number itself is changed in Tented.
 
 ## The first sync
 
-The first sync reads every contact in the app (or the list you chose) and imports them in one run, shown in **People → Past imports** with counts. Very large accounts, in the millions of contacts, are read over about an hour and imported in the background without slowing down the rest of your workspace. Later syncs only fetch what changed.
+The first sync reads every contact in the app (or the list you chose) and imports them in one run, shown in **People → Past imports** with counts. There is no size limit: an account with millions of contacts is read in pages over a few hours, prepared and imported in the background in bounded batches so the rest of your workspace (and other workspaces) stay responsive, and picked up where it left off if anything interrupts it. A very large account can take a day to finish. Later syncs only fetch what changed.
+
+If part of the first sync fails, it is tried again automatically; if it keeps failing, the integration card says so and saving the sync settings starts it over.
 
 Contacts created by a sync show the app's name as their source.
 
 ## Disconnecting
 
-Disconnecting removes the app's field group and its values from every contact. The contacts, and everything in their standard fields, stay. Lists or flows whose rules used those fields keep running, with those conditions matching nobody, and show **Needs attention** until the rule is changed. The confirmation names them before you disconnect.
+Disconnecting removes the app's field group and its values from every contact. The contacts, and everything in their standard fields, stay. Lists or flows whose rules, triggers or steps used those fields keep running, with those conditions matching nobody, and show **Needs attention** (in the lists table, the flows table and the flow editor) until they are changed. The confirmation names them before you disconnect. Removing a field from the mapping later works the same way for that one field.
+
+If you reconnect the same account, the fields and links from before are kept.
 
 See [Connecting HubSpot](/integrations/connecting-hubspot#syncing-contact-data-optional) for the HubSpot specifics.
