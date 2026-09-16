@@ -93,6 +93,7 @@
               "integrations/connecting-origami",
               "integrations/connecting-instantly",
               "integrations/connecting-clay",
+              "integrations/connecting-hubspot",
               "integrations/setting-up-email-notifications",
               "integrations/webhooks"
             ]
