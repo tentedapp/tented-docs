@@ -22,7 +22,11 @@ Before you begin, make sure you have:
 2. On the **HubSpot** tile, select **Connect**, then **Connect HubSpot**.
 3. HubSpot opens in a new window. Pick the account to connect and approve access. The window closes on its own and Tented moves to the next step.
 
-{/* screenshot: hubspot-integrations-page.png, hubspot-connect-step.png, hubspot-oauth-consent.png */}
+![The Integrations page with the HubSpot tile and its Connect button.](../images/hubspot-integrations-page.png)
+
+![The Connect HubSpot dialog: one button opens HubSpot in a new window.](../images/hubspot-connect-step.png)
+
+![HubSpot's consent screen listing what Tented can access.](../images/hubspot-oauth-consent.png)
 
 Tented asks for permission to read contact and company properties, write the page link and summary back to each record, create the six Tented properties, and read the lists you choose to watch.
 
@@ -32,14 +36,14 @@ If you installed Tented from the HubSpot App Marketplace instead, HubSpot sends 
 
 ## Step 2: Choose what to generate
 
-{/* screenshot: hubspot-connect-pages.png */}
+![The Pages step: connected account, template, and the contact list to watch.](../images/hubspot-connect-pages.png)
 
 - **Tented template**: the approved template each page starts from. Tented picks your most recently approved template; change it if you like. Every page is personalized to the record using all of its properties, and for a contact, its company's properties too.
 - **Automatically create pages for**: optional. Pick a **contact list** and/or a **company list**. Tented checks them about every 15 minutes (or straight away when you select **Sync now** on the tile) and creates a page for every new member. Leave both on **None** to create pages only when someone clicks the card on a record.
 
 ### Advanced
 
-{/* screenshot: hubspot-connect-advanced.png */}
+![The Advanced section with the page generation prompt and the link sentence.](../images/hubspot-connect-advanced.png)
 
 Expand **Advanced** to change the copy Tented works from:
 
@@ -58,7 +62,9 @@ HubSpot only shows an app's card on records after someone adds it to the record 
 3. In the right sidebar, select **+** where the card should sit, choose **Tented personalized page**, and save.
 4. Repeat on a company.
 
-{/* screenshot: hubspot-customize-record.png */}
+![The Add card step at the end of setup in Tented.](../images/hubspot-connect-add-card.png)
+
+![HubSpot's record layout editor with the Tented card found in the Card library.](../images/hubspot-customize-record.png)
 
 If you installed Tented from the HubSpot App Marketplace, a Super Admin can add it to every view at once instead: open **Settings → Integrations → Connected apps**, select **Tented**, open the **App cards** tab, and select **Manage locations**.
 
@@ -70,13 +76,15 @@ Pages for the lists you chose in Step 2 are created without the card. The card i
 
 Open any contact or company in HubSpot. The **Tented personalized page** card sits in the right sidebar.
 
-{/* screenshot: hubspot-record-card-idle.png */}
+![The Tented card on a contact record before a page exists.](../images/hubspot-record-card-idle.png)
 
 - Select **Create personalized page**. Expand **Add instructions** first if this page needs something specific, such as leading with a recent funding round.
 - The card shows **Creating the page…** while Tented works, usually one to three minutes. You can leave the record; the Tented properties update when it's done.
 - When the page is ready, the card shows the link, the summary, and the link sentence to paste into an email.
 
-{/* screenshot: hubspot-record-card-generating.png, hubspot-record-card-ready.png */}
+![The card while the page generates.](../images/hubspot-record-card-generating.png)
+
+![The card once the page is ready: link, summary, and the link sentence to copy.](../images/hubspot-record-card-ready.png)
 
 To replace a page, select **Regenerate** on the card. The record keeps its old link until the new page is ready.
 
@@ -99,7 +107,7 @@ Tented writes these properties to every contact or company it makes a page for:
 
 Insert them as personalization tokens wherever HubSpot offers its **Personalize** menu, such as a sequence step, a sales email template, or a marketing email: pick the contact (or company) property named **Tented page offer**. Filter a list or branch a workflow on **Tented page URL is known** so only records with a live page get the step that links to it. Prefer the URL over **Tented page status is Ready**: while a page is being regenerated the status reads **Generating** for a few minutes even though the existing link still works.
 
-{/* screenshot: hubspot-sequence-token.png, hubspot-properties-on-record.png */}
+![The six Tented properties on a contact record after a page is written back.](../images/hubspot-properties-on-record.png)
 
 ## What happens after connecting
 
@@ -108,7 +116,9 @@ Insert them as personalization tokens wherever HubSpot offers its **Personalize*
 - Select **View activity** on the tile to see each sync, how many pages were created, and any records Tented skipped and why. **Sync now** checks your lists straight away instead of waiting for the next pass.
 - Generated tents appear in your Tents list with **HubSpot Integration** as the creator. Use **Filter → Hide integration-created** to keep them out of the way.
 
-{/* screenshot: hubspot-card-connected.png, hubspot-activity.png */}
+![The HubSpot tile once connected: account, watched list, and last sync.](../images/hubspot-card-connected.png)
+
+![The Activity dialog listing recent syncs and the pages each one wrote.](../images/hubspot-activity.png)
 
 ## Changing settings
 
@@ -118,7 +128,11 @@ Select **Edit settings** on the HubSpot tile to change the template, the watched
 
 Select **Disable** on the HubSpot tile. Tented stops creating pages for new list members and the card in HubSpot shows as not connected. Pages already generated, and the Tented properties already written to your records, are not deleted.
 
-Uninstalling the Tented app from HubSpot (**Settings → Integrations → Connected apps**) is noticed by Tented within about 15 minutes: the tile shows **Paused** with **HubSpot access was revoked**, and any requests that were waiting are kept until you select **Reconnect HubSpot**. To remove the connection entirely, select **Disable** in Tented as well.
+Uninstalling the Tented app from HubSpot (**Settings → Integrations → Connected apps**) is noticed by Tented once HubSpot's current access token expires, usually within 30 to 45 minutes: the tile shows **Paused** with **HubSpot access was revoked**, and any requests that were waiting are kept until you select **Reconnect HubSpot**. To remove the connection entirely, select **Disable** in Tented as well.
+
+<Warning>
+Uninstalling the app in HubSpot also removes the Tented card from every record view. After you reconnect or reinstall, add the card again as in [Step 3](#step-3-add-the-tented-card-to-records); the pages and properties on your records are unaffected.
+</Warning>
 
 ## Troubleshooting
 
