@@ -75,6 +75,7 @@ curl --request GET \
           {"kind": "condition", "source": "contact", "field": "state", "operator": "equals", "value": "CA"}
         ]
       },
+      "rule_issues": [],
       "member_count": null,
       "owner_campaign_id": null,
       "created_at": "2026-04-30T12:00:00.000Z",
@@ -86,6 +87,8 @@ curl --request GET \
 ```
 
 `member_count` is a stored counter for static lists and `null` for dynamic lists — use the [member-count endpoint](#member-counts) for a live count of either kind.
+
+`rule_issues` lists custom fields a dynamic list's rules still name after the integration that owned them was disconnected (each entry has `label`, `provider` and `api_name`). Those conditions match nobody until the rules are changed; it is `[]` for every other list.
 
 ## Create a Contact List
 

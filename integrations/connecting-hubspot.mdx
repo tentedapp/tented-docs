@@ -53,6 +53,42 @@ Expand **Advanced** to change the copy Tented works from:
 
 Select **Connect**. Tented adds a **Tented** property group with six properties to contacts and companies in your HubSpot account (see [Using the fields in HubSpot](#using-the-fields-in-hubspot)), then starts watching any lists you chose.
 
+## Syncing contact data (optional)
+
+Tented can also keep your HubSpot contacts in **People**, so lists, flows, and emails in Tented work off the same records your team uses in HubSpot. You choose this during setup on the **Contacts** step, and can change it later with **Edit** next to **Contacts** on the HubSpot tile.
+
+Pick one of three options:
+
+- **Don't sync contacts.** Records stay in HubSpot. Pages still work from the card and lists.
+- **Import HubSpot contacts into Tented.** HubSpot contacts appear in People and are kept up to date about every 15 minutes. Tented never writes back.
+- **Keep Tented and HubSpot in sync.** Changes flow both ways: HubSpot edits come in, and Tented edits and new Tented contacts go back to HubSpot.
+
+### Standard fields
+
+HubSpot's standard properties (email, first and last name, company, job title, lifecycle stage, lead status, and so on) are matched to Tented's fields for you. For each one, choose what happens when a Tented contact already has a value, exactly as in a list import: **Overwrite** or **Do Nothing**. Email and phone are the match keys that pair a contact with its HubSpot record the first time; once paired, the record is what identifies the contact, so an email changed on either side updates the same contact instead of creating another.
+
+HubSpot's **Opted out of all email** flag is mapped to Tented's **Unsubscribed** by default. It only ever unsubscribes a contact in Tented; a contact who unsubscribed in Tented is never re-subscribed by HubSpot. With two-way sync on, Tented unsubscribes are written to a **Unsubscribed in Tented** property in HubSpot so you can build a list or workflow on it.
+
+### HubSpot fields
+
+Any other HubSpot property can come along too. Select **Add HubSpot fields**, pick the properties you want, and for each choose:
+
+- **Read-only.** HubSpot owns the value; it shows on the contact but cannot be edited in Tented.
+- **Editable.** Available with two-way sync. Edits in Tented are sent back to HubSpot.
+
+These arrive as a **HubSpot fields** group on every contact, next to your own custom fields, and are marked as managed by HubSpot in People settings. Each one uses a custom field slot from your workspace's allowance, and the step shows how many are left. Dropdowns with more than 25 options, multiple-choice properties, and calculated properties come in as read-only text.
+
+### Duplicates and scope
+
+- **If a contact already exists in Tented**, choose whether to update it using the rules above or skip it entirely.
+- **Only contacts in this HubSpot list** limits the sync to one list. Leave it on **All contacts** to sync the whole account. A contact that leaves the list stops syncing from its next change onward and picks up again when it rejoins; contacts created in Tented stay in step whether or not they are in the list.
+
+### What happens after you save
+
+The first sync reads every contact in the account (or the chosen list) and imports them in one run. It shows in **People → Past imports** as a HubSpot initial sync with counts, and only rows that failed or were skipped are kept for review. A million contacts take under an hour to read; the import itself runs alongside your other work without slowing it down. After that, Tented picks up changes about every 15 minutes.
+
+Contacts created by the sync show **HubSpot** as their source. Each sync applies only the properties HubSpot changed, so an edit made in Tented survives an unrelated HubSpot change; if the same field changed on both sides between two syncs, the HubSpot value wins. Changing the mapping or the list later re-reads the account with the new settings; contacts already in Tented are updated, not duplicated.
+
 ## Step 3: Add the Tented card to records
 
 HubSpot only shows an app's card on records after someone adds it to the record view. Tented can't do this for you, so the last step of setup in Tented walks you through it:
@@ -128,6 +164,8 @@ Select **Edit settings** on the HubSpot tile to change the template, the watched
 
 Select **Disable** on the HubSpot tile. Tented stops creating pages for new list members and the card in HubSpot shows as not connected. Pages already generated, and the Tented properties already written to your records, are not deleted.
 
+If contact sync was on, the **HubSpot fields** group and its values are removed from every contact; the contacts themselves, and everything in their standard fields, stay in Tented. The confirmation names any lists or flows whose rules use those fields. Those keep running (a rule on a removed field simply matches nobody) and show **Needs attention** until you change the rule.
+
 Uninstalling the Tented app from HubSpot (**Settings → Integrations → Connected apps**) is noticed by Tented once HubSpot's current access token expires, usually within 30 to 45 minutes: the tile shows **Paused** with **HubSpot access was revoked**, and any requests that were waiting are kept until you select **Reconnect HubSpot**. To remove the connection entirely, select **Disable** in Tented as well.
 
 <Warning>
@@ -147,3 +185,6 @@ Uninstalling the app in HubSpot also removes the Tented card from every record v
 | **This HubSpot account is already connected to another Tented workspace** | One HubSpot account can only feed one workspace | Disconnect it there first |
 | The card shows **Failed** | Generation didn't complete, or the record was deleted while it ran | Select **Try again**; check the Activity dialog for the reason |
 | A list member didn't get a page | It already had one, or it joined before the list was chosen | Open the record and use the card |
+| **This mapping needs N custom field slots but the workspace has M left** | Your workspace is near its custom-field allowance | Remove HubSpot fields from the mapping, or archive unused custom fields in People settings |
+| **Paused** with **Contact sync: "property" no longer exists in HubSpot** | A mapped property was deleted in HubSpot | Select **Edit** next to Contacts and remove or replace the field |
+| A list or flow shows **Needs attention** | A rule uses a HubSpot field that was removed when the integration was disconnected | Open the rule and replace the condition |
