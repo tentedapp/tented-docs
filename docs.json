@@ -94,6 +94,7 @@
               "integrations/connecting-instantly",
               "integrations/connecting-clay",
               "integrations/connecting-hubspot",
+              "integrations/contact-sync",
               "integrations/setting-up-email-notifications",
               "integrations/webhooks"
             ]
