@@ -2,6 +2,12 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "Tented Help Center",
+  "redirects": [
+    {
+      "source": "/integrations/contact-sync",
+      "destination": "/integrations/connecting-hubspot#syncing-contact-data-optional"
+    }
+  ],
   "colors": {
     "primary": "#5A855B",
     "light": "#07C983",
@@ -94,7 +100,6 @@
               "integrations/connecting-instantly",
               "integrations/connecting-clay",
               "integrations/connecting-hubspot",
-              "integrations/contact-sync",
               "integrations/setting-up-email-notifications",
               "integrations/webhooks"
             ]

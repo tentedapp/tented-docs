@@ -67,7 +67,7 @@ Pick one of three options:
 
 ### Standard fields
 
-HubSpot's standard properties (email, first and last name, company, job title, lifecycle stage, lead status, and so on) are matched to Tented's fields for you. For each one, choose what happens when a Tented contact already has a value, exactly as in a list import: **Overwrite** or **Do Nothing**. Email and phone are the match keys that pair a contact with its HubSpot record the first time; once paired, the record is what identifies the contact, so an email changed on either side updates the same contact instead of creating another.
+HubSpot's standard properties (email, first and last name, company, job title, lifecycle stage, lead status, and so on) are matched to Tented's fields for you. For each one, choose what happens when a Tented contact already has a value, exactly as in a list import: **Overwrite** or **Do Nothing**. With two-way sync the rule works the same way in the other direction: a **Do Nothing** field is only ever filled in on HubSpot's side, never replaced, so each side keeps its own value.
 
 HubSpot's **Opted out of all email** flag is mapped to Tented's **Unsubscribed** by default. It only ever unsubscribes a contact in Tented; a contact who unsubscribed in Tented is never re-subscribed by HubSpot. With two-way sync on, Tented unsubscribes are written to a **Unsubscribed in Tented** property in HubSpot so you can build a list or workflow on it.
 
@@ -78,26 +78,47 @@ Any other HubSpot property can come along too. Select **Add HubSpot fields**, pi
 - **Read-only.** HubSpot owns the value; it shows on the contact but cannot be edited in Tented.
 - **Editable.** Available with two-way sync. Edits in Tented are sent back to HubSpot.
 
-These arrive as a **HubSpot fields** group on every contact, next to your own custom fields, and are marked as managed by HubSpot in People settings. Each one uses a custom field slot from your workspace's allowance, and the step shows how many are left. Dropdowns with more than 25 options, multiple-choice properties, and calculated properties come in as read-only text.
+These arrive as a **HubSpot fields** group on every contact, next to your own custom fields, and are marked as managed by HubSpot in People settings. Each one uses a custom field slot from your workspace's allowance; the step shows how many are left and will not save a mapping that does not fit. Dropdowns with more than 25 options, multiple-choice properties, and calculated properties come in as read-only text. File and rich-text properties cannot be synced.
 
 ![The HubSpot fields section with Industry set to Editable, and the duplicates choice below it.](../images/hubspot-contacts-fields.png)
 
 ![A contact in People with its HubSpot fields group; Industry is marked as syncing back.](../images/hubspot-contact-fields-group.png)
 
-### Duplicates and scope
+### Matching and duplicates
 
-- **If a contact already exists in Tented**, choose whether to update it using the rules above or skip it entirely.
-- **Only contacts in this HubSpot list** limits the sync to one list. Leave it on **All contacts** to sync the whole account. A contact that leaves the list stops syncing from its next change onward and picks up again when it rejoins; contacts created in Tented stay in step whether or not they are in the list.
+Contacts are matched on email, then phone. **If a contact already exists in Tented**, choose whether to update it using the field rules above or skip it entirely.
 
-### What happens after you save
+Once a contact is linked to a HubSpot record, that link is what identifies it. An email or phone changed in HubSpot updates the same Tented contact rather than creating another, and an email or phone changed in Tented is kept (and, with two-way sync, sent to HubSpot) unless HubSpot changed it too.
 
-The first sync reads every contact in the account (or the chosen list) and imports them in one run. It shows in **People → Past imports** as a HubSpot initial sync with counts, and only rows that failed or were skipped are kept for review. A million contacts take under an hour to read; the import itself runs alongside your other work without slowing it down. After that, Tented picks up changes about every 15 minutes.
+### Limiting the sync to a list
 
-The **Contacts** line on the HubSpot tile shows the sync mode, how many contacts are linked, when the last sync ran, and how many contacts HubSpot did not accept.
+**Only contacts in this HubSpot list** limits the sync to one list; leave it on **All contacts** to sync the whole account. Contacts in the list come in and, with two-way sync, go back.
+
+A contact that leaves the list stops syncing in both directions from its next change onward. It picks up again when it rejoins, including any changes made in HubSpot while it was out. Contacts created in Tented are the one exception: once Tented has created them in HubSpot they stay in step whether or not they are in the list. Contacts that came from a list import or another integration are not sent to HubSpot while the sync is limited to a list.
+
+### How changes are merged
+
+Each sync applies only the properties HubSpot changed since the last one, so an edit made in Tented survives an unrelated HubSpot change. If the same field changed on both sides between two syncs, the HubSpot value wins. A property emptied in HubSpot is emptied in Tented too, unless its rule is **Do Nothing**; an emptied email or phone never empties Tented's copy.
+
+With two-way sync, Tented sends only the fields that changed in Tented. Phone numbers keep HubSpot's own formatting until the number itself is changed in Tented. For a HubSpot dropdown, such as lifecycle stage, Tented sends the matching option; a Tented value HubSpot has no option for is left out, and the rest of the contact is still sent. HubSpot's own default for a new contact (lifecycle stage Lead) then fills that field in Tented only if it is empty.
+
+If HubSpot refuses a contact outright, the **Contacts** line on the tile shows how many contacts were not accepted and the reason for the latest one. A refused contact is sent again the next time it changes in Tented.
+
+### The first sync
+
+The first sync reads every contact in the account (or the chosen list) and imports them in one run. It shows in **People → Past imports** as a HubSpot initial sync with counts, and only rows that failed or were skipped are kept for review. There is no size limit: an account with millions of contacts is read over a few hours and imported in the background in batches, so the rest of your workspace stays responsive, and the sync picks up where it left off if anything interrupts it. A very large account can take a day to finish. After that, Tented picks up changes about every 15 minutes.
+
+If part of the first sync fails, it is tried again automatically. If it keeps failing, the tile says so, and saving the contact sync settings starts it over. Changing the mapping or the list later re-reads the account with the new settings; contacts already in Tented are updated, not duplicated.
+
+Contacts created by the sync show **HubSpot** as their source. The **Contacts** line on the HubSpot tile shows the sync mode, how many contacts are linked, when the last sync ran, and how many contacts HubSpot did not accept.
 
 ![The HubSpot tile with its Contacts line: two-way sync, linked contacts, last sync, and contacts HubSpot did not accept.](../images/hubspot-card-contacts.png)
 
-Contacts created by the sync show **HubSpot** as their source. Each sync applies only the properties HubSpot changed, so an edit made in Tented survives an unrelated HubSpot change; if the same field changed on both sides between two syncs, the HubSpot value wins. With two-way sync, a Tented value that is not one of a HubSpot dropdown's options (for example a lifecycle stage HubSpot does not have) is left out, and the rest of the contact is still sent. HubSpot's own default for a new contact (lifecycle stage Lead) then fills that field in Tented only if it is empty. Changing the mapping or the list later re-reads the account with the new settings; contacts already in Tented are updated, not duplicated.
+### Removing HubSpot fields
+
+Removing a field from the mapping removes it and its values from every contact. Lists and flows whose rules, triggers, or steps used it keep running, with those conditions matching nobody, and show **Needs attention** (in the lists table, the flows table, and the flow editor) until you change them. Disconnecting HubSpot does the same for all HubSpot fields; see [Disconnecting](#disconnecting).
+
+![A dynamic list whose rule used a removed HubSpot field, marked Needs attention in the lists table.](../images/hubspot-needs-attention.png)
 
 ## Step 3: Add the Tented card to records
 
@@ -174,7 +195,7 @@ Select **Edit settings** on the HubSpot tile to change the template, the watched
 
 Select **Disable** on the HubSpot tile. Tented stops creating pages for new list members and the card in HubSpot shows as not connected. Pages already generated, and the Tented properties already written to your records, are not deleted.
 
-If contact sync was on, the **HubSpot fields** group and its values are removed from every contact; the contacts themselves, and everything in their standard fields, stay in Tented. The confirmation names any lists or flows whose rules use those fields. Those keep running (a rule on a removed field simply matches nobody) and show **Needs attention** until you change the rule.
+If contact sync was on, the **HubSpot fields** group and its values are removed from every contact; the contacts themselves, and everything in their standard fields, stay in Tented. The confirmation names any lists or flows whose rules use those fields. Those keep running (a rule on a removed field simply matches nobody) and show **Needs attention** until you change the rule. If you connect the same HubSpot account again, its fields and contact links from before are kept.
 
 Uninstalling the Tented app from HubSpot (**Settings → Integrations → Connected apps**) is noticed by Tented once HubSpot's current access token expires, usually within 30 to 45 minutes: the tile shows **Paused** with **HubSpot access was revoked**, and any requests that were waiting are kept until you select **Reconnect HubSpot**. To remove the connection entirely, select **Disable** in Tented as well.
 
