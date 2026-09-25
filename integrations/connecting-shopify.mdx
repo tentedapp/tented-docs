@@ -24,6 +24,14 @@ Before you begin, make sure you have:
 3. Enter your store address and select **Connect Shopify**.
 4. Shopify opens in a new window. Review the access Tented asks for and select **Install**. The window closes on its own and Tented moves to the next step.
 
+<img src="/images/shopify-integrations-tile.png" alt="The Shopify tile on the Integrations page, before connecting." width="376" />
+
+<img src="/images/shopify-connect-step.png" alt="The Connect Shopify dialog with the store address filled in." width="516" />
+
+Not sure of your store address? Shopify lists it under **Settings → Domains**. It's the one ending in `.myshopify.com`:
+
+<img src="/images/shopify-domains.png" alt="Shopify's Settings → Domains page, showing the store's myshopify.com address." width="728" />
+
 Tented asks for permission to read and update customers and to read orders. It uses them to read customers and segments, write the page link to each customer, keep contacts in sync if you turn that on, and add a customer's recent purchases to their page.
 
 <Note>
@@ -37,7 +45,11 @@ The **Pages** step sets what Tented generates.
 - **Tented template**: the approved template each page starts from. Tented picks your most recently approved template; change it if you like.
 - **Automatically create pages for**: pick a Shopify **customer segment**, or leave it on **No automatic pages** to only connect for now. Each segment shows how many customers are in it.
 
+<img src="/images/shopify-segment-picker.png" alt="The segment picker, listing each Shopify segment with its number of customers." width="495" />
+
 Every customer in the segment gets a page, including customers already in it when you choose it. After that, Tented checks the segment about every 15 minutes (or straight away when you select **Sync now** on the tile) and creates a page for each new member. A customer who already has a page is not given another.
+
+<img src="/images/shopify-connect-pages.png" alt="The Pages step: the template, the chosen segment, and the metafields Tented saves to each customer." width="516" />
 
 Pages are personalized with what Shopify has on the customer: name, company, city and country, customer tags, number of orders, when they became a customer, and what they bought recently. Email addresses, phone numbers, street addresses, notes, and amounts spent are never put on a page, because pages are public.
 
@@ -48,6 +60,8 @@ Build the segment in Shopify first (**Customers → Segments**), for example "cu
 ### Advanced
 
 Expand **Advanced** to change the copy Tented works from:
+
+<img src="/images/shopify-connect-advanced.png" alt="The Advanced section with the page generation prompt, the link sentence, and the follow-up sentence." width="514" />
 
 - **Page generation prompt**: the instructions each page is generated with. `{{shopify.rowData}}` is replaced with what Shopify has on the customer (see above).
 - **Link sentence**: saved to the customer as `tented.page_offer`. Use `{{url}}`, `{{first_name}}`, `{{last_name}}`, `{{company_name}}`, and `{{summary}}`. Leave it empty to skip it.
@@ -64,6 +78,8 @@ Pick one of three options:
 - **Don't sync contacts.** Customers stay in Shopify. Pages still work.
 - **Import Shopify customers into Tented.** Customers appear in People and are kept up to date about every 15 minutes. Tented only writes back one thing: when someone unsubscribes in Tented, their Shopify email marketing status becomes **Unsubscribed**, so Shopify stops emailing them too.
 - **Keep Tented and Shopify in sync.** Changes flow both ways: Shopify changes come in, and Tented edits and new Tented contacts go back to Shopify as customers.
+
+<img src="/images/shopify-contacts-step.png" alt="The Contacts step: the three sync options and the note on email and SMS consent." width="672" />
 
 ### Standard fields
 
@@ -90,6 +106,8 @@ Other customer data can come along too. Select **Add Shopify fields** and pick w
 
 Order counts, amounts, dates, and other fields Shopify calculates are always read-only. These arrive as a **Shopify fields** group on every contact, next to your own custom fields. Each one uses a custom field slot from your workspace's allowance; the step shows how many are left.
 
+<img src="/images/shopify-contacts-fields.png" alt="Shopify fields added to the sync, the duplicates choice, and the segment the sync is limited to." width="644" />
+
 ### Matching and duplicates
 
 Contacts are matched on email, then phone. **If a contact already exists in Tented**, choose whether to update it using the field rules above or skip it.
@@ -115,6 +133,8 @@ The **Contacts** line on the Shopify tile shows the sync mode, how many contacts
 ## Using the page link in Shopify
 
 Tented saves five customer metafields in the `tented` namespace to every customer it makes a page for. They show under **Metafields** on the customer in Shopify.
+
+<img src="/images/shopify-customer-metafields.png" alt="A customer in Shopify with the five Tented metafields filled in." width="638" />
 
 | Metafield | Name in Shopify | What it holds |
 | --- | --- | --- |
@@ -147,6 +167,8 @@ To email only those customers, send to the segment you chose in [Step 2](#step-2
 - Select **View activity** on the tile to see each sync, how many pages were created, and any customers Tented skipped and why. **Sync now** checks your segment straight away instead of waiting for the next pass.
 - Generated tents appear in your Tents list with **Shopify Integration** as the creator. Use **Filter → Hide integration-created** to keep them out of the way.
 
+<img src="/images/shopify-card-connected.png" alt="The Shopify tile once connected: store, segment, contact sync status, and last sync." width="376" />
+
 ## Changing settings
 
 Select **Edit settings** on the Shopify tile to change the template, the segment, the prompt, or the sentences. Customers who already have a page are not given a new one when settings change.
@@ -171,7 +193,7 @@ Shopify asks every app to delete a store's data 48 hours after it's uninstalled.
 
 Tented handles the privacy requests Shopify sends on your customers' behalf:
 
-- **Customer erasure.** When you erase a customer's personal data in Shopify, Tented deletes that customer's page. A contact the sync created in Tented is deleted; a contact that already existed in Tented is kept, but loses its link to Shopify and its Shopify field values.
+- **Customer erasure.** When you erase a customer's personal data in Shopify, Tented deletes that customer's page. A contact the sync created in Tented is deleted; a contact that already existed in Tented is kept, but loses its link to Shopify and its Shopify field values, and two-way sync never adds it back to your store.
 - **Customer data requests** are recorded for your records. Tented holds the same customer data you can already see in People.
 
 ## Troubleshooting
