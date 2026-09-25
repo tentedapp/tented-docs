@@ -1647,7 +1647,7 @@
                       "items": {
                         "$ref": "#/components/schemas/ContactWithCustomFields"
                       },
-                      "description": "Contacts. In lookup mode, at most one item, including `custom_fields`. In listing mode, the current page, without `custom_fields`."
+                      "description": "Contacts. In lookup mode, at most one item, including `custom_fields`. In listing mode, the current page with every standard contact field, without `custom_fields`."
                     },
                     "pagination": {
                       "$ref": "#/components/schemas/Pagination",
@@ -7066,7 +7066,7 @@
                       "items": {
                         "$ref": "#/components/schemas/Contact"
                       },
-                      "description": "Contacts in this page (without `custom_fields`)."
+                      "description": "Contacts in this page, with every standard contact field (without `custom_fields`)."
                     },
                     "pagination": {
                       "$ref": "#/components/schemas/Pagination"
@@ -7310,7 +7310,7 @@
         ],
         "operationId": "preview-contact-import",
         "summary": "Preview an import",
-        "description": "Parse the session's CSV and return everything needed to build the mapping step: the detected column headers, proposed column-to-field mappings (deterministic header matching plus AI-assisted suggestions), the catalog of available target fields (importable standard fields and your active custom fields), suggested new custom fields for unmapped columns (`field_creation_candidates`), a sample of rows, and validation issues found in that sample.\n\nNo request body. Safe to call repeatedly — for example, after bulk-creating suggested custom fields via `POST /v1/contact-fields`, preview again to see the new fields mapped.\n\n`blocking_issues` must be resolved before executing: an import needs at least one column mapped to `email` or `phone` so contacts can be identified and deduplicated.",
+        "description": "Parse the session's CSV and return everything needed to build the mapping step: the detected column headers, proposed column-to-field mappings (deterministic header matching plus AI-assisted suggestions), the catalog of available target fields (importable standard fields and your active custom fields), suggested new custom fields for unmapped columns (`field_creation_candidates`), a sample of rows, and validation issues found in that sample.\n\nProposed mappings never send two columns to the same field: a header-name match wins over an AI suggestion, then the earlier column wins, and the other column is left unmapped (its `reason` names the column that claimed the field) so it can be offered in `field_creation_candidates`.\n\nNo request body. Safe to call repeatedly — for example, after bulk-creating suggested custom fields via `POST /v1/contact-fields`, preview again to see the new fields mapped.\n\n`blocking_issues` must be resolved before executing: an import needs at least one column mapped to `email` or `phone` so contacts can be identified and deduplicated.",
         "parameters": [
           {
             "name": "sessionId",
@@ -7374,7 +7374,7 @@
         ],
         "operationId": "execute-contact-import",
         "summary": "Execute an import",
-        "description": "Approve the final column mappings and start the import. The import runs asynchronously in chunks — this endpoint returns `202` with an `import_run_id`; poll `GET /v1/contacts/imports/{importRunId}` until `status` is `completed` or `failed`.\n\nEvery mapping's `header` must be a column from the session's CSV. Map a column to `null` (`target_field: null`, `target_kind: null`) to skip it. At least one column must map to the `email` or `phone` standard field — contacts are matched (deduplicated) by normalized email or phone.\n\nEach session can be executed once: re-executing a session whose latest run is `queued`, `running`, or `completed` returns `400`. A session whose only runs `failed` can be executed again.",
+        "description": "Approve the final column mappings and start the import. The import runs asynchronously in chunks — this endpoint returns `202` with an `import_run_id`; poll `GET /v1/contacts/imports/{importRunId}` until `status` is `completed` or `failed`.\n\nEvery mapping's `header` must be a column from the session's CSV. Map a column to `null` (`target_field: null`, `target_kind: null`) to skip it. Each field can be the target of only one column; mapping two columns to the same field returns `400`. At least one column must map to the `email` or `phone` standard field — contacts are matched (deduplicated) by normalized email or phone.\n\nEach session can be executed once: re-executing a session whose latest run is `queued`, `running`, or `completed` returns `400`. A session whose only runs `failed` can be executed again.",
         "parameters": [
           {
             "name": "sessionId",

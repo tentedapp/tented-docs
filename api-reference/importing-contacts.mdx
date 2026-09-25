@@ -71,6 +71,8 @@ POST /v1/contacts/imports/{session_id}/preview
 
 Parses the header plus sample rows and returns auto-detected `mappings` (source header → target field), per-column sample validation `issues`, the org's `available_fields`, and `field_creation_candidates` for unmapped columns. Optional for headless runs — you can pass mappings straight to execute.
 
+Proposed mappings never send two columns to the same field. When two columns match one field, the column matched by its header name wins over an AI suggestion, then the earlier column wins. The other column is left unmapped with a `reason` naming the column that claimed the field, so it shows up in `field_creation_candidates`. For example, in a Shopify customer export, `Phone` maps to `phone` and `Default Address Phone` is left for a custom field.
+
 ## Execute an Import
 
 ```bash
@@ -79,7 +81,7 @@ POST /v1/contacts/imports/{session_id}/execute
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `mappings` | `array` | Yes | `{header, target_field, target_kind, overwrite_behavior?}` per column |
+| `mappings` | `array` | Yes | `{header, target_field, target_kind, overwrite_behavior?}` per column. Each field can be the target of only one column; mapping two columns to the same field returns `400` |
 | `duplicate_strategy` | `string` | No | `update` (default) merges into matching contacts; `skip` leaves them untouched |
 | `overwrite_blank_only` | `boolean` | No | When `true`, mapped fields default to filling blanks only |
 | `list_ids` | `array` | No | Static list IDs (≤ 500) every imported contact is added to |

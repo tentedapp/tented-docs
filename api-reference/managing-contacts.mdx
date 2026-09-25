@@ -141,7 +141,7 @@ Without an `email`/`phone` identifier, `GET /v1/contacts` pages through the work
 | `search` | `string` | No | Matches name, email, phone, and company |
 | `updated_after` | `string` | No | ISO 8601 timestamp — only contacts updated after it. The building block for incremental syncs |
 
-Returns `{items, pagination}`. List items do not include `custom_fields` — fetch a single contact for those.
+Returns `{items, pagination}`. Each item carries every standard contact field (address fields, `unsubscribed`, `marketing_email_subscribed`, `marketing_sms_subscribed`, and so on), the same as [Get a Contact](#get-a-contact). List items do not include `custom_fields` — fetch a single contact for those.
 
 ## Update a Single Contact
 
@@ -345,6 +345,8 @@ Filter contacts with a rule tree — the same engine that powers dynamic lists a
 | `sort` / `order` | `string` | No | Same sort keys as [List Contacts](#list-contacts) |
 
 Discover the available fields and operators with [`GET /v1/contact-fields/rule-metadata`](/api-reference/managing-contact-fields).
+
+Returns `{items, pagination}`. Like [List Contacts](#list-contacts), each item carries every standard contact field but not `custom_fields`.
 
 ## Update Contacts
 
