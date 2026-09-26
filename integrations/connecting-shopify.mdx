@@ -12,25 +12,22 @@ This guide covers connecting your store, choosing a segment, syncing customers, 
 Before you begin, make sure you have:
 
 - **Admin access** to your Tented workspace. Connecting, changing settings, and disconnecting are admin-only.
-- **An approved tent template** in Tented. Pages are generated from a template's approved version. See [Templates](/working-with-tents/tent-templates) if you don't have one yet.
+- **An approved tent template** in Tented, to create pages. Pages are generated from a template's approved version. You can connect your store and sync customers before you have one; see [Templates](/working-with-tents/tent-templates) when you're ready.
 - **Permission to install apps in your Shopify store.** Store owners have it; staff need permission to install apps.
-- **Your store's myshopify.com address**, such as `acme.myshopify.com`. Find it in Shopify under **Settings → Domains**. A custom domain won't work here.
 - **AI credits**. Each generated page uses half a credit.
 
 ## Step 1: Connect Shopify
 
+You install Tented from the Shopify App Store, and Shopify brings you back to Tented to finish setup.
+
 1. In Tented, open **Settings → Integrations**.
-2. On the **Shopify** tile, select **Connect**.
-3. Enter your store address and select **Connect Shopify**.
-4. Shopify opens in a new window. Review the access Tented asks for and select **Install**. The window closes on its own and Tented moves to the next step.
+2. On the **Shopify** tile, select **Connect**, then **Install from the Shopify App Store**.
+3. In Shopify, select **Install**, review the access Tented asks for, and approve it.
+4. Shopify sends you back to Tented. Sign in (or create your Tented account) if you aren't already, and the Shopify setup opens with your store connected.
 
 <img src="/images/shopify-integrations-tile.png" alt="The Shopify tile on the Integrations page, before connecting." width="376" />
 
-<img src="/images/shopify-connect-step.png" alt="The Connect Shopify dialog with the store address filled in." width="516" />
-
-Not sure of your store address? Shopify lists it under **Settings → Domains**. It's the one ending in `.myshopify.com`:
-
-<img src="/images/shopify-domains.png" alt="Shopify's Settings → Domains page, showing the store's myshopify.com address." width="728" />
+You can also start in Shopify: find **Tented** in the Shopify App Store and install it. If Tented is already installed, open it from **Apps** in your Shopify admin to finish connecting.
 
 Tented asks for permission to read and update customers and to read orders. It uses them to read customers and segments, write the page link to each customer, keep contacts in sync if you turn that on, and add a customer's recent purchases to their page.
 
@@ -42,7 +39,7 @@ One Shopify store can feed one Tented workspace. To connect a different store, d
 
 The **Pages** step sets what Tented generates.
 
-- **Tented template**: the approved template each page starts from. Tented picks your most recently approved template; change it if you like.
+- **Tented template**: the approved template each page starts from. Tented picks your most recently approved template; change it if you like. No approved template yet? Connect anyway to sync customers, and choose a template and a segment in **Edit settings** later.
 - **Automatically create pages for**: pick a Shopify **customer segment**, or leave it on **No automatic pages** to only connect for now. Each segment shows how many customers are in it.
 
 <img src="/images/shopify-segment-picker.png" alt="The segment picker, listing each Shopify segment with its number of customers." width="495" />
@@ -200,9 +197,8 @@ Tented handles the privacy requests Shopify sends on your customers' behalf:
 
 | What you see | What it means | What to do |
 | --- | --- | --- |
-| **Enter your store's myshopify.com address** | The address isn't a myshopify.com address | Use the address from **Settings → Domains** in Shopify, such as `acme.myshopify.com` |
 | **This Shopify store is already connected to another Tented workspace** | One store can only feed one workspace | Disconnect it there first |
-| **The Shopify window closed before finishing** | The Shopify window was closed before you selected **Install** | Select **Connect Shopify** again |
+| **The Shopify window closed before finishing** | While reconnecting, the Shopify window was closed before you approved access | Select **Reconnect Shopify** again |
 | **Paused: out of AI credits** | Your workspace ran out of credits | Add credits; pages resume automatically |
 | **Paused: published-tent limit reached** | Your plan's published page limit is full | Unpublish pages or upgrade |
 | **Paused: Shopify access was revoked or the Tented app was uninstalled** | The app was uninstalled in Shopify | Select **Reconnect Shopify** on the tile |
@@ -211,3 +207,5 @@ Tented handles the privacy requests Shopify sends on your customers' behalf:
 | **This customer no longer exists in Shopify** in the activity | The customer was deleted before their page was made | Nothing to do |
 | A customer unsubscribed in Shopify still shows **Marketing Email Subscribed** in Tented | The next sync hasn't run yet | Wait up to 15 minutes |
 | A list or flow shows **Needs attention** | A rule uses a Shopify field that was removed from the mapping or with the disconnect | Open the rule and replace the condition |
+| The Shopify setup didn't open after installing | Signing in took a while, or you signed in to a different workspace | In Shopify, open Tented from **Apps**; Shopify sends you back to finish connecting |
+| **Automatically create pages for** can't be changed | There's no approved template yet | Create and approve a template, then pick it in **Edit settings** |
