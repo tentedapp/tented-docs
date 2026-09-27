@@ -23,7 +23,7 @@ You install Tented from the Shopify App Store, and Shopify brings you back to Te
 1. In Tented, open **Settings → Integrations**.
 2. On the **Shopify** tile, select **Connect**, then **Install from the Shopify App Store**.
 3. In Shopify, select **Install**, review the access Tented asks for, and approve it.
-4. Shopify sends you back to Tented. Sign in (or create your Tented account) if you aren't already, and the Shopify setup opens with your store connected.
+4. Shopify sends you back to Tented. Sign in (or create your Tented account) if you aren't already, and the Shopify setup opens with your store connected. It shows the store you installed Tented in and the workspace it's joining; if you didn't just install Tented in that store, close it without connecting.
 
 <img src="/images/shopify-integrations-tile.png" alt="The Shopify tile on the Integrations page, before connecting." width="376" />
 
@@ -86,10 +86,12 @@ Company and address come from the customer's default address in Shopify and are 
 
 ### Email and SMS consent
 
-Shopify keeps a marketing consent status for each customer's email and phone. Tented maps it both ways:
+Shopify keeps a marketing consent status for each customer's email and phone. Tented keeps unsubscribes in step with it, and the newest change wins:
 
-- **Unsubscribes from Shopify.** A customer whose email marketing status becomes **Unsubscribed** in Shopify is unsubscribed in Tented. It only ever unsubscribes: a customer who resubscribes in Shopify is not resubscribed in Tented.
+- **Unsubscribes from Shopify.** A customer whose email marketing status becomes **Unsubscribed** in Shopify is unsubscribed in Tented.
+- **Resubscribes in Shopify.** If that customer later subscribes again in Shopify, they're no longer unsubscribed in Tented either.
 - **Unsubscribes from Tented.** A contact who unsubscribes in Tented (from an email's unsubscribe link, or by hand) has their Shopify email marketing status set to **Unsubscribed**. This happens with import and with two-way sync, for contacts linked to a Shopify customer.
+- **Removing Unsubscribed in Tented** changes Tented only. Shopify can't set a customer back to "not subscribed", only mark them subscribed, which needs their consent. So their Shopify status stays **Unsubscribed** until they subscribe again in Shopify.
 - **Consent.** Shopify's email and SMS consent fill **Marketing Email Subscribed** and **Marketing SMS Subscribed** on each contact: **Yes** only when the status is **Subscribed**. Tented doesn't hold back sends based on these fields. Where you need opt-in consent, filter the audience by **Marketing Email Subscribed**.
 
 Consent changes made in Shopify reach Tented on the next sync, usually within 15 minutes.
