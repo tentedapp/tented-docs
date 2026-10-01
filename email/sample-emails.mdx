@@ -14,17 +14,17 @@ The same dialog is available wherever you work with emails and templates.
 For emails:
 
 - **Email editor** — the **Send Sample** button in the top bar, next to **Approve**.
-- **Emails list** — select an email, then choose **Send Sample** from the **Email Actions** dropdown.
+- **Emails list** — open the **⋯** menu on the email's row and choose **Send Sample**.
 - **Email details page** — the **Email Actions** dropdown, top-right.
 
 ![A screenshot of the email editor's top-bar controls showing the Send Sample button between Preview as and Approve.](../images/email-editor-send-sample-button.png)
 
-![A screenshot of the Email Actions dropdown on the Emails list with a Send Sample item.](../images/emails-list-send-sample-action.png)
+<img src="/images/emails-list-send-sample-action.png" alt="A screenshot of an email's row menu on the Emails list with the Send Sample item highlighted." width="300" />
 
 For templates:
 
 - **Template editor** — the **Send Sample** button in the top bar.
-- **Templates list** — select a template, then choose **Send Sample** from the **Template Actions** dropdown.
+- **Templates list** — open the **⋯** menu on the template's row and choose **Send Sample**.
 
 <Tip>
   Reviewing an old version in **Generation History**? The history toolbar has its own **Send Sample** — it opens the dialog with that generation pre-selected. This works in both the email and template editors.
@@ -36,7 +36,7 @@ For templates:
 2. **Version** — defaults to the latest generation. Pick any past generation from the dropdown; your approved version is marked **Approved**.
 3. **Personalize as contact** *(optional)* — search by name, email, or phone — or paste a contact ID — and [personalization tokens](/email/personalization) render with that contact's real values. The sample still goes only to the **Send to** address, never to the contact.
 
-![A screenshot of the Send Sample Email dialog with a recipient field, a version picker showing the latest generation, an optional contact personalization search, and a note that the subject is prefixed with TEST.](../images/email-send-sample-dialog.png)
+<img src="/images/email-send-sample-dialog.png" alt="A screenshot of the Send Sample Email dialog with a recipient field, a version picker showing the latest generation, an optional contact personalization search, and a note that the subject is prefixed with TEST." width="512" />
 
 Without a contact, tokens render the way they would for a contact with no data: defaults like `{{contact.firstName:default=there}}` kick in, and everything else renders blank.
 

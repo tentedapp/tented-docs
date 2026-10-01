@@ -19,12 +19,12 @@ Before you begin, make sure you have:
 ## Step 1: Connect HubSpot
 
 1. In Tented, open **Settings → Integrations**.
-2. On the **HubSpot** tile, select **Connect**, then **Connect HubSpot**.
+2. On the **HubSpot** tile, select **Install**, then **Connect HubSpot**.
 3. HubSpot opens in a new window. Pick the account to connect and approve access. The window closes on its own and Tented moves to the next step.
 
-![The Integrations page with the HubSpot tile and its Connect button.](../images/hubspot-integrations-page.png)
+<img src="/images/hubspot-integrations-page.png" alt="The Integrations page with the HubSpot tile and its Install button." width="391" />
 
-![The Connect HubSpot dialog: one button opens HubSpot in a new window.](../images/hubspot-connect-step.png)
+<img src="/images/hubspot-connect-step.png" alt="The Connect HubSpot dialog: one button opens HubSpot in a new window." width="560" />
 
 ![HubSpot's consent screen listing what Tented can access.](../images/hubspot-oauth-consent.png)
 
@@ -36,14 +36,14 @@ If you installed Tented from the HubSpot App Marketplace instead, HubSpot sends 
 
 ## Step 2: Choose what to generate
 
-![The Pages step: connected account, template, and the contact list to watch.](../images/hubspot-connect-pages.png)
+<img src="/images/hubspot-connect-pages.png" alt="The Pages step: connected account, template, and the contact list to watch." width="720" />
 
 - **Tented template**: the approved template each page starts from. Tented picks your most recently approved template; change it if you like. Every page is personalized to the record using all of its properties, and for a contact, its company's properties too.
 - **Automatically create pages for**: optional. Pick a **contact list** and/or a **company list**. Tented checks them about every 15 minutes (or straight away when you select **Sync now** on the tile) and creates a page for every new member. Leave both on **None** to create pages only when someone clicks the card on a record.
 
 ### Advanced
 
-![The Advanced section with the page generation prompt and the link sentence.](../images/hubspot-connect-advanced.png)
+<img src="/images/hubspot-connect-advanced.png" alt="The Advanced section with the page generation prompt and the link sentence." width="720" />
 
 Expand **Advanced** to change the copy Tented works from:
 
@@ -51,7 +51,7 @@ Expand **Advanced** to change the copy Tented works from:
 - **Link sentence**: written to the record as `tented_page_offer`. Use `{{url}}`, `{{first_name}}`, `{{company_name}}`, `{{job_title}}`, and `{{summary}}`. Leave it empty to skip it.
 - **Follow-up sentence**: written as `tented_page_reference` for a later email or sequence step.
 
-Select **Connect**. Tented adds a **Tented** property group with six properties to contacts and companies in your HubSpot account (see [Using the fields in HubSpot](#using-the-fields-in-hubspot)), then starts watching any lists you chose.
+Select **Next: Contacts** to choose whether to sync contacts (below), then **Connect**. Tented adds a **Tented** property group with six properties to contacts and companies in your HubSpot account (see [Using the fields in HubSpot](#using-the-fields-in-hubspot)), then starts watching any lists you chose.
 
 ## Syncing contact data (optional)
 
@@ -63,7 +63,7 @@ Pick one of three options:
 - **Import HubSpot contacts into Tented.** HubSpot contacts appear in People and are kept up to date about every 15 minutes. Tented never writes back.
 - **Keep Tented and HubSpot in sync.** Changes flow both ways: HubSpot edits come in, and Tented edits and new Tented contacts go back to HubSpot.
 
-![The Contacts step: the three sync options and the standard field mapping.](../images/hubspot-contacts-step.png)
+<img src="/images/hubspot-contacts-step.png" alt="The Contacts step: the three sync options and the standard field mapping." width="720" />
 
 ### Standard fields
 
@@ -80,9 +80,9 @@ Any other HubSpot property can come along too. Select **Add HubSpot fields**, pi
 
 These arrive as a **HubSpot fields** group on every contact, next to your own custom fields, and are marked as managed by HubSpot in People settings. Each one uses a custom field slot from your workspace's allowance; the step shows how many are left and will not save a mapping that does not fit. Dropdowns with more than 25 options, multiple-choice properties, and calculated properties come in as read-only text. File and rich-text properties cannot be synced.
 
-![The HubSpot fields section with Industry set to Editable, and the duplicates choice below it.](../images/hubspot-contacts-fields.png)
+<img src="/images/hubspot-contacts-fields.png" alt="The HubSpot fields section with Industry set to Editable, and the duplicates choice below it." width="648" />
 
-![A contact in People with its HubSpot fields group; Industry is marked as syncing back.](../images/hubspot-contact-fields-group.png)
+<img src="/images/hubspot-contact-fields-group.png" alt="A contact in People with its HubSpot fields group; Industry is marked as syncing back." width="528" />
 
 ### Matching and duplicates
 
@@ -112,13 +112,13 @@ If part of the first sync fails, it is tried again automatically. If it keeps fa
 
 Contacts created by the sync show **HubSpot** as their source. The **Contacts** line on the HubSpot tile shows the sync mode, how many contacts are linked, when the last sync ran, and how many contacts HubSpot did not accept.
 
-![The HubSpot tile with its Contacts line: two-way sync, linked contacts, last sync, and contacts HubSpot did not accept.](../images/hubspot-card-contacts.png)
+<img src="/images/hubspot-card-contacts.png" alt="The HubSpot tile with its Contacts line: two-way sync, linked contacts, last sync, and contacts HubSpot did not accept." width="391" />
 
 ### Removing HubSpot fields
 
 Removing a field from the mapping removes it and its values from every contact. Lists and flows whose rules, triggers, or steps used it keep running, with those conditions matching nobody, and show **Needs attention** (in the lists table, the flows table, and the flow editor) until you change them. Disconnecting HubSpot does the same for all HubSpot fields; see [Disconnecting](#disconnecting).
 
-![A dynamic list whose rule used a removed HubSpot field, marked Needs attention in the lists table.](../images/hubspot-needs-attention.png)
+<img src="/images/hubspot-needs-attention.png" alt="A dynamic list whose rule used a removed HubSpot field, marked Needs attention in the lists table." width="1100" />
 
 ## Step 3: Add the Tented card to records
 
@@ -129,7 +129,7 @@ HubSpot only shows an app's card on records after someone adds it to the record 
 3. In the right sidebar, select **+** where the card should sit, choose **Tented personalized page**, and save.
 4. Repeat on a company.
 
-![The Add card step at the end of setup in Tented.](../images/hubspot-connect-add-card.png)
+<img src="/images/hubspot-connect-add-card.png" alt="The Add card step at the end of setup in Tented." width="560" />
 
 ![HubSpot's record layout editor with the Tented card found in the Card library.](../images/hubspot-customize-record.png)
 
@@ -181,15 +181,15 @@ Insert them as personalization tokens wherever HubSpot offers its **Personalize*
 - The HubSpot tile shows **Connected**, the account, and which lists create pages automatically.
 - Pages are published at readable URLs under your Tented domain, such as `https://your-domain/for-ada-from-analytical-engines` for a contact or `https://your-domain/for-acme-co` for a company.
 - Select **View activity** on the tile to see each sync, how many pages were created, and any records Tented skipped and why. **Sync now** checks your lists straight away instead of waiting for the next pass.
-- Generated tents appear in your Tents list with **HubSpot Integration** as the creator. Use **Filter → Hide integration-created** to keep them out of the way.
+- Generated tents appear in **Content > Tents** with **HubSpot Integration** as the creator. Turn on **Hide integration tents** in the filter bar to keep them out of the way.
 
-![The HubSpot tile once connected: account, watched list, and last sync.](../images/hubspot-card-connected.png)
+<img src="/images/hubspot-card-connected.png" alt="The HubSpot tile once connected: account, watched list, and last sync." width="391" />
 
-![The Activity dialog listing recent syncs and the pages each one wrote.](../images/hubspot-activity.png)
+<img src="/images/hubspot-activity.png" alt="The Activity dialog listing recent syncs and the pages each one wrote." width="760" />
 
 ## Changing settings
 
-Select **Edit settings** on the HubSpot tile to change the template, the watched lists, the prompt, or the sentences. Records that already have a page are not regenerated when settings change.
+Select **Edit settings** on the HubSpot tile to change the template, the watched lists, the prompt, or the sentences on the **Pages** tab, or contact sync on the **Contacts** tab. Records that already have a page are not regenerated when settings change.
 
 ## Disconnecting
 

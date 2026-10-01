@@ -21,11 +21,11 @@ Before you begin, make sure you have:
 You install Tented from the Shopify App Store, and Shopify brings you back to Tented to finish setup.
 
 1. In Tented, open **Settings → Integrations**.
-2. On the **Shopify** tile, select **Connect**, then **Install from the Shopify App Store**.
+2. On the **Shopify** tile, select **Install**, then **Install from the Shopify App Store**.
 3. In Shopify, select **Install**, review the access Tented asks for, and approve it.
 4. Shopify sends you back to Tented. Sign in (or create your Tented account) if you aren't already, and the Shopify setup opens with your store connected. It shows the store you installed Tented in and the workspace it's joining; if you didn't just install Tented in that store, close it without connecting.
 
-<img src="/images/shopify-integrations-tile.png" alt="The Shopify tile on the Integrations page, before connecting." width="376" />
+<img src="/images/shopify-integrations-tile.png" alt="The Shopify tile on the Integrations page, before connecting." width="391" />
 
 You can also start in Shopify: find **Tented** in the Shopify App Store and install it. If Tented is already installed, open it from **Apps** in your Shopify admin to finish connecting.
 
@@ -42,11 +42,11 @@ The **Pages** step sets what Tented generates.
 - **Tented template**: the approved template each page starts from. Tented picks your most recently approved template; change it if you like. No approved template yet? Connect anyway to sync customers, and choose a template and a segment in **Edit settings** later.
 - **Automatically create pages for**: pick a Shopify **customer segment**, or leave it on **No automatic pages** to only connect for now. Each segment shows how many customers are in it.
 
-<img src="/images/shopify-segment-picker.png" alt="The segment picker, listing each Shopify segment with its number of customers." width="495" />
+<img src="/images/shopify-segment-picker.png" alt="The segment picker, listing each Shopify segment with its number of customers." width="658" />
 
 Every customer in the segment gets a page, including customers already in it when you choose it. After that, Tented checks the segment about every 15 minutes (or straight away when you select **Sync now** on the tile) and creates a page for each new member. A customer who already has a page is not given another.
 
-<img src="/images/shopify-connect-pages.png" alt="The Pages step: the template, the chosen segment, and the metafields Tented saves to each customer." width="516" />
+<img src="/images/shopify-connect-pages.png" alt="The Pages step: the template, the chosen segment, and the metafields Tented saves to each customer." width="720" />
 
 Pages are personalized with what Shopify has on the customer: name, company, city and country, customer tags, number of orders, when they became a customer, and what they bought recently. Email addresses, phone numbers, street addresses, notes, and amounts spent are never put on a page, because pages are public.
 
@@ -58,7 +58,7 @@ Build the segment in Shopify first (**Customers → Segments**), for example "cu
 
 Expand **Advanced** to change the copy Tented works from:
 
-<img src="/images/shopify-connect-advanced.png" alt="The Advanced section with the page generation prompt, the link sentence, and the follow-up sentence." width="514" />
+<img src="/images/shopify-connect-advanced.png" alt="The Advanced section with the page generation prompt, the link sentence, and the follow-up sentence." width="645" />
 
 - **Page generation prompt**: the instructions each page is generated with. `{{shopify.rowData}}` is replaced with what Shopify has on the customer (see above).
 - **Link sentence**: saved to the customer as `tented.page_offer`. Use `{{url}}`, `{{first_name}}`, `{{last_name}}`, `{{company_name}}`, and `{{summary}}`. Leave it empty to skip it.
@@ -76,7 +76,7 @@ Pick one of three options:
 - **Import Shopify customers into Tented.** Customers appear in People and are kept up to date about every 15 minutes. Tented only writes back one thing: when someone unsubscribes in Tented, their Shopify email marketing status becomes **Unsubscribed**, so Shopify stops emailing them too.
 - **Keep Tented and Shopify in sync.** Changes flow both ways: Shopify changes come in, and Tented edits and new Tented contacts go back to Shopify as customers.
 
-<img src="/images/shopify-contacts-step.png" alt="The Contacts step: the three sync options and the note on email and SMS consent." width="672" />
+<img src="/images/shopify-contacts-step.png" alt="The Contacts step: the three sync options and the note on email and SMS consent." width="648" />
 
 ### Standard fields
 
@@ -105,7 +105,7 @@ Other customer data can come along too. Select **Add Shopify fields** and pick w
 
 Order counts, amounts, dates, and other fields Shopify calculates are always read-only. These arrive as a **Shopify fields** group on every contact, next to your own custom fields. Each one uses a custom field slot from your workspace's allowance; the step shows how many are left.
 
-<img src="/images/shopify-contacts-fields.png" alt="Shopify fields added to the sync, the duplicates choice, and the segment the sync is limited to." width="644" />
+<img src="/images/shopify-contacts-fields.png" alt="Shopify fields added to the sync, the duplicates choice, and the segment the sync is limited to." width="648" />
 
 ### Matching and duplicates
 
@@ -164,13 +164,13 @@ To email only those customers, send to the segment you chose in [Step 2](#step-2
 - The Shopify tile shows **Connected**, the store, and which segment creates pages automatically.
 - Pages are published at readable URLs under your Tented domain, such as `https://your-domain/for-ada-from-analytical-engines`.
 - Select **View activity** on the tile to see each sync, how many pages were created, and any customers Tented skipped and why. **Sync now** checks your segment straight away instead of waiting for the next pass.
-- Generated tents appear in your Tents list with **Shopify Integration** as the creator. Use **Filter → Hide integration-created** to keep them out of the way.
+- Generated tents appear in **Content > Tents** with **Shopify Integration** as the creator. Turn on **Hide integration tents** in the filter bar to keep them out of the way.
 
-<img src="/images/shopify-card-connected.png" alt="The Shopify tile once connected: store, segment, contact sync status, and last sync." width="376" />
+<img src="/images/shopify-card-connected.png" alt="The Shopify tile once connected: store, segment, contact sync status, and last sync." width="391" />
 
 ## Changing settings
 
-Select **Edit settings** on the Shopify tile to change the template, the segment, the prompt, or the sentences. Customers who already have a page are not given a new one when settings change.
+Select **Edit settings** on the Shopify tile to change the template, the segment, the prompt, or the sentences on the **Pages** tab, or contact sync on the **Contacts** tab. Customers who already have a page are not given a new one when settings change.
 
 ## Disconnecting
 

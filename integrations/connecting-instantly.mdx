@@ -21,18 +21,18 @@ Before you begin, make sure you have:
 ## Step 1: Connect Instantly
 
 1. In Tented, open **Settings → Integrations**.
-2. On the **Instantly** tile, select **Connect**.
+2. On the **Instantly** tile, select **Install**.
 
-![The Integrations page with the Instantly tile and its Connect button.](../images/instantly-integrations-page.png)
+<img src="/images/instantly-integrations-page.png" alt="The Integrations page with the Instantly tile and its Install button." width="391" />
 3. Paste your Instantly API key and select **Continue**. Tented checks the key with Instantly before moving on.
 
-![The Connect Instantly dialog asking for an API key.](../images/instantly-connect-key.png)
+<img src="/images/instantly-connect-key.png" alt="The Connect Instantly dialog asking for an API key." width="560" />
 
 ## Step 2: Choose what to generate
 
 Pick the campaign or agent to work from and the template to build pages with.
 
-![The Choose what to generate step with a campaign and a template selected.](../images/instantly-connect-pages.png)
+<img src="/images/instantly-connect-pages.png" alt="The Choose what to generate step with a campaign and a template selected." width="560" />
 
 - **Instantly campaign or AI Sales Agent**: the leads that should get pages.
   - Pick a **campaign** to cover every lead in that campaign, including leads added later.
@@ -43,7 +43,7 @@ Pick the campaign or agent to work from and the template to build pages with.
 
 Select **Advanced** to adjust three more settings:
 
-![The Advanced section with the generation prompt, link sentence, and follow-up sentence.](../images/instantly-connect-advanced.png)
+<img src="/images/instantly-connect-advanced.png" alt="The Advanced section with the generation prompt, link sentence, and follow-up sentence." width="560" />
 
 - **Tent generation prompt**: the instructions Tented gives the model for each page. `{{instantly.rowData}}` is replaced with the lead's data; use **Insert lead data** to place it.
 - **Link sentence**: the sentence Tented writes to each lead as `{{tented_page_offer}}`, for example `I put together a page for you here: {{url}}`. You can use `{{url}}`, `{{summary}}`, `{{first_name}}`, `{{company_name}}`, and `{{job_title}}`.
@@ -61,7 +61,7 @@ Without live sync, Tented checks for new leads every 15 minutes. With live sync,
 
 If your API key has the **Webhooks** scope, Tented registers the webhook itself and this step shows **Live sync is on**. Otherwise, the easiest fix is to disable the integration and connect again with a key that has the scope. You can also add the webhook by hand:
 
-![The live sync step confirming Live sync is on.](../images/instantly-live-sync-on.png)
+<img src="/images/instantly-live-sync-on.png" alt="The live sync step confirming Live sync is on." width="560" />
 
 1. In Instantly, go to **Settings → Integrations → Webhooks** and add a webhook for the **Email Sent** event.
 2. Paste the **webhook URL** shown in Tented (use the **Copy** button).
@@ -99,17 +99,17 @@ Pages are generated within 15 minutes of a lead being added (sooner with live sy
 
 The Instantly tile shows the connected campaign or agent, the last sync, and a **View activity** link.
 
-![The Instantly tile after connecting, showing the campaign and last sync.](../images/instantly-card-connected.png)
+<img src="/images/instantly-card-connected.png" alt="The Instantly tile after connecting, showing the campaign and last sync." width="391" />
 
 **Page URLs are readable.** Each page publishes at a path built from the lead's name and company, for example `https://your-domain/for-bryan-from-acme-co`. When a lead has no company, the path uses the first and last name instead.
 
 **Activity** lists each sync run with the URLs written, leads skipped, and credits used. Select a skipped count to see which leads were skipped and why. **Sync now** starts a run immediately.
 
-![The Instantly activity dialog listing recent syncs.](../images/instantly-activity.png)
+<img src="/images/instantly-activity.png" alt="The Instantly activity dialog listing recent syncs." width="760" />
 
-**Generated tents** appear in your Tents list with "Instantly Integration" as the creator. Use **Filter → Hide integration-created** to keep them out of the way while you work on other tents.
+**Generated tents** appear in **Content > Tents** with "Instantly Integration" as the creator. Turn on **Hide integration tents** in the filter bar to keep them out of the way while you work on other tents.
 
-![The Tents list with Instantly Integration as the creator.](../images/instantly-tents-list.png)
+<img src="/images/instantly-tents-list.png" alt="The Tents list with Instantly Integration as the creator." width="1117" />
 
 ## Changing settings
 

@@ -21,19 +21,19 @@ Before you begin, make sure you have:
 ## Step 1: Connect Origami
 
 1. In Tented, open **Settings → Integrations**.
-2. On the **Origami** tile, select **Connect**.
+2. On the **Origami** tile, select **Install**.
 
-![The Integrations page with the Origami tile and its Connect button.](../images/origami-integrations-page.png)
+<img src="/images/origami-integrations-page.png" alt="The Integrations page with the Origami tile and its Install button." width="391" />
 
 3. Paste your Origami API key and select **Continue**. Tented checks the key with Origami before moving on.
 
-![The Connect Origami dialog asking for an API key.](../images/origami-connect-key.png)
+<img src="/images/origami-connect-key.png" alt="The Connect Origami dialog asking for an API key." width="560" />
 
 ## Step 2: Choose what to generate
 
 Pick the table to work from, the campaign to enroll into, and the template to build pages with.
 
-![The Choose what to generate step with a table, a campaign, and a template selected.](../images/origami-connect-pages.png)
+<img src="/images/origami-connect-pages.png" alt="The Choose what to generate step with a table, a campaign, and a template selected." width="560" />
 
 - **Origami table**: the lead table whose prospects should get pages. Tented adds two columns to it, **Tented Personalized URL** and **Tented Page Summary**, and fills them in as pages are published.
 - **Origami campaign (optional)**: the campaign to enroll prospects into once their page exists. Prospects the campaign has already messaged are skipped, so connecting to a running campaign never generates pages for people who already heard from you.
@@ -41,7 +41,7 @@ Pick the table to work from, the campaign to enroll into, and the template to bu
 
 Select **Advanced** to adjust two more settings:
 
-![The Advanced section with the generation prompt, minimum fit score, and API key.](../images/origami-connect-advanced.png)
+<img src="/images/origami-connect-advanced.png" alt="The Advanced section with the generation prompt, minimum fit score, and API key." width="560" />
 
 - **Tent generation prompt**: the instructions Tented gives the model for each page. `{{origami.rowData}}` is replaced with the prospect's row data; use **Insert row data** to place it.
 - **Minimum fit score**: only prospects Origami scored at or above this number get a page. The default is 75, which matches Origami's own table view. Clear it to include every row.
@@ -58,7 +58,7 @@ Without live sync, Tented checks the table for new prospects every 15 minutes. W
 
 If your API key is an admin key, Tented registers the webhook itself and this step shows **Live sync is on**. With a member key, Tented walks you through creating the endpoint in Origami:
 
-![The Turn on live sync step listing the endpoint URL, the event to subscribe to, and a field for the signing secret.](../images/origami-connect-live-sync.png)
+<img src="/images/origami-connect-live-sync.png" alt="The Turn on live sync step listing the endpoint URL, the event to subscribe to, and a field for the signing secret." width="560" />
 
 1. In Origami, go to **Settings → Developers → Webhooks** and select **New endpoint**.
 2. Paste the **endpoint URL** shown in Tented (use the **Copy** button).
@@ -70,7 +70,7 @@ If your API key is an admin key, Tented registers the webhook itself and this st
 5. Back in Tented, paste the secret and select **Save**. Tented now waits for a test delivery.
 6. In Origami, open the endpoint you just created and select **Send test**. Tented verifies the signature and the step changes to **Live sync is on**.
 
-![The live sync step confirming Live sync is on.](../images/origami-live-sync-on.png)
+<img src="/images/origami-live-sync-on.png" alt="The live sync step confirming Live sync is on." width="560" />
 
 <Tip>
 If you close the dialog before finishing, the Origami tile keeps a **Turn on live sync** link that reopens this step. Scheduled syncs run every 15 minutes in the meantime.
@@ -104,17 +104,17 @@ You can ask the Origami agent to make the template change for you. Tell it to ad
 
 The Origami tile shows the connected table and campaign, the last sync, and a **View activity** link.
 
-![The Origami tile after connecting, showing the table, campaign, and last sync.](../images/origami-card-connected.png)
+<img src="/images/origami-card-connected.png" alt="The Origami tile after connecting, showing the table, campaign, and last sync." width="391" />
 
 **Page URLs are readable.** Each page publishes at a path built from the prospect's name and company, for example `https://your-domain/for-bryan-from-acme-co`. When a row has no company, the path uses the first and last name instead.
 
 **Activity** lists each sync run with the URLs written, prospects skipped, and credits used. Select a skipped count to see which prospects were skipped and why. **Sync now** starts a run immediately.
 
-![The Origami activity dialog listing recent syncs.](../images/origami-activity.png)
+<img src="/images/origami-activity.png" alt="The Origami activity dialog listing recent syncs." width="760" />
 
-**Generated tents** appear in your Tents list with "Origami Integration" as the creator. Use **Filter → Hide integration-created** to keep them out of the way while you work on other tents.
+**Generated tents** appear in **Content > Tents** with "Origami Integration" as the creator. Turn on **Hide integration tents** in the filter bar to keep them out of the way while you work on other tents.
 
-![The Tents list with Origami Integration as the creator and the Hide integration-created option in the Filter menu.](../images/origami-tents-list.png)
+<img src="/images/origami-tents-list.png" alt="The Tents list with Origami Integration as the creator and the Hide integration tents toggle in the filter bar." width="1127" />
 
 ## Changing settings
 

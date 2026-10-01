@@ -9,7 +9,7 @@ An **A/B test** takes the guesswork out of a blast: instead of betting the whole
 
 Every A/B test lives inside an [email blast](/email/email-blasts). Open a draft blast, head to the **Schedule** step, and find **AB Test** under **Additional Settings**. Click **Add Test**.
 
-![A screenshot of the blast Schedule step showing the Additional Settings card with the Set as operational toggle and the AB Test section with an Add Test button.](../images/blast-schedule-step.png)
+<img src="/images/blast-schedule-step.png" alt="A screenshot of the blast Schedule step showing the Additional Settings card with the Set as operational toggle and the AB Test section with an Add Test button." width="720" />
 
 <Note>
   Once a test is active, the blast's schedule follows the **test's** start time, and **Send now** is unavailable — a test needs time to collect results before the winner can go out.
@@ -19,7 +19,7 @@ Every A/B test lives inside an [email blast](/email/email-blasts). Open a draft 
 
 The **What should we test?** dropdown offers five test types:
 
-![A screenshot of the What should we test dropdown open, listing Subject line, Whole email, From address, Day of week, and Time of day.](../images/ab-test-dimensions.png)
+<img src="/images/ab-test-dimensions.png" alt="A screenshot of the What should we test dropdown open, listing Subject line, Whole email, From address, Day of week, and Time of day." width="697" />
 
 | Test type | Each variation is… | Good for |
 |---|---|---|
@@ -37,26 +37,26 @@ The **What should we test?** dropdown offers five test types:
 
 **Variation A** is always the **control**: your campaign's current setup. Add up to four more with **Add variation** (a test needs at least two).
 
-![A screenshot of the Variations section with Variation A marked Control and prefilled with the campaign subject, an empty Variation B, an Add variation button, and a Suggest variations button.](../images/ab-test-variations-default.png)
+<img src="/images/ab-test-variations-default.png" alt="A screenshot of the Variations section with Variation A marked Control and prefilled with the campaign subject, an empty Variation B, an Add variation button, and a Suggest variations button." width="697" />
 
 ### Let AI write the alternatives
 
 For **Subject line** and **From address** tests, click **Suggest variations** and Tented generates alternatives alongside your control — each with a one-line rationale explaining what it's testing, so the test is a real experiment rather than five shots in the dark. Keep them, edit them, or **Regenerate variations** for a new set.
 
-![A screenshot of AI-suggested variations, each with an AI suggested badge and a rationale line beneath the variation name.](../images/ab-test-variations-suggested.png)
+<img src="/images/ab-test-variations-suggested.png" alt="A screenshot of AI-suggested variations, each with an AI suggested badge and a rationale line beneath the variation name." width="697" />
 
 ### Whole-email variations
 
 For a **Whole email** test, Variation A sends the approved campaign email. For each other variation, pick another **approved** email — or click **Clone original email** to duplicate the control and edit the copy in the email editor. Clones must be approved before the test can be saved.
 
-![A screenshot of a Whole email test where Variation A sends the approved campaign email with an Edit control email link, and Variation B has a Variation email picker.](../images/ab-test-whole-email.png)
+<img src="/images/ab-test-whole-email.png" alt="A screenshot of a Whole email test where Variation A sends the approved campaign email with an Edit control email link, and Variation B has a Variation email picker." width="697" />
 
 ### Timing variations
 
 - **Day of week** — set one **Send time for every variation**, then give each variation its own weekday.
 - **Time of day** — give each variation its own local time, interpreted as wall-clock time in the test's timezone. A **Winner delivery weekdays** setting controls which days the winning time may be delivered on — after winner selection, delivery waits for the winning local time on an eligible weekday.
 
-![A screenshot of a Time of day test showing per-variation local time inputs and the Winner delivery weekdays radio options.](../images/ab-test-time-of-day.png)
+<img src="/images/ab-test-time-of-day.png" alt="A screenshot of a Time of day test showing per-variation local time inputs and the Winner delivery weekdays radio options." width="697" />
 
 ## Split the audience
 
@@ -67,7 +67,7 @@ For a **Whole email** test, Variation A sends the approved campaign email. For e
 
 The two always total 100% (editing one rebalances the other), and both must be whole percentages between 1 and 99.
 
-![A screenshot of the Audience allocation section with Test sample at 20 percent and Winner audience at 80 percent, above the Winner selection radios.](../images/ab-test-allocation-winner.png)
+<img src="/images/ab-test-allocation-winner.png" alt="A screenshot of the Audience allocation section with Test sample at 20 percent and Winner audience at 80 percent, above the Winner selection radios." width="697" />
 
 <Note>
   The audience needs at least **one more qualified contact than you have variations** — every variation gets at least one sample recipient, and at least one contact is always held back for the winner send.
@@ -95,23 +95,23 @@ Two datetime fields close out the setup:
 - **Test start time** — when the sample sends go out. This *is* the blast's send time. It can stay blank while you draft, but scheduling requires a start at least **2 minutes** in the future.
 - **Winner decision time** (automatic selection only) — when Tented evaluates results and sends the winner. It must land **after every variation has sent**. For subject-line, whole-email, and from-address tests the winner goes out right at decision time; day-of-week and time-of-day winners wait for the next eligible occurrence of the winning slot.
 
-![A screenshot of the bottom of the AB Test configurator with Winner selection radios, Test start time and Winner decision time pickers, and the Save AB test button.](../images/ab-test-timing-save.png)
+<img src="/images/ab-test-timing-save.png" alt="A screenshot of the bottom of the AB Test configurator with Winner selection radios, Test start time and Winner decision time pickers, and the Save AB test button." width="710" />
 
 ## Save it, then schedule it
 
 Click **Save AB test** — the badge in the AB Test header flips from **Unsaved changes** to **Saved**. Then launch from the top of the Schedule step, where the usual Schedule send button now reads **Schedule test**: it approves the blast and schedules the test to begin at your start time.
 
-![A screenshot of the Schedule step with a saved AB test, showing the Schedule the AB test card with a Schedule test button and the AB Test section marked Saved.](../images/ab-test-saved-schedule.png)
+<img src="/images/ab-test-saved-schedule.png" alt="A screenshot of the Schedule step with a saved AB test, showing the Schedule the AB test card with a Schedule test button and the AB Test section marked Saved." width="1470" />
 
-Back on the **Campaigns** tab, blasts with a test carry a violet **AB TEST** badge next to their status:
+Back on the **Campaigns** page, blasts with a test carry a violet **AB TEST** badge next to their status:
 
-![A screenshot of the Campaigns list where the draft blast Terra Collection Launch has a violet AB TEST badge beside its Draft status.](../images/campaigns-list-ab-test.png)
+<img src="/images/campaigns-list-ab-test.png" alt="A screenshot of the Campaigns list where the draft blast Terra Collection Launch has a violet AB TEST badge beside its Draft status." width="1160" />
 
 ## Watch the results roll in
 
 Once scheduled, the campaign page gains an **AB Test** card that tracks the whole lifecycle — it refreshes itself, so you can leave it open:
 
-![A screenshot of a completed AB test overview showing test timing tiles, the audience split, winning metric, selection mode, and the selected winner Variation C.](../images/ab-test-results-overview.png)
+<img src="/images/ab-test-results-overview.png" alt="A screenshot of a completed AB test overview showing test timing tiles, the audience split, winning metric, selection mode, and the selected winner Variation C." width="716" />
 
 | Status | What's happening |
 |---|---|
@@ -124,7 +124,7 @@ Once scheduled, the campaign page gains an **AB Test** card that tracks the whol
 
 The results table shows every variation with its recipients, opens, clicks, and your winning metric. The winner is tinted green and wears the trophy:
 
-![A screenshot of the AB test results table with five subject line variations, where Variation C is highlighted with a Winner badge at a 53 percent open rate.](../images/ab-test-results-table.png)
+<img src="/images/ab-test-results-table.png" alt="A screenshot of the AB test results table with five subject line variations, where Variation C is highlighted with a Winner badge at a 53 percent open rate." width="714" />
 
 For a **Declare manually** test, each row gains a **Declare winner** button once results are collecting. Declaring sends that variation to the winner audience — for content tests you also pick the **Send winner at** time. The choice can't be changed after winner selection.
 

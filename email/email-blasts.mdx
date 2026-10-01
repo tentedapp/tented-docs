@@ -11,25 +11,25 @@ An **email blast** is a one-time send to an audience: product launches, newslett
   First time sending? Make sure your sending domain is verified — see [Setting Up Email](/email/email-setup).
 </Note>
 
-Head to **Email > Campaigns** and click **Create Email Blast**. Name your blast (this is just for your team — recipients never see it), and you're dropped into a three-step wizard: **Audience → Email → Schedule**. Your progress saves automatically as you go.
+Head to **Campaigns** and click **Create blast** on the **Email Blast** card (or **Add > Create Email Blast**). Tented creates an **Untitled blast** you can rename at the top of the page (the name is just for your team; recipients never see it), and you're dropped into a three-step wizard: **Audience → Email → Schedule**. Your progress saves automatically as you go.
 
-![A screenshot of the Campaigns tab with cards for Create Email Blast and Create Triggered Flow.](../images/email-campaigns-tab.png)
+<img src="/images/email-campaigns-tab.png" alt="A screenshot of the Campaigns page with the Email Blast and Triggered Flow cards." width="1160" />
 
 ## Step 1: Pick the audience
 
 Choose an existing [static or dynamic list](/people/working-with-lists), or build a one-off list just for this blast (it's deleted along with the blast, keeping your Lists page tidy).
 
-![A screenshot of the audience step showing the choice between using an existing audience and creating a new one, with a list picker below.](../images/blast-audience-step.png)
+<img src="/images/blast-audience-step.png" alt="A screenshot of the audience step showing the choice between using an existing audience and creating a new one, with a list picker below." width="1470" />
 
 Once you pick a list, Tented shows you the **qualified** count (people who will actually receive the email) and the **blocked** count (people excluded because they've unsubscribed). Click **View all** to inspect exactly who qualifies.
 
-![A screenshot of a selected audience showing 8,412 qualified contacts and 147 blocked.](../images/blast-audience-selected.png)
+<img src="/images/blast-audience-selected.png" alt="A screenshot of a selected audience showing 8,412 qualified contacts and 147 blocked." width="720" />
 
 ## Step 2: Pick the email
 
 Use an existing **approved** email, or compose a one-off email inline just for this blast.
 
-![A screenshot of the email step showing the choice between using an existing approved email and creating a new one for this blast.](../images/blast-email-step.png)
+<img src="/images/blast-email-step.png" alt="A screenshot of the email step showing the choice between using an existing approved email and creating a new one for this blast." width="1470" />
 
 <Warning>
   Blasts send the **approved version** of an email. If you've made draft edits since approving, they won't go out until you click **Approve Update** on the email.
@@ -42,7 +42,7 @@ Two ways to launch:
 - **Schedule send** — pick a day and time; the blast is approved now and sends automatically.
 - **Send now** — confirm, and it goes to everyone qualified immediately. This can't be undone, so the confirmation shows you the exact recipient count first.
 
-![A screenshot of the schedule step with options to schedule for a specific day and time or send now, plus Additional Settings with the Set as operational toggle and the AB Test section.](../images/blast-schedule-step.png)
+<img src="/images/blast-schedule-step.png" alt="A screenshot of the schedule step with options to schedule for a specific day and time or send now, plus Additional Settings with the Set as operational toggle and the AB Test section." width="720" />
 
 <Note>
   **Set as operational** is for service notices — password resets, security announcements, terms changes. Operational sends go to unsubscribed contacts too and skip the unsubscribe footer — though contacts whose email was marked invalid by a hard bounce are still excluded (that address can't receive mail). Never use it for marketing.
@@ -68,41 +68,41 @@ Not sure which subject line (or send time, or sender) will win? The **AB Test** 
 
 The moment a blast sends, its page becomes a live results dashboard: recipients, sent, delivered, opened, clicked, bounced, unsubscribed, and spam reports.
 
-![A screenshot of a completed blast showing its status, audience, email, and a results dashboard with sent and delivery metrics.](../images/blast-results.png)
+<img src="/images/blast-results.png" alt="A screenshot of a completed blast showing its status, audience, email, and a results dashboard with sent and delivery metrics." width="1470" />
 
 ### Drill into any metric
 
 Every number on the dashboard is clickable. Click a metric — say **Delivered** or **Bounced** — to open the **Activity** view: the exact contacts in that bucket, with timestamps (delivered at, opened at, and so on). A left-hand rail lets you jump between buckets, and there's a search box to find a specific person.
 
-![A screenshot of the blast Activity view showing the Delivered bucket with one contact, the metric rail on the left, and an Export button.](../images/blast-metric-drilldown.png)
+<img src="/images/blast-metric-drilldown.png" alt="A screenshot of the blast Activity view showing the Delivered bucket with one contact, the metric rail on the left, and an Export button." width="1470" />
 
 Click **Export** to download the contacts in the current bucket as a CSV — handy for pulling your bounced addresses for cleanup, or your openers for a follow-up.
 
-All your blasts (and flows) live together on the **Campaigns** tab, with status and headline results at a glance.
+All your blasts (and flows) live together on the **Campaigns** page, with status and headline results at a glance.
 
-![A screenshot of the Campaigns list showing a completed email blast with 1 sent.](../images/campaigns-list.png)
+<img src="/images/campaigns-list.png" alt="A screenshot of the Campaigns page listing blasts and flows with their status, details, and last update." width="1160" />
 
 ## Clone a blast
 
-Running the same newsletter every month? Clone last month's instead of rebuilding it: hover a blast in the Campaigns list and click the **Clone** icon, or use the **⋯ menu > Clone campaign** inside the blast.
+Running the same newsletter every month? Clone last month's instead of rebuilding it: open the **⋯** menu on a blast's row in the Campaigns list and choose **Clone**, or use the **⋯ menu > Clone campaign** inside the blast.
 
-![A screenshot of the Clone Blast dialog with a New Blast Name field prefilled with Copy of Terra Collection Launch and a note that cloned blasts always start as drafts.](../images/blast-clone-dialog.png)
+<img src="/images/blast-clone-dialog.png" alt="A screenshot of the Clone campaign dialog with a Name field prefilled with Copy of Predictive Scheduling Launch Blast and a note that cloned campaigns start as drafts." width="492" />
 
 Cloned blasts **always start as drafts** — the audience, email, and settings carry over, but a blast that was already scheduled or sent is cloned *without* a send time, so nothing fires until you schedule it. Cloning works from any state, including completed and archived blasts, and drops you straight into the new draft.
 
 ## Archive a campaign
 
-Campaigns that have actually run aren't deleted — they're **archived**, so their send history stays intact. Hover a completed (or failed) blast in the Campaigns list and click the **Archive Campaign** icon, or use **⋯ menu > Archive campaign** on the campaign's page.
+Campaigns that have actually run aren't deleted — they're **archived**, so their send history stays intact. Open the **⋯** menu on a completed (or failed) blast's row in the Campaigns list and choose **Archive Campaign**, or use **⋯ menu > Archive campaign** on the campaign's page.
 
-![A screenshot of the Campaigns list with the Archive Campaign tooltip showing on a completed blast's hover action.](../images/campaign-archive-hover.png)
+<img src="/images/campaign-archive-hover.png" alt="A screenshot of a completed blast's row menu in the Campaigns list with Archive Campaign highlighted." width="1140" />
 
 Confirm, and the campaign moves out of your campaigns list — its results are preserved and it stays reachable forever:
 
-![A screenshot of the Archive confirmation dialog explaining that the blast will move out of the campaigns list and its send results are preserved.](../images/campaign-archive-confirm.png)
+<img src="/images/campaign-archive-confirm.png" alt="A screenshot of the Archive confirmation dialog explaining that the blast will move out of the campaigns list and its send results are preserved." width="472" />
 
 To find archived campaigns, open **Filter**, pick a **Type** first, then choose **Archived** under Status:
 
-![A screenshot of the campaigns Filter dropdown with Type set to Email Blast and the Status list showing the Archived option.](../images/campaigns-filter-archived.png)
+<img src="/images/campaigns-filter-archived.png" alt="A screenshot of the campaigns Filter dropdown with Type set to Email Blast and the Status list showing the Archived option." width="1100" />
 
 A few rules worth knowing:
 

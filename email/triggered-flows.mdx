@@ -7,13 +7,13 @@ description: "Build automated, multi-step email journeys on a visual canvas"
 
 A **triggered flow** is marketing automation on autopilot: contacts enter when they match a trigger, then move through the steps you've laid out — sending emails, waiting, branching, updating fields — until they reach the end. Welcome series, onboarding sequences, re-engagement campaigns: this is where they live.
 
-Head to **Email > Campaigns** and click **Create Triggered Flow**. Name it, and you land on the visual flow builder with three tabs: **Overview** (analytics), **Edit Flow** (the canvas), and **History**.
+Head to **Campaigns** and click **Build a flow** on the **Triggered Flow** card (or **Add > Create Triggered Flow**). Tented creates an **Untitled flow** you can rename at the top of the page, and you land on the visual flow builder with three tabs: **Overview** (analytics), **Edit Flow** (the canvas), and **History**.
 
 ## Set the trigger
 
 Click the **Trigger** node to choose how contacts enter:
 
-![A screenshot of the flow builder showing the Setup Flow Trigger panel with the trigger types and the trigger node on the canvas.](../images/flow-triggers.png)
+<img src="/images/flow-triggers.png" alt="A screenshot of the flow builder showing the Setup Flow Trigger panel with the trigger types and the trigger node on the canvas." width="1470" />
 
 - **Added to Static List** — the classic welcome-series trigger
 - **Removed from Static List**
@@ -32,13 +32,13 @@ Below the triggers you'll find **Qualification rules** — the fine print of who
 - **Re-entry policy**: allow contacts to go through the flow again after they finish (or block them to once ever).
 - **Disqualification rules**: audience rules that keep matching contacts *out* — for example, exclude anyone whose lifecycle stage is already "Customer" from a lead-nurture flow.
 
-![A screenshot of the Qualification rules panel showing the re-entry policy options and disqualification rules.](../images/flow-qualification-rules.png)
+<img src="/images/flow-qualification-rules.png" alt="A screenshot of the Qualification rules panel showing the re-entry policy options and disqualification rules." width="1470" />
 
 ## Build the steps
 
 Click **+** anywhere on the canvas to add a step. You've got a full automation toolkit:
 
-![A screenshot of the step palette showing Send Email, Wait, Update Contact, Add to List, Remove from List, Condition, Create Tent, Send Webhook, and Drop from Flow.](../images/flow-steps-palette.png)
+<img src="/images/flow-steps-palette.png" alt="A screenshot of the step palette showing Send Email, Wait, Update Contact, Add to List, Remove from List, Condition, Create Tent, Send Webhook, and Drop from Flow." width="1470" />
 
 | Step | What it does |
 |---|---|
@@ -54,23 +54,23 @@ Click **+** anywhere on the canvas to add a step. You've got a full automation t
 
 For a Send Email step, pick any **approved** email — the same approval rule as blasts — or compose one inline. There's also an operational-send toggle for non-marketing notices.
 
-![A screenshot of the Configure Send Email panel with an approved email selected and the flow canvas showing Trigger, Send Email, and End nodes.](../images/flow-send-email-step.png)
+<img src="/images/flow-send-email-step.png" alt="A screenshot of the Configure Send Email panel with an approved email selected and the flow canvas showing Trigger, Send Email, and End nodes." width="1470" />
 
 Wait steps keep journeys humane — space your sends out instead of firing everything at once:
 
-![A screenshot of a flow canvas showing Trigger, Send Email, and a Wait step configured for 1 day.](../images/flow-wait-step.png)
+<img src="/images/flow-wait-step.png" alt="A screenshot of a flow canvas showing Trigger, Send Email, and a Wait step configured for 1 day." width="1470" />
 
 ### The Create Tent step
 
 The **Create Tent** step generates a *personalized landing page for each contact* as they pass through the flow — a unique page per person, built from their contact data.
 
-![A screenshot of the Configure Create Tent panel showing Source, a personalized Prompt, an Auto-approve checkbox, a URL path field, and a Published URL token.](../images/flow-create-tent-step.png)
+<img src="/images/flow-create-tent-step.png" alt="A screenshot of the Configure Create Tent panel showing Source, a personalized Prompt, an Auto-approve checkbox, a URL path field, and a Published URL token." width="1470" />
 
 Configure it with:
 
 - **Source** — **From scratch** (generate with AI from a prompt) or **From template** (copy an approved tent template, no generation credits).
 
-  ![A screenshot of the Source dropdown showing From scratch and From template options.](../images/flow-create-tent-source.png)
+  <img src="/images/flow-create-tent-source.png" alt="A screenshot of the Source dropdown showing From scratch and From template options." width="363" />
 
 - **Prompt** — what to generate. Click **Personalize** to drop in [contact tokens](/email/creating-emails#subject-lines-preheaders-and-personalization) like `{{contact.firstName}}`, so every contact gets a page tailored to them.
 - **Tent name** and **URL path** — both optional and both personalizable; a blank URL path falls back to the tent ID.
@@ -108,29 +108,29 @@ Click **Activate** and your flow goes live: from now on, contacts matching a tri
   Activating flows requires a **Pro or Max** plan. On the Free plan you can build, edit, and save flows — the canvas shows a reminder, and an **Upgrade to Unlock** gem appears in place of the Activate button. If a workspace downgrades to Free, its active flows are **paused automatically** (members stay put, and resume if you upgrade and reactivate). See [Upgrading Your Plan](/billing-subscriptions/upgrading-plan).
 </Note>
 
-![A screenshot of an active flow with the ACTIVE badge and a banner noting the flow must be paused before making changes.](../images/flow-active.png)
+<img src="/images/flow-active.png" alt="A screenshot of an active flow with the ACTIVE badge and a banner noting the flow must be paused before making changes." width="1470" />
 
 <Note>
   Active flows are locked for editing — hit **Pause** first if you need to make changes, then reactivate. Pausing doesn't kick anyone out: contacts already in the flow simply wait, and pick up where they left off when you reactivate. Triggers fire on *new* events after activation (evaluated about once a minute); contacts already on a list won't enter an "Added to Static List" flow retroactively.
 </Note>
 
-Retiring a flow for good? Pause it, then **Archive** it from the header's overflow menu — the flow moves out of your active campaigns with its run history preserved, and you can find it under the **Archived** status filter on the Campaigns tab. Archiving can't be undone: contacts still waiting in the flow stay in its history, but the flow never resumes. See [Archive a campaign](/email/email-blasts#archive-a-campaign) for the full rules.
+Retiring a flow for good? Pause it, then **Archive** it from the header's overflow menu — the flow moves out of your active campaigns with its run history preserved, and you can find it under the **Archived** status filter on the Campaigns page. Archiving can't be undone: contacts still waiting in the flow stay in its history, but the flow never resumes. See [Archive a campaign](/email/email-blasts#archive-a-campaign) for the full rules.
 
 ## Track performance
 
 The **Overview** tab shows your flow's vitals: total contacts entered, how many are currently waiting, the most recent entry, who's parked at each Wait step, and per-email stats (sent, delivered, opened, clicked, bounced, unsubscribed, spam).
 
-![A screenshot of flow analytics showing one contact entered, one currently waiting at the 1-day Wait step, and the Send Email step at 100 percent delivered.](../images/flow-analytics.png)
+<img src="/images/flow-analytics.png" alt="A screenshot of flow analytics showing one contact entered, one currently waiting at the 1-day Wait step, and the Send Email step at 100 percent delivered." width="962" />
 
 ### See every run
 
 The **History** tab lists every contact who's been through the flow — their status (In Flow, Completed, Exited), when they entered, and when they left. Filter by status or date range, and click **Export** for a CSV.
 
-![A screenshot of the flow History tab showing one run with an In Flow status and a View Run Details button.](../images/flow-history-runs.png)
+<img src="/images/flow-history-runs.png" alt="A screenshot of the flow History tab showing one run with an In Flow status and a View Run Details button." width="966" />
 
 Click **View Run Details** on any run to see that contact's exact path through the flow — a step-by-step timeline of what happened and when (entered flow, email sent, wait, email delivered), with the contact's current position highlighted.
 
-![A screenshot of the Run details timeline showing Entered flow, Email sent, Wait, and Email delivered events with timestamps.](../images/flow-run-details.png)
+<img src="/images/flow-run-details.png" alt="A screenshot of the Run details timeline showing Entered flow, Email sent, Wait, and Email delivered events with timestamps." width="554" />
 
 ## Flow or blast?
 
