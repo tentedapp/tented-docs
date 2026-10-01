@@ -19,10 +19,10 @@ Before you begin, make sure you have:
 ## Step 1: Connect HubSpot
 
 1. In Tented, open **Settings → Integrations**.
-2. On the **HubSpot** tile, select **Connect**, then **Connect HubSpot**.
+2. On the **HubSpot** tile, select **Install**, then **Connect HubSpot**.
 3. HubSpot opens in a new window. Pick the account to connect and approve access. The window closes on its own and Tented moves to the next step.
 
-<img src="/images/hubspot-integrations-page.png" alt="The Integrations page with the HubSpot tile and its Connect button." width="391" />
+<img src="/images/hubspot-integrations-page.png" alt="The Integrations page with the HubSpot tile and its Install button." width="391" />
 
 <img src="/images/hubspot-connect-step.png" alt="The Connect HubSpot dialog: one button opens HubSpot in a new window." width="560" />
 
@@ -51,7 +51,7 @@ Expand **Advanced** to change the copy Tented works from:
 - **Link sentence**: written to the record as `tented_page_offer`. Use `{{url}}`, `{{first_name}}`, `{{company_name}}`, `{{job_title}}`, and `{{summary}}`. Leave it empty to skip it.
 - **Follow-up sentence**: written as `tented_page_reference` for a later email or sequence step.
 
-Select **Connect**. Tented adds a **Tented** property group with six properties to contacts and companies in your HubSpot account (see [Using the fields in HubSpot](#using-the-fields-in-hubspot)), then starts watching any lists you chose.
+Select **Next: Contacts** to choose whether to sync contacts (below), then **Connect**. Tented adds a **Tented** property group with six properties to contacts and companies in your HubSpot account (see [Using the fields in HubSpot](#using-the-fields-in-hubspot)), then starts watching any lists you chose.
 
 ## Syncing contact data (optional)
 
@@ -181,7 +181,7 @@ Insert them as personalization tokens wherever HubSpot offers its **Personalize*
 - The HubSpot tile shows **Connected**, the account, and which lists create pages automatically.
 - Pages are published at readable URLs under your Tented domain, such as `https://your-domain/for-ada-from-analytical-engines` for a contact or `https://your-domain/for-acme-co` for a company.
 - Select **View activity** on the tile to see each sync, how many pages were created, and any records Tented skipped and why. **Sync now** checks your lists straight away instead of waiting for the next pass.
-- Generated tents appear in your Tents list with **HubSpot Integration** as the creator. Use **Filter → Hide integration-created** to keep them out of the way.
+- Generated tents appear in **Content > Tents** with **HubSpot Integration** as the creator. Turn on **Hide integration tents** in the filter bar to keep them out of the way.
 
 <img src="/images/hubspot-card-connected.png" alt="The HubSpot tile once connected: account, watched list, and last sync." width="391" />
 
@@ -189,7 +189,7 @@ Insert them as personalization tokens wherever HubSpot offers its **Personalize*
 
 ## Changing settings
 
-Select **Edit settings** on the HubSpot tile to change the template, the watched lists, the prompt, or the sentences. Records that already have a page are not regenerated when settings change.
+Select **Edit settings** on the HubSpot tile to change the template, the watched lists, the prompt, or the sentences on the **Pages** tab, or contact sync on the **Contacts** tab. Records that already have a page are not regenerated when settings change.
 
 ## Disconnecting
 

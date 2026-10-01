@@ -7,9 +7,9 @@ description: "Understand the contact fields Tented gives you — and add your ow
 
 Every contact in your People database is built from **fields**. Tented ships with a rich set of standard fields, and you can extend them with up to **200 custom fields** of your own.
 
-Manage them all in one place: **Workspace Settings > People > Manage Fields** (or **Settings > People**). From here you can also **Export** your full field schema.
+Manage them all in one place: **Settings > People**. From here you can also **Export** your full field schema.
 
-<img src="/images/contact-fields.png" alt="A screenshot of the Contact Fields page showing the custom fields usage bar, an empty custom fields section, and the standard fields list." width="1470" />
+<img src="/images/contact-fields.png" alt="A screenshot of the People section of Settings showing the custom fields usage bar, the custom fields, and the fields synced from integrations." width="1470" />
 
 ## Standard fields
 
@@ -44,13 +44,11 @@ To add one, click **Add field**:
 
 Picking **Select Dropdown** adds an **Accepted values** editor. Each option pairs a **display name** (what Tented shows everywhere) with a lowercase **internal name** (what the field actually stores) — and API updates and CSV imports must use the internal name: `active_customer`, not "Active Customer". You can reorder options, give each a color, choose a default for newly created people, and edit the set later from the field's pencil icon.
 
-{/* TODO: re-capture — the dialog now offers all eight types (String, Email, Phone, Number, Boolean, Date, Date & time, Select Dropdown) plus the Accepted values editor for selects. */}
-<img src="/images/contact-fields-add.png" alt="A screenshot of the Add custom field dialog with a display name of Plan Tier, an auto-generated API name, and the type dropdown showing String, Number, Boolean, and Date." width="880" />
+<img src="/images/contact-fields-add.png" alt="A screenshot of the Add custom field dialog for a Customer Type field of type Select Dropdown, with its Accepted values editor listing Active Customer, Free Trial, and Churned." width="880" />
 
 Your custom fields appear at the top of the fields page, where you can rename them, toggle editability, or archive ones you no longer use.
 
-{/* TODO: re-capture — the fields list now shows the expanded type badges (e.g. Select, Datetime). */}
-<img src="/images/contact-fields-custom.png" alt="A screenshot of the custom fields list showing a Plan Tier field with its Editable toggle and edit and archive controls." width="776" />
+<img src="/images/contact-fields-custom.png" alt="A screenshot of the custom fields list showing a Plan Tier field with its Editable toggle and edit and archive controls, followed by the HubSpot and Shopify field groups." width="776" />
 
 <Tip>
   You can also create custom fields on the fly during a [CSV import](/people/importing-contacts) — map an unmatched column to a new field without leaving the import flow.
