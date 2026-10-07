@@ -13555,6 +13555,10 @@
             "type": "integer",
             "description": "Total pageviews in the date range."
           },
+          "sample_interval": {
+            "type": "integer",
+            "description": "Resolution of the counts. 1 means every count is exact. A value N greater than 1 means Cloudflare served a 1-in-N sample and every count in the response is extrapolated by N. This is rare and only happens when the analytics backend could not obtain full-resolution data after retrying."
+          },
           "date_range": {
             "type": "object",
             "properties": {
