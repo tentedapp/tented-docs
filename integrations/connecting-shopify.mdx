@@ -169,7 +169,7 @@ Once Shopify is connected, [triggered flows](/email/triggered-flows) can start f
 
 The triggers appear in the picker only while Shopify is connected. A flow that already uses one keeps it, but is paused if you disconnect (see below).
 
-Tented matches the customer to a contact by their Shopify customer, then by email. If neither exists in People, Tented creates the contact (with **Shopify** as the source) and enrolls them. Each order or checkout enrolls a contact once, even if Shopify sends the event again.
+Tented matches the customer to a contact by their Shopify customer, then by email. If neither exists in People, Tented creates the contact (with **Shopify** as the source) and enrolls them. Each order or checkout enrolls a contact once, even if Shopify sends the event again. Test orders and orders imported from another platform (created more than a day before Shopify reports them) don't start flows, so a migration doesn't email your whole order history.
 
 A checkout that is completed before the delay ends never triggers the flow, so customers who finish buying aren't sent a reminder.
 
@@ -211,15 +211,15 @@ In [Shopify Flow](https://help.shopify.com/en/manual/shopify-flow), add an actio
 
 - **Customer**: the customer the page is for. Required.
 - **Order**: an order to build the page around. Optional. The page uses the order's items, totals, and shipping details.
-- **Instructions for this page**: what the page should focus on, in plain words. Optional.
+- **Instructions for this page**: what the page should focus on, in plain words. Optional. Tented follows these as instructions, so keep them to text you wrote yourself rather than Flow variables that customers fill in, such as an order note.
 
-When the workflow runs, Tented creates the customer's page from your Tented template, or refreshes it if they already have one. The page link is saved to the customer as `tented.page_url`, as with segment pages. If you chose an order, the link is also saved on the order as `tented.page_url`, so an order confirmation or shipping email can use it:
+When the workflow runs, Tented creates the customer's page from your Tented template, or refreshes it if they already have one. The action finishes only once the page is ready and its link is saved, so Shopify Flow waits (usually a minute or two) and the steps after it can use the link straight away. If the page can't be built, the action fails and Flow shows the reason. The page link is saved to the customer as `tented.page_url`, as with segment pages. If you chose an order, the link is also saved on the order as `tented.page_url`, so an order confirmation or shipping email can use it:
 
 ```liquid
 {{ order.metafields.tented.page_url }}
 ```
 
-The action works with **No automatic pages** too, so you can leave segments off and create pages only from Flow. It needs the store connected to Tented and a template chosen in **Settings → Integrations → Shopify**. If Flow reports that the store isn't connected or that no template is chosen, fix that in Tented and run the workflow again.
+The action works with **No automatic pages** too, so you can leave segments off and create pages only from Flow. It needs the store connected to Tented and a template chosen in **Settings → Integrations → Shopify**. If Flow reports that the store isn't connected or that no template is chosen, fix that in Tented and run the workflow again. Shopify lets Tented read orders from the last 60 days, so an older order is left off the page.
 
 ## What happens after connecting
 
