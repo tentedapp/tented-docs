@@ -29,7 +29,7 @@ You install Tented from the Shopify App Store, and Shopify brings you back to Te
 
 You can also start in Shopify: find **Tented** in the Shopify App Store and install it. If Tented is already installed, open it from **Apps** in your Shopify admin to finish connecting.
 
-Tented asks for permission to read and update customers and to read orders. It uses them to read customers and segments, write the page link to each customer, keep contacts in sync if you turn that on, and add a customer's recent purchases to their page.
+Tented asks for permission to read and update customers, and to read orders and products. It uses them to read customers and segments, write the page link to each customer, keep contacts in sync if you turn that on, add a customer's recent purchases to their page, and sync your product catalog.
 
 <Note>
 One Shopify store can feed one Tented workspace. To connect a different store, disconnect the current one first.
@@ -159,6 +159,68 @@ To show the link only to customers who have a page, wrap it in a check:
 
 To email only those customers, send to the segment you chose in [Step 2](#step-2-choose-a-segment): its members are the customers Tented makes pages for. A customer who just joined gets their page within about 15 minutes, so the check above keeps the email tidy in the meantime.
 
+## Order and cart triggers in Flows
+
+Once Shopify is connected, [triggered flows](/email/triggered-flows) can start from what happens in your store. Three triggers are added to the trigger picker:
+
+- **Shopify: Order placed**: when a customer places an order.
+- **Shopify: Order fulfilled**: when an order is marked fulfilled.
+- **Shopify: Checkout abandoned**: when a checkout sits unfinished. Choose how long to wait before the flow starts: from 15 minutes up to 1 day, with 1 hour as the default.
+
+The triggers appear in the picker only while Shopify is connected. A flow that already uses one keeps it, but is paused if you disconnect (see below).
+
+Tented matches the customer to a contact by their Shopify customer, then by email. If neither exists in People, Tented creates the contact (with **Shopify** as the source) and enrolls them. Each order or checkout enrolls a contact once, even if Shopify sends the event again.
+
+A checkout that is completed before the delay ends never triggers the flow, so customers who finish buying aren't sent a reminder.
+
+### Order details in your flow
+
+Each trigger hands the details to the run as [`{{campaign.dynamic.*}}` tokens](/email/personalization#campaign-dynamic-tokens-flows-only), which you can use in emails and in the **Create Tent** prompt:
+
+| Trigger | Tokens |
+| --- | --- |
+| Order placed | `orderNumber`, `orderId`, `orderDate`, `orderTotal`, `orderCurrency`, `orderItemCount`, `orderItems`, `orderStatusUrl`, `orderDiscountCodes`, `shippingCity`, `shippingCountry` |
+| Order fulfilled | The order placed tokens, plus `fulfillmentTrackingUrl` and `fulfillmentTrackingNumber` |
+| Checkout abandoned | `checkoutUrl`, `cartTotal`, `cartCurrency`, `cartItemCount`, `cartItems`, `checkoutDate` |
+
+For example, a recovery email can link its button to `{{campaign.dynamic.checkoutUrl}}` so the customer lands back in their cart.
+
+A [Create Tent step](/email/triggered-flows#the-create-tent-step) in the flow receives the order or cart details automatically, including the products, quantities, and prices, so you don't need to type the tokens into its prompt. The same privacy rules apply as for other pages: email addresses, phone numbers, and street addresses are not put on a page.
+
+### If Shopify is disconnected
+
+If you disconnect Shopify, or uninstall Tented in Shopify, flows that use a Shopify trigger are paused. The flow shows why it paused. Reconnecting does not restart them: reconnect Shopify, then select **Activate** on each flow again.
+
+## Products
+
+Tented reads your Shopify products so pages and emails can use your catalog. For each product it keeps the title, description, vendor, type, tags, images, variants (with price and availability), and the product's link on your store.
+
+Products are copied when you connect, and stay current as you add, change, or delete products in Shopify. The **Products** line on the Shopify tile shows how many products are synced and when. Select **Sync now** on that line to refresh them straight away.
+
+Today, products enrich the order details on your pages: an order's items come with the product's name, image, and link. Product blocks in emails will build on the same catalog later.
+
+Stores connected before products were added need to approve the new permission once. If the tile says **Reconnect Shopify to sync products**, select **Reconnect** and approve access in Shopify.
+
+Disconnecting Shopify removes the products Tented synced. Your products in Shopify are not changed.
+
+## Create a page from Shopify Flow
+
+Tented adds an action to Shopify Flow, **Create Tented page**, so a Shopify workflow can create a customer's personalized page whenever you want, for example when an order is delivered or a customer is tagged.
+
+In [Shopify Flow](https://help.shopify.com/en/manual/shopify-flow), add an action and choose **Create Tented page**. It has three fields:
+
+- **Customer**: the customer the page is for. Required.
+- **Order**: an order to build the page around. Optional. The page uses the order's items, totals, and shipping details.
+- **Instructions for this page**: what the page should focus on, in plain words. Optional.
+
+When the workflow runs, Tented creates the customer's page from your Tented template, or refreshes it if they already have one. The page link is saved to the customer as `tented.page_url`, as with segment pages. If you chose an order, the link is also saved on the order as `tented.page_url`, so an order confirmation or shipping email can use it:
+
+```liquid
+{{ order.metafields.tented.page_url }}
+```
+
+The action works with **No automatic pages** too, so you can leave segments off and create pages only from Flow. It needs the store connected to Tented and a template chosen in **Settings → Integrations → Shopify**. If Flow reports that the store isn't connected or that no template is chosen, fix that in Tented and run the workflow again.
+
 ## What happens after connecting
 
 - The Shopify tile shows **Connected**, the store, and which segment creates pages automatically.
@@ -245,4 +307,6 @@ Tented handles the privacy requests Shopify sends on your customers' behalf:
 | A customer unsubscribed in Shopify still shows **Marketing Email Subscribed** in Tented | The next sync hasn't run yet | Wait up to 15 minutes |
 | A list or flow shows **Needs attention** | A rule uses a Shopify field that was removed from the mapping or with the disconnect | Open the rule and replace the condition |
 | The Shopify setup didn't open after installing | Signing in took a while, or you signed in to a different workspace | In Shopify, open Tented from **Apps**; Shopify sends you back to finish connecting |
+| **Flow paused: Shopify disconnected** on a flow | Shopify was disconnected or the app was uninstalled, so flows with a Shopify trigger were paused | Reconnect Shopify, then select **Activate** on the flow |
+| **Reconnect Shopify to sync products** on the tile | The store was connected before Tented asked to read products | Select **Reconnect** and approve access in Shopify |
 | **Automatically create pages for** can't be changed | There's no approved template yet | Create and approve a template, then pick it in **Edit settings** |
