@@ -213,7 +213,7 @@ In [Shopify Flow](https://help.shopify.com/en/manual/shopify-flow), add an actio
 - **Order**: an order to build the page around. Optional. The page uses the order's items, totals, and shipping details.
 - **Instructions for this page**: what the page should focus on, in plain words. Optional. Tented follows these as instructions, so keep them to text you wrote yourself rather than Flow variables that customers fill in, such as an order note.
 
-When the workflow runs, Tented creates the customer's page from your Tented template, or refreshes it if they already have one. The page link is saved to the customer as `tented.page_url`, as with segment pages. If you chose an order, the link is also saved on the order as `tented.page_url`, so an order confirmation or shipping email can use it:
+When the workflow runs, Tented creates the customer's page from your Tented template, or refreshes it if they already have one. The action finishes only once the page is ready and its link is saved, so Shopify Flow waits (usually a minute or two) and the steps after it can use the link straight away. If the page can't be built, the action fails and Flow shows the reason. The page link is saved to the customer as `tented.page_url`, as with segment pages. If you chose an order, the link is also saved on the order as `tented.page_url`, so an order confirmation or shipping email can use it:
 
 ```liquid
 {{ order.metafields.tented.page_url }}
