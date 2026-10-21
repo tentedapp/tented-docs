@@ -127,7 +127,9 @@ With two-way sync, contacts Tented creates in Shopify are new customers there, a
 
 The first sync reads every customer in the store (or the chosen segment) and imports them in one run. It shows in **People → Past imports** as a Shopify initial sync. After that, Tented picks up changes about every 15 minutes. Contacts created by the sync show **Shopify** as their source.
 
-The **Contacts** line on the Shopify tile shows the sync mode, how many contacts are linked, and when the last sync ran. If Shopify refuses a contact, the tile shows how many weren't accepted and why; a refused contact is sent again the next time it changes in Tented.
+Before you save, the Contacts step shows what the sync will do: how many customers it will import from the store or segment, and, with two-way sync, how many Tented contacts it will send to Shopify and roughly how long that takes at Shopify's limits. A send of 10,000 contacts or more asks you to confirm it first. To send fewer, choose a segment, or import only.
+
+The **Contacts** line on the Shopify tile shows the sync mode, how many contacts are linked, and when the last sync ran. While the first sync runs it shows the stage and how far along it is: reading customers from Shopify, importing them, then (two-way) sending Tented's contacts to Shopify, with a rough time left. When Shopify limits how fast Tented can read or send, the line says so and the sync continues on its own; that is not an error. If Shopify refuses a contact, the tile shows how many weren't accepted and why; a refused contact is sent again the next time it changes in Tented.
 
 ## Using the page link in Shopify
 
