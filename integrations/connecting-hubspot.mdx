@@ -67,7 +67,9 @@ Pick one of three options:
 
 ### Standard fields
 
-HubSpot's standard properties (email, first and last name, company, job title, lifecycle stage, lead status, and so on) are matched to Tented's fields for you. For each one, choose what happens when a Tented contact already has a value, exactly as in a list import: **Overwrite** or **Do Nothing**. With two-way sync the rule works the same way in the other direction: a **Do Nothing** field is only ever filled in on HubSpot's side, never replaced, so each side keeps its own value.
+HubSpot's standard properties (email, first and last name, company, job title, lead status, and so on) are matched to Tented's fields for you. For each one, choose what happens when a Tented contact already has a value, exactly as in a list import: **Overwrite** or **Do Nothing**. With two-way sync the rule works the same way in the other direction: a **Do Nothing** field is only ever filled in on HubSpot's side, never replaced, so each side keeps its own value.
+
+HubSpot's **Lifecycle stage** is not matched to Tented's **Lifecycle Stage**. HubSpot gives every contact it creates the stage **Lead**, and its pipeline is HubSpot's, not Tented's. Add it as a HubSpot field if you want it on your contacts.
 
 HubSpot's **Opted out of all email** flag is mapped to Tented's **Unsubscribed** by default. It only ever unsubscribes a contact in Tented; a contact who unsubscribed in Tented is never re-subscribed by HubSpot. With two-way sync on, Tented unsubscribes are written to a **Unsubscribed in Tented** property in HubSpot so you can build a list or workflow on it.
 
@@ -100,7 +102,7 @@ A contact that leaves the list stops syncing in both directions from its next ch
 
 Each sync applies only the properties HubSpot changed since the last one, so an edit made in Tented survives an unrelated HubSpot change. If the same field changed on both sides between two syncs, the HubSpot value wins. A property emptied in HubSpot is emptied in Tented too, unless its rule is **Do Nothing**; an emptied email or phone never empties Tented's copy.
 
-With two-way sync, Tented sends only the fields that changed in Tented. Phone numbers keep HubSpot's own formatting until the number itself is changed in Tented. For a HubSpot dropdown, such as lifecycle stage, Tented sends the matching option; a Tented value HubSpot has no option for is left out, and the rest of the contact is still sent. HubSpot's own default for a new contact (lifecycle stage Lead) then fills that field in Tented only if it is empty.
+With two-way sync, Tented sends only the fields that changed in Tented. Phone numbers keep HubSpot's own formatting until the number itself is changed in Tented. For a HubSpot dropdown, such as lead status, Tented sends the matching option; a Tented value HubSpot has no option for is left out, and the rest of the contact is still sent. A default HubSpot gives a contact it creates then fills that field in Tented only if it is empty.
 
 If HubSpot refuses a contact outright, the **Contacts** line on the tile shows how many contacts were not accepted and the reason for the latest one. A refused contact is sent again the next time it changes in Tented.
 
