@@ -127,7 +127,9 @@ With two-way sync, contacts Tented creates in Shopify are new customers there, a
 
 The first sync reads every customer in the store (or the chosen segment) and imports them in one run. It shows in **People → Past imports** as a Shopify initial sync. After that, Tented picks up changes about every 15 minutes. Contacts created by the sync show **Shopify** as their source.
 
-The **Contacts** line on the Shopify tile shows the sync mode, how many contacts are linked, and when the last sync ran. If Shopify refuses a contact, the tile shows how many weren't accepted and why; a refused contact is sent again the next time it changes in Tented.
+Before you save, the Contacts step shows what the sync will do: how many customers it will import from the store or segment, and, with two-way sync, how many Tented contacts it will send to Shopify and roughly how long that takes at Shopify's limits. A send of 10,000 contacts or more asks you to confirm it first. To send fewer, choose a segment, or import only.
+
+The **Contacts** line on the Shopify tile shows the sync mode, how many contacts are linked, and when the last sync ran. While the first sync runs it shows the stage and how far along it is: reading customers from Shopify, importing them, then (two-way) sending Tented's contacts to Shopify, with a rough time left. A store with 5,000 customers or more is read as one Shopify bulk operation rather than page by page, and a two-way sync of 5,000 contacts or more goes out as Shopify bulk jobs, neither of which Shopify rate limits, so a large first sync takes minutes to hours instead of days. When Shopify limits how fast Tented can read or send, the line says so and the sync continues on its own; that is not an error. If Shopify refuses a contact, the tile shows how many weren't accepted and why; a refused contact is sent again the next time it changes in Tented.
 
 ## Using the page link in Shopify
 
@@ -225,7 +227,7 @@ The action works with **No automatic pages** too, so you can leave segments off 
 
 - The Shopify tile shows **Connected**, the store, and which segment creates pages automatically.
 - Pages are published at readable URLs under your Tented domain, such as `https://your-domain/for-ada-from-analytical-engines`.
-- Select **View activity** on the tile to see each sync, how many pages were created, and any customers Tented skipped and why. **Sync now** checks your segment straight away instead of waiting for the next pass.
+- Select **View activity** on the tile to see each sync, how many pages were created, and any customers Tented skipped and why. When contact sync is on, the same dialog lists each contact sync pass: the initial sync and every pass of changes since, with the contacts imported, sent to Shopify, and refused, and the reason when a pass stopped early. **Sync now** checks your segment straight away instead of waiting for the next pass.
 - Generated tents appear in **Content > Tents** with **Shopify Integration** as the creator. Turn on **Hide integration tents** in the filter bar to keep them out of the way.
 
 <img src="/images/shopify-card-connected.png" alt="The Shopify tile once connected: store, segment, contact sync status, and last sync." width="391" />
