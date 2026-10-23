@@ -49,6 +49,7 @@
             "group": "People & Lists",
             "pages": [
               "people/managing-contacts",
+              "people/selecting-everyone",
               "people/importing-contacts",
               "people/contact-fields",
               "people/working-with-lists"

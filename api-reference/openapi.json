@@ -16054,6 +16054,10 @@
             ],
             "description": "Contact email."
           },
+          "contact_deleted": {
+            "type": "boolean",
+            "description": "True if the contact has since been deleted. The run history is kept; contact_name and contact_email then come from what a send to them recorded, and are null if nothing was sent."
+          },
           "run_status": {
             "type": "string",
             "enum": [
@@ -16210,6 +16214,10 @@
               "null"
             ],
             "description": "Contact email."
+          },
+          "contact_deleted": {
+            "type": "boolean",
+            "description": "True if the contact has since been deleted. The run history is kept; contact_name and contact_email then come from what a send to them recorded, and are null if nothing was sent."
           },
           "run_status": {
             "type": "string",
