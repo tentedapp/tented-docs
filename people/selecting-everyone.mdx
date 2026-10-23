@@ -1,0 +1,96 @@
+---
+title: "Selecting and Deleting Everyone"
+description: "Select every person in a view, not just the current page, then export them or delete them all"
+---
+
+## Select everyone, not just this page
+
+The checkbox at the top of the People table selects the people on the page you're looking at. When a view holds more people than fit on one page, a **Select all [N]** button appears next to the selection count. Click it and the whole view is selected: every page, not only what's loaded.
+
+A view is whatever People is showing right now:
+
+- **All People**, including any [filters](/people/managing-contacts#filtering-people) and search you've applied
+- A **static or dynamic list**, including its search and its blocked-contacts chip
+
+The toolbar then reads **All [N] people selected**. Click **Clear** to start over, or uncheck someone to go back to picking people on the page.
+
+<Note>
+  With everyone selected, **People Actions** offers two things: **Export as CSV** and **Delete all**. To edit a field or change lists, clear the selection and pick people on a page.
+</Note>
+
+## Export everyone
+
+Choose **People Actions > Export as CSV** to export the whole view with the columns you have showing. In All People, the export follows your filters and search.
+
+A list export always includes every member of the list, so clear the list's search or blocked-contacts chip before exporting.
+
+## Delete everyone in a view
+
+<Warning>
+  Only workspace admins can delete everyone in a view. Everyone else sees **Delete all** greyed out, with the reason. A delete can't be undone.
+</Warning>
+
+1. Select everyone in the view (see above).
+2. Choose **People Actions > Delete all [N] people**.
+3. Read what will be deleted. The dialog spells out the view, for example *Everyone in your People database will be deleted* or *Everyone in VIP Customers will be deleted from your workspace, not just removed from the list*.
+4. Type the number of people to confirm, then click **Delete [N] people**.
+
+It works the same way on any view, so selecting everyone in All People with no filters or search deletes your entire People database.
+
+<Tip>
+  Want people off a static list but still in your workspace? Select them in the list and use **People Actions > Remove from List** instead.
+</Tip>
+
+### What gets deleted
+
+- The people in the view, along with their activity, field values and list memberships
+- Their spot in any [triggered flow](/email/triggered-flows) they're partway through
+
+Static list member counts drop to match, and dynamic lists update on their own.
+
+What stays:
+
+- Past sends and flow history, so your [email reports](/email/email-performance) still add up
+- Anyone who joins the view after you confirm, like a new form submission, an import, or someone added to the list. Tented deletes exactly the people you confirmed.
+
+<Warning>
+  People who came in from an integration (HubSpot, Shopify and the like) can come back the next time it syncs.
+</Warning>
+
+### Following the delete
+
+A big view takes a little while, so the delete runs in the background. A progress card at the top of People shows:
+
+- **Getting ready to delete [N] people** while Tented locks in exactly who will be deleted
+- **Deleting [N] people**, with how many are done so far
+
+You can leave People while it runs. When it finishes, you'll see **[N] people deleted**.
+
+Only one delete runs in a workspace at a time, so **Delete all** stays unavailable until the current one finishes.
+
+### Stopping a delete
+
+Admins can click **Stop** on the progress card. Everyone already deleted stays deleted, and everyone else stays in your workspace.
+
+### If the numbers change
+
+- **Before you confirm:** if people join or leave the view while the dialog is open (say, a form submission comes in), Tented shows the new number and asks you to type it again.
+- **Right after you confirm:** if people leave the view before deleting starts (someone else deletes a few of them, for example), Tented deletes nobody and asks you to check the view and start again.
+
+### If a delete can't finish
+
+A banner on People tells you how far it got, for example *The delete stopped after 1,300 of 2,600 people. Everyone not yet deleted is still here.* Start the delete again to remove the rest.
+
+## In the iOS app
+
+The Tented iOS app works the same way. Select people, tap **Select all [N]**, then open **People Actions** to export or (for admins) delete everyone in the view. Progress shows at the top of People, with **Stop** for admins. An export from the app is prepared for you to download from People on the web.
+
+## What's next?
+
+<Card
+  title="Next: Working with Lists"
+  icon="arrow-right"
+  href="/people/working-with-lists"
+>
+  Organize your contacts into static and dynamic lists, the audiences behind your campaigns.
+</Card>
