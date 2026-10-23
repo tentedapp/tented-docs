@@ -63,7 +63,7 @@ Pick one of three options:
 - **Import HubSpot contacts into Tented.** HubSpot contacts appear in People and are kept up to date about every 15 minutes. Tented never writes back.
 - **Keep Tented and HubSpot in sync.** Changes flow both ways: HubSpot edits come in, and Tented edits and new Tented contacts go back to HubSpot.
 
-<img src="/images/hubspot-contacts-step.png" alt="The Contacts step: the three sync options and the standard field mapping." width="720" />
+<img src="/images/hubspot-contacts-step.png" alt="The Contacts step: the sync mode, the preview of what saving does, and the mapping sections." width="720" />
 
 Once you pick an option the three cards fold to one line; **Change** opens them again. Below it, the step shows what saving will do: how many contacts it will import from the portal or list and, with two-way sync, how many Tented contacts it will send to HubSpot and roughly how long that takes. A send of 10,000 contacts or more asks you to confirm it first. To send fewer, choose a list, or import only. On a sync that is already running the panel shows how many contacts are linked and when it last ran, and switches to **What changes when you save** once you change the mapping.
 
@@ -90,7 +90,7 @@ Any HubSpot property can also come in as a field of its own, in a **HubSpot fiel
 
 These fields are marked as managed by HubSpot in People settings and are deleted when the integration is disconnected. Each one uses a custom field slot from your workspace's allowance; the section shows how many are left and the step will not save a mapping that does not fit. Dropdowns with more than 25 options, multiple-choice properties, and calculated properties come in as read-only text. File and rich-text properties cannot be synced.
 
-<img src="/images/hubspot-contacts-fields.png" alt="The HubSpot fields section with Industry set to Editable, and the duplicates choice below it." width="648" />
+<img src="/images/hubspot-contacts-fields.png" alt="The Create new HubSpot custom fields section with Industry set to Editable." width="648" />
 
 <img src="/images/hubspot-contact-fields-group.png" alt="A contact in People with its HubSpot fields group; Industry is marked as syncing back." width="528" />
 
