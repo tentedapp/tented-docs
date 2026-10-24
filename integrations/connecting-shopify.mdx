@@ -227,6 +227,17 @@ When the workflow runs, Tented creates the customer's page from your Tented temp
 
 The action works with **No automatic pages** too, so you can leave segments off and create pages only from Flow. It needs the store connected to Tented and a template chosen in **Settings → Integrations → Shopify**. If Flow reports that the store isn't connected or that no template is chosen, fix that in Tented and run the workflow again. Shopify lets Tented read orders from the last 60 days, so an older order is left off the page.
 
+## Using your products in Tented
+
+The connection also keeps a copy of your store's products and collections in Tented, current as they change in Shopify.
+
+- **Content > Assets > Products** lists the catalog by collection, with each product's price and status, and a **Sync now** button. See [Managing Your Assets](/working-with-tents/managing-assets#products).
+- In the editor chat, ask for products in plain words or with the **/products** command, confirm the matches Tented shows you, and they're added to your page or email with prices and links. Name a product in an image request and its photo becomes the reference. See [Adding Products from Shopify](/working-with-tents/using-shopify-products).
+
+<Note>
+Stores connected before Tented could read products need to grant that access once: select **Reconnect Shopify** on the tile and approve the updated permissions. Until then the Products view asks you to reconnect.
+</Note>
+
 ## What happens after connecting
 
 - The Shopify tile shows **Connected**, the store, and which segment creates pages automatically.
