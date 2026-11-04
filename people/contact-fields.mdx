@@ -29,7 +29,7 @@ Standard fields are built in — they can't be renamed or removed, and every con
 Each field has an **API name** (like `firstName` or `lifecycleStage`) you'll use with the [API](/api-reference/managing-contacts), see in CSV exports, and reference in [email personalization tokens](/email/creating-emails#subject-lines-preheaders-and-personalization) — `{{contact.firstName}}`.
 
 <Note>
-  The subscription fields (like **Unsubscribed**) are managed by Tented's email pipeline — they update automatically when contacts unsubscribe, and marketing sends respect them without any work on your part.
+  **Unsubscribed** and **Marketing Email Invalid** are managed by Tented's email pipeline — they update automatically when contacts unsubscribe or hard-bounce, and every marketing send respects them. **Marketing Email Subscribed** records consent from imports and integrations but does not block sends on its own; to make it (or any Yes/No custom field) a suppression, add a rule under [Settings → Email → Send Suppression](/email/email-setup#5-decide-who-else-is-held-back).
 </Note>
 
 ## Custom fields
