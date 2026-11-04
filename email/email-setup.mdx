@@ -62,6 +62,24 @@ The footer supports tokens that are filled from your sender profile at send time
   When a contact unsubscribes, Tented flips their **Unsubscribed** field and quietly excludes them from future marketing sends. You don't need to manage suppression lists yourself.
 </Note>
 
+## 5. Decide who else is held back
+
+The **Send Suppression** panel shows who never receives a marketing blast or flow. Two rules are built in and cannot be changed:
+
+- **Unsubscribed** is Yes. Operational sends bypass this one.
+- **Marketing Email Invalid** is Yes (a hard-bounced address). This blocks every send, operational included.
+
+On top of those you can add your own rules. Each rule names a Yes/No field and blocks the contact when the field is **No**, when it is **not set**, or both:
+
+- **Marketing Email Subscribed** is where CSV imports and the Shopify integration record consent. Block when No and when not set, and only contacts who explicitly opted in receive marketing email. This is the right setting for a migration from another platform.
+- Any **Yes/No custom field** works the same way, so a field like `gdprConsent` or `catalogOptIn` can gate sends without touching your audiences.
+
+Added rules apply everywhere the built-in ones do: the blocked count when you pick an audience, the People list's blocked filters, blasts, A/B tests and flows. Operational sends ignore added rules. A rule on a custom field that is later archived stops applying on its own.
+
+<Warning>
+  Added rules only hold contacts back. They never change a contact's fields, so clearing a rule later lets those contacts receive mail again.
+</Warning>
+
 ## Deliverability & suppression
 
 A few behaviors worth knowing so your sends stay healthy:
@@ -70,7 +88,7 @@ A few behaviors worth knowing so your sends stay healthy:
 - **Hard bounces suppress themselves.** When an address hard-bounces, Tented marks the contact's email invalid and excludes it from **every** future send — operational included, since the address simply can't receive mail. The flag is system-managed: it can't be set by hand or by imports, and it clears automatically if the contact's email address is updated.
 - **Bounces and spam reports are tracked.** They show up in your [blast](/email/email-blasts) and flow results so you can spot problem addresses, and you can export the bounced bucket to clean your list.
 - **One-click unsubscribe** is built in via the `List-Unsubscribe` header, so Gmail and Apple Mail show their native unsubscribe button — which protects your sender reputation.
-- **Operational sends bypass the unsubscribe preference only** (password resets, security notices) — invalid, hard-bounced addresses stay excluded even there. Keep that toggle off for anything promotional.
+- **Operational sends bypass the unsubscribe preference only** (password resets, security notices) — invalid, hard-bounced addresses stay excluded even there, and your added suppression rules are skipped. Keep that toggle off for anything promotional.
 
 ## You're ready to send 🎉
 
