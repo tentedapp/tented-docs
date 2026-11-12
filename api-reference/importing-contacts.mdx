@@ -38,6 +38,8 @@ Two mutually exclusive modes, selected by `source`:
 
 Returns an `import_session_id` plus a presigned S3 `upload_url` (valid for 1 hour) — `PUT` your CSV bytes directly to it, then continue to preview/execute.
 
+The file must be comma-separated, UTF-8 text, at most **350 MB**, with column names in the first row and at least one data row. Blank rows are skipped. See [what a valid file looks like](/people/importing-contacts#what-a-valid-file-looks-like).
+
 ### Inline rows mode
 
 | Field | Type | Required | Notes |
@@ -70,6 +72,10 @@ POST /v1/contacts/imports/{session_id}/preview
 ```
 
 Parses the header plus sample rows and returns auto-detected `mappings` (source header → target field), per-column sample validation `issues`, the org's `available_fields`, and `field_creation_candidates` for unmapped columns. Optional for headless runs — you can pass mappings straight to execute.
+
+Column names that repeat are made unique: the first keeps its name and each repeat is returned as `Comment (2)`, `Comment (3)`, and so on. Repeats come back unmapped and are not listed in `field_creation_candidates`. Use the returned `headers` when you build `mappings` for execute.
+
+Preview returns `400` with a plain-language `error` when the file can't be used: it is empty, has column names but no data rows, has an unclosed quotation mark, is not CSV text (for example a renamed `.xlsx` or a UTF-16 export), or is over the size limit.
 
 Proposed mappings never send two columns to the same field. When two columns match one field, the column matched by its header name wins over an AI suggestion, then the earlier column wins. The other column is left unmapped with a `reason` naming the column that claimed the field, so it shows up in `field_creation_candidates`. For example, in a Shopify customer export, `Phone` maps to `phone` and `Default Address Phone` is left for a custom field.
 
@@ -115,7 +121,7 @@ Streams a CSV of `skipped` and `failed` rows with reasons (`Content-Disposition:
 
 | Status | Meaning |
 | --- | --- |
-| `400` | Invalid mappings, unknown target field, or malformed rows |
+| `400` | Invalid mappings, unknown target field, malformed rows, or a CSV file that can't be read (see [Preview an Import](#preview-an-import)) |
 | `404` | Unknown `session_id` / `import_run_id` (sessions expire after 24 hours) |
 | `409` | Session already executed |
 | `413` | Inline rows body over 5 MB |
