@@ -80,6 +80,14 @@ Added rules apply everywhere the built-in ones do: the blocked count when you pi
   Added rules only hold contacts back. They never change a contact's fields, so clearing a rule later lets those contacts receive mail again.
 </Warning>
 
+## 6. Set how often one person is emailed
+
+The **Sending Frequency** panel limits how many marketing emails a single person receives in a week. It is on by default at 5 per week, and you can change the number (1 to 100) or turn it off.
+
+- The limit counts blasts, A/B tests and flows together, over the last 7 days.
+- A person who has reached the limit is skipped and counted as blocked, like a suppressed contact. In a flow, the email step is skipped and the person continues to the next step.
+- Operational sends and sample sends are never limited and never count toward the limit.
+
 ## Deliverability & suppression
 
 A few behaviors worth knowing so your sends stay healthy:
