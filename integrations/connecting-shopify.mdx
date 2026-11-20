@@ -167,10 +167,11 @@ To email only those customers, send to the segment you chose in [Step 2](#step-2
 
 ## Order and cart triggers in Flows
 
-Once Shopify is connected, [triggered flows](/email/triggered-flows) can start from what happens in your store. Three triggers are added to the trigger picker:
+Once Shopify is connected, [triggered flows](/email/triggered-flows) can start from what happens in your store. Four triggers are added to the trigger picker:
 
 - **Shopify: Order placed**: when a customer places an order.
 - **Shopify: Order fulfilled**: when an order is marked fulfilled.
+- **Shopify: Delivery update**: when a shipment reaches the delivery status you choose: In transit, Out for delivery, Delivery attempted, Delivered, Ready for pickup, or Picked up.
 - **Shopify: Checkout abandoned**: when a checkout sits unfinished. Choose how long to wait before the flow starts: from 15 minutes up to 1 day, with 1 hour as the default.
 
 The triggers appear in the picker only while Shopify is connected. A flow that already uses one keeps it, but is paused if you disconnect (see below).
@@ -178,6 +179,20 @@ The triggers appear in the picker only while Shopify is connected. A flow that a
 Tented matches the customer to a contact by their Shopify customer, then by email. If neither exists in People, Tented creates the contact (with **Shopify** as the source) and enrolls them. Each order or checkout enrolls a contact once, even if Shopify sends the event again. Test orders and orders imported from another platform (created more than a day before Shopify reports them) don't start flows, so a migration doesn't email your whole order history.
 
 A checkout that is completed before the delay ends never triggers the flow, so customers who finish buying aren't sent a reminder.
+
+### Remove people when they order
+
+Each Shopify trigger has the option **Remove people from this flow when they place an order**. When it is on, a customer who places an order while they are in the flow is removed from it and receives none of the remaining emails. The flow's history shows **Placed an order** as the reason. It is on by default for new **Checkout abandoned** triggers, so a customer who buys after the first reminder is not sent the second.
+
+In a flow that starts from **Order placed**, the order that started the run does not remove it. A later order does.
+
+### Delivery updates
+
+**Order fulfilled** means the order was marked fulfilled in Shopify, which usually happens when it is packed or handed to the carrier. It does not mean the order arrived. To email a customer when their order is out for delivery, delivered, or ready for pickup, use **Shopify: Delivery update** and choose the status.
+
+Shopify only reports a delivery status when it can track the carrier, or when an app or your team marks the status on the fulfillment. A shipment with no tracking, or a carrier Shopify does not track, never reaches **Delivered**, so send a test order through each fulfillment method you use before relying on it. Each status starts the flow once per shipment.
+
+Delivery updates need an extra permission. If you connected Shopify before this trigger was available, open Tented from **Apps** in your Shopify admin to reconnect and approve it. Until then, a flow with this trigger cannot be activated.
 
 ### Order details in your flow
 
@@ -187,6 +202,7 @@ Each trigger hands the details to the run as [`{{campaign.dynamic.*}}` tokens](/
 | --- | --- |
 | Order placed | `orderNumber`, `orderId`, `orderDate`, `orderTotal`, `orderCurrency`, `orderItemCount`, `orderItems`, `orderStatusUrl`, `orderDiscountCodes`, `shippingCity`, `shippingCountry` |
 | Order fulfilled | The order placed tokens, plus `fulfillmentTrackingUrl` and `fulfillmentTrackingNumber` |
+| Delivery update | The order fulfilled tokens (tracking link and number are for the shipment that was updated), plus `fulfillmentTrackingCompany`, `deliveryStatus`, `deliveryUpdatedAt`, `deliveryEstimatedAt` and `deliveryMethod` (Shipping, Local delivery or Pickup) |
 | Checkout abandoned | `checkoutUrl`, `cartTotal`, `cartCurrency`, `cartItemCount`, `cartItems`, `checkoutDate` |
 
 For example, a recovery email can link its button to `{{campaign.dynamic.checkoutUrl}}` so the customer lands back in their cart.
